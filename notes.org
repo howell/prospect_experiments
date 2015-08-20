@@ -1,0 +1,25 @@
+* Questions about prospect
+** What are the different forms and their relation to the NC paper?
+*** advertise/observe versus pub/sub
+*** (?!)
+*** ? (wildcard?)
+*** at-meta
+** How to start the program using spawn-world or spawn-demand-matcher?
+** What is the pattern language?
+** Is there a way to look at the current assertions? Just use printf?
+** How to get the assertions out of a patch?
+** What is the distinction between (assert X) and (message X)?
+** How to inject a keyboard event into the network?
+** Initial network configuration
+The base layer of the network is called ground. The processes spawned at the
+top level of the module are one level removed from ground as evident by the
+need to use `at-meta` and #:meta-level to see messages created with
+send-ground-message. Is there a way to create a ground actor? Can spawn be
+wrapped with at-meta?
+** Spawn a process at a specific level
+In the context of a timer handler, if I call `spawn` then the process will be
+at ground level. But, all of the other processes I created by calling spawn
+from the top level of my module are at a different level. Is there a direct
+way to spawn a process at a specific level, or do I have to create a process
+at the desired level that will listen for ground-messages and spawn processes
+in response?
