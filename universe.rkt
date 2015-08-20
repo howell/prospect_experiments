@@ -14,8 +14,37 @@
     (super-new)))
 
 ;; protocol description
-;; Each process Pi listens for keyboard event messages of the form (Pi k).
-;; In response to the key press Pi asserts (key k). Additionally,
+;; "World" Processes:
+;; - Each world process Pi listens for keyboard messages of the form (Pi k)
+;; - On receiving such a message it will retract all current assertions and assert (key-press Pi k)
+;; - On receiving an added patch of the form (display k) outputs the string k
+;; "Universe" Process
+;; - On receiving added patches of the form (key-press P k) it will pick one and assert (display k)
+;;   as well as retracting all previous assertions
+
+(define (spawn-world label msg-out)
+  (spawn
+     (lambda (e maybe-old-key)
+       (match e
+         [(message (at-meta (list l k)))
+          (if (equal? l label)
+              (transition k
+                          (if (and maybe-old-key (not (equal? maybe-old-key k)))
+                              ;; was this process previously asserting a key?
+                              (list (assert `(key ,k)) (retract `(key ,maybe-old-key)))
+                              (list (assert `(key ,k)))))
+              #f)]
+         [(? patch/added? p)
+          (match-define (cons k _) (set->list (matcher-project/set/single (patch-added p) key-detector)))
+          (msg-out k)
+          #f]
+         [_ #f]))
+     #f
+     ;; listen for key event messages from this canvas
+     ;; (sub (at-meta `(,lbl ,?)))
+     (sub `(,lbl ,?) #:meta-level 1)
+     ;; listen for key messages from processes
+     (sub `(key ,?))))
 
 (define (make-frame)
   (parameterize ((current-eventspace (make-eventspace)))
@@ -35,28 +64,7 @@
                                        (printf "key press: ~v ~v\n" lbl key)
                                        (send-ground-message `(,lbl ,key)))]))
     (send frame show #t)
-    (spawn
-     (lambda (e maybe-old-key)
-       (match e
-         [(message (at-meta (list l k)))
-          (if (equal? l lbl)
-              (transition k
-                          (if (and maybe-old-key (not (equal? maybe-old-key k)))
-                              ;; was this process previously asserting a key?
-                              (list (assert `(key ,k)) (retract `(key ,maybe-old-key)))
-                              (list (assert `(key ,k)))))
-              #f)]
-         [(? patch/added? p)
-          (match-define (cons k _) (set->list (matcher-project/set/single (patch-added p) key-detector)))
-          (send msg set-label k)
-          #f]
-         [_ #f]))
-     #f
-     ;; listen for key event messages from this canvas
-     ;; (sub (at-meta `(,lbl ,?)))
-     (sub `(,lbl ,?) #:meta-level 1)
-     ;; listen for key messages from processes
-     (sub `(key ,?)))))
+    (spawn-world (lambda (k) (send msg set-label k)))))
 
 (define (spawner)
   (spawn
