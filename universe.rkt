@@ -23,27 +23,23 @@
 ;;   as well as retracting all previous assertions
 
 (define (spawn-world label msg-out)
-  (define key-detector (compile-projection `(key ,(?!))))
+  (define display-detector (compile-projection `(display ,(?!))))
   (spawn
-   (lambda (e maybe-old-key)
+   (lambda (e s)
      (match e
        [(message (at-meta (list (== label) k)))
-        (transition k
-                    (if (and maybe-old-key (not (equal? maybe-old-key k)))
-                        ;; was this process previously asserting a key?
-                        (list (assert `(key ,k)) (retract `(key ,maybe-old-key)))
-                        (list (assert `(key ,k)))))]
+        (transition s (patch-seq (retract `(key-press ,label ,?))
+                                 (assert `(key-press ,label ,k))))]
        [(? patch/added? p)
-        (match-define (cons k _) (set->list (matcher-project/set/single (patch-added p) key-detector)))
+        (match-define (cons k _) (set->list (matcher-project/set/single (patch-added p) display-detector)))
         (msg-out k)
         #f]
        [_ #f]))
    #f
    ;; listen for key event messages from this canvas
-   ;; (sub (at-meta `(,lbl ,?)))
    (sub `(key-event ,label ,?) #:meta-level 1)
-   ;; listen for key messages from processes
-   (sub `(key ,?))))
+   ;; listen for display messages from universe
+   (sub `(display ,?))))
 
 (define (make-frame)
   (parameterize ((current-eventspace (make-eventspace)))
