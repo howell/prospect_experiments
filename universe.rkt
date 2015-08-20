@@ -27,7 +27,7 @@
   (spawn
    (lambda (e s)
      (match e
-       [(message (at-meta (list (== label) k)))
+       [(message (at-meta `(key-event ,(== label) ,k)))
         (transition s (patch-seq (retract `(key-press ,label ,?))
                                  (assert `(key-press ,label ,k))))]
        [(? patch/added? p)
@@ -88,7 +88,7 @@
 (make-frame)
 (make-frame)
 (make-frame)
-#;(spawner)
+(spawner)
 
 (define (main frames)
   (for ([i (in-range frames)])
