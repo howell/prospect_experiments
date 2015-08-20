@@ -23,6 +23,7 @@
 ;;   as well as retracting all previous assertions
 
 (define (spawn-world label msg-out)
+  (define key-detector (compile-projection `(key ,(?!))))
   (spawn
      (lambda (e maybe-old-key)
        (match e
@@ -42,14 +43,13 @@
      #f
      ;; listen for key event messages from this canvas
      ;; (sub (at-meta `(,lbl ,?)))
-     (sub `(,lbl ,?) #:meta-level 1)
+     (sub `(,label ,?) #:meta-level 1)
      ;; listen for key messages from processes
      (sub `(key ,?))))
 
 (define (make-frame)
   (parameterize ((current-eventspace (make-eventspace)))
-    (define lbl (symbol->string (gensym "process")))
-    (define key-detector (compile-projection `(key ,(?!))))
+    (define lbl (symbol->string (gensym "process")))    
     (define frame (new frame%
                        [label lbl]
                        [width 300]
@@ -64,7 +64,7 @@
                                        (printf "key press: ~v ~v\n" lbl key)
                                        (send-ground-message `(,lbl ,key)))]))
     (send frame show #t)
-    (spawn-world (lambda (k) (send msg set-label k)))))
+    (spawn-world lbl (lambda (k) (send msg set-label k)))))
 
 (define (spawner)
   (spawn
