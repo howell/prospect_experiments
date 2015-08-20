@@ -13,6 +13,10 @@
           #f))
     (super-new)))
 
+;; protocol description
+;; Each process Pi listens for keyboard event messages of the form (Pi k).
+;; In response to the key press Pi asserts (key k). Additionally,
+
 (define (make-frame)
   (parameterize ((current-eventspace (make-eventspace)))
     (define lbl (symbol->string (gensym "process")))
