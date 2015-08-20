@@ -41,6 +41,19 @@
    ;; listen for display messages from universe
    (sub `(display ,?))))
 
+(define (spawn-universe)
+  (define key-press-detector (compile-projection `(key-press ,? ,(?!))))
+  (spawn
+   (lambda (e s)
+     (match e
+       [(? patch/added? p)
+        (match-define (cons k _) (set->list (matcher-project/set/single (patch-added p) key-press-detector)))
+        (transition s (patch-seq (retract `(display ,?))
+                                 (assert `(display ,k))))]
+       [_ #f]))
+   (void)
+   (sub `(key-press ,? ,?))))
+
 (define (make-frame)
   (parameterize ((current-eventspace (make-eventspace)))
     (define lbl (symbol->string (gensym "process")))    
@@ -69,13 +82,13 @@
    (void)
    (sub 'spawn-frame #:meta-level 1)))
 
-
+(spawn-universe)
 (make-frame)
 (make-frame)
 (make-frame)
 (make-frame)
 (make-frame)
-(spawner)
+#;(spawner)
 
 (define (main frames)
   (for ([i (in-range frames)])
