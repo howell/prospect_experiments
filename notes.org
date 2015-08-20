@@ -23,3 +23,6 @@ from the top level of my module are at a different level. Is there a direct
 way to spawn a process at a specific level, or do I have to create a process
 at the desired level that will listen for ground-messages and spawn processes
 in response?
+** Why the need for patch-seq?
+My intuition was that the list of actions in a transition would effectively
+all be patch-seq'd together.
