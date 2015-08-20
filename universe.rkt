@@ -15,7 +15,7 @@
 
 ;; protocol description
 ;; "World" Processes:
-;; - Each world process Pi listens for keyboard messages of the form (Pi k)
+;; - Each world process Pi listens for keyboard messages of the form (key-event Pi k)
 ;; - On receiving such a message it will retract all current assertions and assert (key-press Pi k)
 ;; - On receiving an added patch of the form (display k) outputs the string k
 ;; "Universe" Process
@@ -62,7 +62,7 @@
                         [parent frame]
                         [key-handler (lambda (key)
                                        (printf "key press: ~v ~v\n" lbl key)
-                                       (send-ground-message `(,lbl ,key)))]))
+                                       (send-ground-message `(key-event ,lbl ,key)))]))
     (send frame show #t)
     (spawn-world lbl (lambda (k) (send msg set-label k)))))
 
