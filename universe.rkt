@@ -1,7 +1,7 @@
 #lang prospect
 
 (require racket/gui)
-(require "../drivers/timer.rkt")
+(require "../prospect/prospect/drivers/timer.rkt")
 
 (define my-canvas%
   (class canvas%
