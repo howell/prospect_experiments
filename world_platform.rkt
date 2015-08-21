@@ -91,6 +91,21 @@
      (struct-copy worldstate ws [it1 it1-n])]
     [_ ws]))
 
+;; check if two circles with radius r at positions p1 and p2
+;; are colliding
+(define (colliding-circles? p1 p2 r)
+  (match-define (posn x1 y1) p1)
+  (match-define (posn x2 y2) p2)
+  (define d^2 (+ (expt (- x1 x2) 2)
+                 (expt (- y1 y2) 2)))
+  (define r^2 (expt r 2))
+  (< r^2 d^2))
+
+(module+ test
+  (check-true (colliding-circles? (posn 0 0)
+                                    (posn 0 0)
+                                    1)))
+
 (define (render ws)
   (match-define (worldstate it1 it2) ws)
   (place-image IT2 (posn-x it2) (posn-y it2)
@@ -103,4 +118,4 @@
             [on-key key-press]
             [to-draw render]))
 
-(main)
+#;(main)
