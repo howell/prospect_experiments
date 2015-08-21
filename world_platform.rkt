@@ -56,6 +56,28 @@
     ["down" (adjust-to-canvas (struct-copy posn pos [y (+ (posn-y pos) DELTA)]))]
     [_ pos]))
 
+;; check if two circles with centers p1 p2 and radii r1 r2
+;; are colliding
+(define (colliding-circles? p1 r1 p2 r2)
+  (match-define (posn x1 y1) p1)
+  (match-define (posn x2 y2) p2)
+  (define d^2 (+ (expt (- x1 x2) 2)
+                 (expt (- y1 y2) 2)))
+  (define r^2 (expt (+ r1 r2) 2))
+  (< d^2 r^2))
+
+(module+ test
+  (check-true (colliding-circles? (posn 0 0) 1
+                                  (posn 0 0) 1))
+  (check-true (colliding-circles? (posn 0 0) 1
+                                  (posn 1 1) 1))
+  (check-true (colliding-circles? (posn 2 3) 2
+                                  (posn 4 4) 1))
+  (check-false (colliding-circles? (posn 0 0) 1
+                                   (posn 2 2) 1))
+  (check-false (colliding-circles? (posn 0 0) 100
+                                   (posn 1000 1000) 100)))
+
 (define (wasd-to-arrows k)
   (match k
     ["w" "up"]
@@ -85,31 +107,15 @@
   (match key
     [(or "w" "a" "s" "d")
      (define it2-n (move-in-canvas it2 (wasd-to-arrows key)))
-     (struct-copy worldstate ws [it2 it2-n])]
+     (if (colliding-circles? it1 RADIUS it2-n RADIUS)
+         ws
+         (struct-copy worldstate ws [it2 it2-n]))]
     [(or "left" "right" "up" "down")
      (define it1-n (move-in-canvas it1 key))
-     (struct-copy worldstate ws [it1 it1-n])]
+     (if (colliding-circles? it1-n RADIUS it2 RADIUS)
+         ws
+         (struct-copy worldstate ws [it1 it1-n]))]
     [_ ws]))
-
-;; check if two circles with centers p1 p2 and radii r1 r2
-;; are colliding
-(define (colliding-circles? p1 r1 p2 r2)
-  (match-define (posn x1 y1) p1)
-  (match-define (posn x2 y2) p2)
-  (define d^2 (+ (expt (- x1 x2) 2)
-                 (expt (- y1 y2) 2)))
-  (define r^2 (expt (+ r1 r2) 2))
-  (< d^2 r^2))
-
-(module+ test
-  (check-true (colliding-circles? (posn 0 0) 1
-                                  (posn 0 0) 1))
-  (check-true (colliding-circles? (posn 0 0) 1
-                                  (posn 1 1) 1))
-  (check-true (colliding-circles? (posn 2 3) 2
-                                  (posn 4 4) 1))
-  (check-false (colliding-circles? (posn 0 0) 1
-                                   (posn 2 2) 1)))
 
 (define (render ws)
   (match-define (worldstate it1 it2) ws)
@@ -123,4 +129,4 @@
             [on-key key-press]
             [to-draw render]))
 
-#;(main)
+(main)
