@@ -18,7 +18,8 @@
 (define CANVAS-SIZE 400)
 
 (define BACKGROUND (empty-scene CANVAS-SIZE CANVAS-SIZE))
-(define IT (circle RADIUS "solid" "blue"))
+(define IT1 (circle RADIUS "solid" "blue"))
+(define IT2 (circle RADIUS "solid" "red"))
 
 ;; adjust the xy point representing the center of the circle
 ;; so that it stays in the canvas
@@ -68,7 +69,9 @@
 (define (key-press ws key)
   (match-define (worldstate it1 it2) ws)
   (match key
-    [(or "w" "a" "s" "d") ws]
+    [(or "w" "a" "s" "d")
+     (define it2-n (move-in-canvas it2 key))
+     (struct-copy worldstate ws [it2 it2-n])]
     [(or "left" "right" "up" "down")
      (define it1-n (move-in-canvas it1 key))
      (struct-copy worldstate ws [it1 it1-n])]
@@ -76,7 +79,8 @@
 
 (define (render ws)
   (match-define (worldstate it1 it2) ws)
-  (place-image IT (posn-x it1) (posn-y it1) BACKGROUND))
+  (place-image IT2 (posn-x it2) (posn-y it2)
+               (place-image IT1 (posn-x it1) (posn-y it1) BACKGROUND)))
 
 (define (main)
   (big-bang (worldstate
