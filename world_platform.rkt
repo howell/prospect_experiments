@@ -99,7 +99,7 @@
   (define d^2 (+ (expt (- x1 x2) 2)
                  (expt (- y1 y2) 2)))
   (define r^2 (expt r 2))
-  (< r^2 d^2))
+  (< d^2 r^2))
 
 (module+ test
   (check-true (colliding-circles? (posn 0 0)
