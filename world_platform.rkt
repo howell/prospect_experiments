@@ -46,8 +46,7 @@
   (check-equal? (adjust-to-canvas (posn 200 -10))
                 (posn 200 RADIUS))
   (check-equal? (adjust-to-canvas (posn CANVAS-SIZE CANVAS-SIZE))
-                (posn (- CANVAS-SIZE RADIUS) (- CANVAS-SIZE RADIUS)))
-  )
+                (posn (- CANVAS-SIZE RADIUS) (- CANVAS-SIZE RADIUS))))
                     
 (define (move-in-canvas pos key)
   (match key
@@ -63,7 +62,23 @@
     ["a" "left"]
     ["s" "down"]
     ["d" "right"]
-    [_ ""]))
+    [_ #f]))
+
+(module+ test
+  (check-equal? (wasd-to-arrows "w")
+                "up")
+  (check-equal? (wasd-to-arrows "a")
+                "left")
+  (check-equal? (wasd-to-arrows "s")
+                "down")
+  (check-equal? (wasd-to-arrows "d")
+                "right")
+  (check-equal? (wasd-to-arrows "left")
+                #f)
+  (check-equal? (wasd-to-arrows "right")
+                #f)
+  (check-equal? (wasd-to-arrows "k")
+                #f))
 
 (define (key-press ws key)
   (match-define (worldstate it1 it2) ws)
