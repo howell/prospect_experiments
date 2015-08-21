@@ -47,7 +47,7 @@
                 (posn 200 RADIUS))
   (check-equal? (adjust-to-canvas (posn CANVAS-SIZE CANVAS-SIZE))
                 (posn (- CANVAS-SIZE RADIUS) (- CANVAS-SIZE RADIUS))))
-                    
+
 (define (move-in-canvas pos key)
   (match key
     ["left" (adjust-to-canvas (struct-copy posn pos [x (- (posn-x pos) DELTA)]))]
@@ -103,8 +103,8 @@
 
 (module+ test
   (check-true (colliding-circles? (posn 0 0)
-                                    (posn 0 0)
-                                    1)))
+                                  (posn 0 0)
+                                  1)))
 
 (define (render ws)
   (match-define (worldstate it1 it2) ws)
