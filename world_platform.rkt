@@ -70,16 +70,18 @@
   (match key
     [(or "w" "a" "s" "d") ws]
     [(or "left" "right" "up" "down")
-     (define it1-n (move-in-canvas it1))
+     (define it1-n (move-in-canvas it1 key))
      (struct-copy worldstate ws [it1 it1-n])]
     [_ ws]))
 
 (define (render ws)
   (match-define (worldstate it1 it2) ws)
-  (place-image IT (posn-x it1) (posn-y it2) BACKGROUND))
+  (place-image IT (posn-x it1) (posn-y it1) BACKGROUND))
 
 (define (main)
-  (big-bang (posn RADIUS RADIUS)
+  (big-bang (worldstate
+             (posn RADIUS RADIUS)
+             (posn (- CANVAS-SIZE RADIUS) (- CANVAS-SIZE RADIUS)))
             [on-key key-press]
             [to-draw render]))
 
