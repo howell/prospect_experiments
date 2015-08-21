@@ -13,10 +13,11 @@
 
 (define RADIUS 20)
 
-(define IT (circle RADIUS "solid" "blue"))
-
 ;; length of each side of the square
 (define CANVAS-SIZE 400)
+
+(define BACKGROUND (empty-scene CANVAS-SIZE CANVAS-SIZE))
+(define IT (circle RADIUS "solid" "blue"))
 
 ;; adjust the xy point representing the center of the circle
 ;; so that it stays in the canvas
@@ -52,3 +53,6 @@
     ['right (adjust (struct-copy posn pos [x (+ (posn-x pos) DELTA)]))]
     ['up (adjust (struct-copy posn pos [y (+ (posn-y pos) DELTA)]))]
     ['down (adjust (struct-copy posn pos [y (- (posn-y pos) DELTA)]))]))
+
+(define (render pos)
+  (place-image IT (pos-x pos) (posn-y pos) BACKGROUND))
