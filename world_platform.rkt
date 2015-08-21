@@ -48,11 +48,20 @@
   )
                     
 (define (key-handler pos key)
+  (printf "key: ~v" key)
   (match key
     ['left (adjust (struct-copy posn pos [x (- (posn-x pos) DELTA)]))]
     ['right (adjust (struct-copy posn pos [x (+ (posn-x pos) DELTA)]))]
     ['up (adjust (struct-copy posn pos [y (+ (posn-y pos) DELTA)]))]
-    ['down (adjust (struct-copy posn pos [y (- (posn-y pos) DELTA)]))]))
+    ['down (adjust (struct-copy posn pos [y (- (posn-y pos) DELTA)]))]
+    [_ pos]))
 
 (define (render pos)
-  (place-image IT (pos-x pos) (posn-y pos) BACKGROUND))
+  (place-image IT (posn-x pos) (posn-y pos) BACKGROUND))
+
+(define (main)
+  (big-bang (posn RADIUS RADIUS)
+            [on-key key-handler]
+            [to-draw render]))
+
+(main)
