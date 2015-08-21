@@ -91,7 +91,7 @@
      (struct-copy worldstate ws [it1 it1-n])]
     [_ ws]))
 
-;; check if two circles with radius r at positions p1 and p2
+;; check if two circles with centers p1 p2 and radii r1 r2
 ;; are colliding
 (define (colliding-circles? p1 r1 p2 r2)
   (match-define (posn x1 y1) p1)
@@ -102,12 +102,14 @@
   (< d^2 r^2))
 
 (module+ test
-  (check-true (colliding-circles? (posn 0 0)
-                                  (posn 0 0)
-                                  1))
-  (check-true (colliding-circles? (posn 0 0)
-                                  (posn 1 1)
-                                  1)))
+  (check-true (colliding-circles? (posn 0 0) 1
+                                  (posn 0 0) 1))
+  (check-true (colliding-circles? (posn 0 0) 1
+                                  (posn 1 1) 1))
+  (check-true (colliding-circles? (posn 2 3) 2
+                                  (posn 4 4) 1))
+  (check-false (colliding-circles? (posn 0 0) 1
+                                   (posn 2 2) 1)))
 
 (define (render ws)
   (match-define (worldstate it1 it2) ws)
