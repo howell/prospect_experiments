@@ -48,7 +48,7 @@
                 (posn (- CANVAS-SIZE RADIUS) (- CANVAS-SIZE RADIUS)))
   )
                     
-(define (key-handler pos key)
+(define (move-in-canvas pos key)
   (printf "key: ~v\n" key)
   (match key
     ["left" (adjust-to-canvas (struct-copy posn pos [x (- (posn-x pos) DELTA)]))]
@@ -68,16 +68,19 @@
 (define (key-press ws key)
   (match-define (worldstate it1 it2) ws)
   (match key
-    [(or "w" "a" "s" "d") #f]
-    [(or "left" "right" "up" "down") #f]
+    [(or "w" "a" "s" "d") ws]
+    [(or "left" "right" "up" "down")
+     (define it1-n (move-in-canvas it1))
+     (struct-copy worldstate ws [it1 it1-n])]
     [_ ws]))
 
-(define (render pos)
-  (place-image IT (posn-x pos) (posn-y pos) BACKGROUND))
+(define (render ws)
+  (match-define (worldstate it1 it2) ws)
+  (place-image IT (posn-x it1) (posn-y it2) BACKGROUND))
 
 (define (main)
   (big-bang (posn RADIUS RADIUS)
-            [on-key key-handler]
+            [on-key key-press]
             [to-draw render]))
 
 (main)
