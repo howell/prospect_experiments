@@ -93,17 +93,20 @@
 
 ;; check if two circles with radius r at positions p1 and p2
 ;; are colliding
-(define (colliding-circles? p1 p2 r)
+(define (colliding-circles? p1 r1 p2 r2)
   (match-define (posn x1 y1) p1)
   (match-define (posn x2 y2) p2)
   (define d^2 (+ (expt (- x1 x2) 2)
                  (expt (- y1 y2) 2)))
-  (define r^2 (expt r 2))
+  (define r^2 (expt (+ r1 r2) 2))
   (< d^2 r^2))
 
 (module+ test
   (check-true (colliding-circles? (posn 0 0)
                                   (posn 0 0)
+                                  1))
+  (check-true (colliding-circles? (posn 0 0)
+                                  (posn 1 1)
                                   1)))
 
 (define (render ws)
