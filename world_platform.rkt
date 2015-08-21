@@ -50,7 +50,6 @@
   )
                     
 (define (move-in-canvas pos key)
-  (printf "key: ~v\n" key)
   (match key
     ["left" (adjust-to-canvas (struct-copy posn pos [x (- (posn-x pos) DELTA)]))]
     ["right" (adjust-to-canvas (struct-copy posn pos [x (+ (posn-x pos) DELTA)]))]
@@ -70,7 +69,7 @@
   (match-define (worldstate it1 it2) ws)
   (match key
     [(or "w" "a" "s" "d")
-     (define it2-n (move-in-canvas it2 key))
+     (define it2-n (move-in-canvas it2 (wasd-to-arrows key)))
      (struct-copy worldstate ws [it2 it2-n])]
     [(or "left" "right" "up" "down")
      (define it1-n (move-in-canvas it1 key))

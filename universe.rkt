@@ -73,7 +73,7 @@
     (send frame show #t)
     (spawn-world lbl (lambda (k) (send msg set-label k)))))
 
-(define (spawner)
+(define (frame-spawner)
   (spawn
    (lambda (e s)
      (match e
@@ -88,7 +88,7 @@
 (make-frame)
 (make-frame)
 (make-frame)
-(spawner)
+(frame-spawner)
 
 (define (main frames)
   (for ([i (in-range frames)])
