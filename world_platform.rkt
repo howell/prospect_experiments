@@ -8,6 +8,7 @@
 ;; move a circle around the screen in response to arrow key presses
 
 (struct posn (x y) #:transparent)
+(struct worldstate (it1 it2) #:transparent)
 
 (define DELTA 15)
 
@@ -55,6 +56,21 @@
     ["up" (adjust-to-canvas (struct-copy posn pos [y (- (posn-y pos) DELTA)]))]
     ["down" (adjust-to-canvas (struct-copy posn pos [y (+ (posn-y pos) DELTA)]))]
     [_ pos]))
+
+(define (wasd-to-arrows k)
+  (match k
+    ["w" "up"]
+    ["a" "left"]
+    ["s" "down"]
+    ["d" "right"]
+    [_ ""]))
+
+(define (key-press ws key)
+  (match-define (worldstate it1 it2) ws)
+  (match key
+    [(or "w" "a" "s" "d") #f]
+    [(or "left" "right" "up" "down") #f]
+    [_ ws]))
 
 (define (render pos)
   (place-image IT (posn-x pos) (posn-y pos) BACKGROUND))
