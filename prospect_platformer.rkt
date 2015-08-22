@@ -115,3 +115,10 @@
                           (send dc draw-ellipse tl-x tl-y x-size y-size))])))
   
   (send frame show #t))
+
+;; protocol description - Take 1 (mimic big-bang program)
+;; key board events are injected into the system using messages of the form (key-event k)
+;; the God process listens for key events, translates them into commands, updates the
+;; state of the world accordingly, and draws to the canvas.
+
+(struct key-event (key) #:transparent)
