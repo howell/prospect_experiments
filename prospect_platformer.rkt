@@ -101,11 +101,9 @@
   (posn (+ tl-x r) (- tl-y r)))
 
 ;; protocol description - Take 1 (mimic big-bang program)
-;; key board events are injected into the system using messages of the form (key-event k)
+;; key board events are injected into the system using messages of the form ('key-event k)
 ;; the God process listens for key events, translates them into commands, updates the
 ;; state of the world accordingly, and draws to the canvas.
-
-(struct key-event (key) #:transparent)
 
 (define game-canvas%
   (class canvas%
@@ -165,7 +163,7 @@
   (spawn
    (lambda (e ws)
      (match e
-       [(message (at-meta (key-event key)))
+       [(message (at-meta `(key-event ,key)))
         (define ws-n (key-press ws key))
         (draw-ws dc ws-n)
         (transition ws-n '())]
@@ -181,6 +179,6 @@
   (define canvas
     (new game-canvas%
          [parent frame]
-         [key-handler (lambda (key) (send-ground-message (key-event key)))]))
+         [key-handler (lambda (key) (send-ground-message `(key-event ,key)))]))
   (send frame show #t)
   (make-world (send canvas get-dc)))
