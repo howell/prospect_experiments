@@ -109,15 +109,15 @@
   (match-define (worldstate it1 it2) ws)
   (send dc suspend-flush)
   (send dc clear)
-  (draw-shape-ellipse dc it1 'blue)
-  (draw-shape-ellipse dc it2 'red)
+  (draw-shape-ellipse dc it1 "blue")
+  (draw-shape-ellipse dc it2 "red")
   (send dc resume-flush))
 
 (define CANVAS-SIZE 400)
 (define DELTA 15)
 (define RADIUS 20)
 (define IT1 (shape (posn 0 0) (* RADIUS 2) (* RADIUS 2)))
-(define IT2 (shape (posn 0 0) (* RADIUS 2) (* RADIUS 2)))
+(define IT2 (shape (posn 340 340) (* RADIUS 2) (* RADIUS 2)))
 
 (define (make-world dc)
   (define worldstate0 (worldstate IT1 IT2))
@@ -142,4 +142,5 @@
       (new game-canvas%
            [parent frame]
            [key-handler (lambda (key) (send-ground-message (key-event key)))])))
-  (send frame show #t))
+  (send frame show #t)
+  (make-world (send canvas get-dc)))
