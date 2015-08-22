@@ -60,6 +60,14 @@
     ["down" (posn 0 delta)]
     [_ (posn 0 0)]))
 
+(define (wasd-to-arrows k)
+  (match k
+    ["w" "up"]
+    ["a" "left"]
+    ["s" "down"]
+    ["d" "right"]
+    [_ #f]))
+
 #;(module+ test
     (check-equal? (key-to-posn-delta "left" 10)
                   (posn -10 0))
@@ -76,6 +84,21 @@
   (match key
     [(or 'left 'right 'up 'down) #t]
     [_ #f]))
+
+;; check if two circles with centers p1 p2 and radii r1 r2
+;; are colliding
+(define (colliding-circles? p1 r1 p2 r2)
+  (match-define (posn x1 y1) p1)
+  (match-define (posn x2 y2) p2)
+  (define d^2 (+ (expt (- x1 x2) 2)
+                 (expt (- y1 y2) 2)))
+  (define r^2 (expt (+ r1 r2) 2))
+  (< d^2 r^2))
+
+(define (circle-center sh)
+  (match-define (shape (tl-x tl-y) d _) sh)
+  (define r (/ d 2))
+  (posn (+ tl-x r) (- tl-y r)))
 
 ;; protocol description - Take 1 (mimic big-bang program)
 ;; key board events are injected into the system using messages of the form (key-event k)
