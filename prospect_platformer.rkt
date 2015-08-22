@@ -166,7 +166,9 @@
    (lambda (e ws)
      (match e
        [(message (at-meta (key-event key)))
-        #f]
+        (define ws-n (key-press ws key))
+        (draw-ws dc ws-n)
+        (transition ws-n '())]
        [_ #f]))
    worldstate0
    (sub `(key-event ,?) #:meta-level 1)))
@@ -177,10 +179,8 @@
                      [width CANVAS-SIZE]
                      [height CANVAS-SIZE]))
   (define canvas
-    (let* ([circ-radius 20]
-           [circ (box (shape (posn 0 0) (* circ-radius 2) (* circ-radius 2)))])
-      (new game-canvas%
-           [parent frame]
-           [key-handler (lambda (key) (send-ground-message (key-event key)))])))
+    (new game-canvas%
+         [parent frame]
+         [key-handler (lambda (key) (send-ground-message (key-event key)))]))
   (send frame show #t)
   (make-world (send canvas get-dc)))
