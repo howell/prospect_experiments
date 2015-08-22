@@ -108,7 +108,7 @@
   (send dc set-smoothing 'aligned)
   (send dc draw-ellipse tl-x tl-y x-size y-size))
 
-(define (draw-ws ws dc)
+(define (draw-ws dc ws)
   (match-define (worldstate it1 it2) ws)
   (send dc suspend-flush)
   (send dc clear)
@@ -116,36 +116,33 @@
   (draw-shape-ellipse dc it2 'red)
   (send dc resume-flush))
 
+(define DELTA 15)
+(define RADIUS 20)
+(define IT1 (shape (posn 0 0) (* circ-radius 2) (* circ-radius 2)))
+(define IT2 (shape (posn 0 0) (* circ-radius 2) (* circ-radius 2)))
 
 (define (make-world dc)
+  (define worldstate0 (worldstate IT1 IT2))
+  (draw-ws dc worldstate0)
   (spawn
    (lambda (e ws)
      (match e
        [(message (at-meta (key-event key)))
-        
-        (parameterize ((current-eventspace (make-eventspace)))
-          (define frame (new frame%
-                             [label "My Frame"]
-                             [width CANVAS-SIZE]
-                             [height CANVAS-SIZE]))
-          
-          (define canvas
-            (let* ([circ-radius 20]
-                   [circ (box (shape (posn 0 0) (* circ-radius 2) (* circ-radius 2)))])
-              (new game-canvas%
-                   [parent frame]
-                   [key-handler (lambda (key) (send-ground-message (key-event key)))])))
-          #|
-           (define dc (send canvas get-dc))
-                          (define-values (max-x max-y) (send canvas get-client-size))
-                          (match-define (posn dx dy) (key-to-posn-delta key DELTA))
-                          (set-box! circ (move-shape-in-canvas (unbox circ) dx dy (posn max-x max-y)))
-                          (match-define (shape (posn tl-x tl-y) x-size y-size) (unbox circ))
-                          (send dc clear)
-                          (send dc set-brush "blue" 'solid)
-                          (send dc set-pen "blue" 1 'transparent)
-                          (send dc set-smoothing 'aligned)
-                          (send dc draw-ellipse tl-x tl-y x-size y-size))])))
-|#
-          
-          (send frame show #t))
+        #f]
+       [_ #f]))
+   worldstate0
+   (sub `(key-event ,?) #:meta-level 1)))
+
+(parameterize ((current-eventspace (make-eventspace)))
+  (define frame (new frame%
+                     [label "My Frame"]
+                     [width CANVAS-SIZE]
+                     [height CANVAS-SIZE]))
+  
+  (define canvas
+    (let* ([circ-radius 20]
+           [circ (box (shape (posn 0 0) (* circ-radius 2) (* circ-radius 2)))])
+      (new game-canvas%
+           [parent frame]
+           [key-handler (lambda (key) (send-ground-message (key-event key)))])))
+  (send frame show #t))
