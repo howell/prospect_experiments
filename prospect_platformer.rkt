@@ -15,7 +15,7 @@
     [(> x max) max]
     [else x]))
 
-(module+ test
+#;(module+ test
   (require rackunit)
   (check-equal? (clip 5 0 0) 0)
   (check-equal? (clip 0 0 0) 0)
@@ -30,7 +30,7 @@
 (define (adjust-1d center margin-low margin-high floor ceil)
   (clip center (+ floor margin-low) (- ceil margin-high)))
 
-(module+ test
+#;(module+ test
   (check-equal? (adjust-1d 5 10 10 0 100)
                 10)
   (check-equal? (adjust-1d 95 10 10 0 100)
@@ -60,7 +60,7 @@
     ["down" (posn 0 delta)]
     [_ (posn 0 0)]))
 
-(module+ test
+#;(module+ test
   (check-equal? (key-to-posn-delta "left" 10)
                 (posn -10 0))
   (check-equal? (key-to-posn-delta "right" 42)
