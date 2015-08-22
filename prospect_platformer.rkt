@@ -1,4 +1,4 @@
-#lang racket
+#lang prospect
 
 (require racket/gui)
 (require racket/draw)
@@ -77,6 +77,13 @@
     [(or 'left 'right 'up 'down) #t]
     [_ #f]))
 
+;; protocol description - Take 1 (mimic big-bang program)
+;; key board events are injected into the system using messages of the form (key-event k)
+;; the God process listens for key events, translates them into commands, updates the
+;; state of the world accordingly, and draws to the canvas.
+
+(struct key-event (key) #:transparent)
+
 (define game-canvas%
   (class canvas%
     (init-field key-handler)
@@ -102,8 +109,9 @@
            [circ (box (shape (posn 0 0) (* circ-radius 2) (* circ-radius 2)))])
       (new game-canvas%
            [parent frame]
-           [key-handler (lambda (key)
-                          (define dc (send canvas get-dc))
+           [key-handler (lambda (key) (send-ground-message (key-event key)))])))
+#|
+           (define dc (send canvas get-dc))
                           (define-values (max-x max-y) (send canvas get-client-size))
                           (match-define (posn dx dy) (key-to-posn-delta key DELTA))
                           (set-box! circ (move-shape-in-canvas (unbox circ) dx dy (posn max-x max-y)))
@@ -113,12 +121,6 @@
                           (send dc set-pen "blue" 1 'transparent)
                           (send dc set-smoothing 'aligned)
                           (send dc draw-ellipse tl-x tl-y x-size y-size))])))
+|#
   
   (send frame show #t))
-
-;; protocol description - Take 1 (mimic big-bang program)
-;; key board events are injected into the system using messages of the form (key-event k)
-;; the God process listens for key events, translates them into commands, updates the
-;; state of the world accordingly, and draws to the canvas.
-
-(struct key-event (key) #:transparent)
