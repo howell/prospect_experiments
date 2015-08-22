@@ -142,6 +142,23 @@
 (define IT1 (shape (posn 0 0) (* RADIUS 2) (* RADIUS 2)))
 (define IT2 (shape (posn 340 340) (* RADIUS 2) (* RADIUS 2)))
 
+(define (key-press ws key)
+  (match-define (worldstate it1 it2) ws)
+  (match key
+    [(or "w" "a" "s" "d")
+     (match-define (posn dx dy) (key-to-posn-delta (wasd-to-arrows key) DELTA))
+     (define it2-n (move-shape-in-canvas it2 dx dy (posn CANVAS-SIZE CANVAS-SIZE)))
+     (if (colliding-circles? (circle-center it1) RADIUS (circle-center it2-n) RADIUS)
+         ws
+         (struct-copy worldstate ws [it2 it2-n]))]
+    [(or "left" "right" "up" "down")
+     (match-define (posn dx dy) (key-to-posn-delta key DELTA))
+     (define it1-n (move-shape-in-canvas it1 dx dy (posn CANVAS-SIZE CANVAS-SIZE)))
+     (if (colliding-circles? (circle-center it1-n) RADIUS (circle-center it2) RADIUS)
+         ws
+         (struct-copy worldstate ws [it1 it1-n]))]
+    [_ ws]))
+
 (define (make-world dc)
   (define worldstate0 (worldstate IT1 IT2))
   (draw-ws dc worldstate0)
