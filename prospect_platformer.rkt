@@ -95,9 +95,6 @@
         [else (void)]))
     (super-new)))
 
-(define CANVAS-SIZE 400)
-(define DELTA 20)
-
 ;; it1 and it2 are both shapes
 (struct worldstate (it1 it2) #:transparent)
 
@@ -116,10 +113,11 @@
   (draw-shape-ellipse dc it2 'red)
   (send dc resume-flush))
 
+(define CANVAS-SIZE 400)
 (define DELTA 15)
 (define RADIUS 20)
-(define IT1 (shape (posn 0 0) (* circ-radius 2) (* circ-radius 2)))
-(define IT2 (shape (posn 0 0) (* circ-radius 2) (* circ-radius 2)))
+(define IT1 (shape (posn 0 0) (* RADIUS 2) (* RADIUS 2)))
+(define IT2 (shape (posn 0 0) (* RADIUS 2) (* RADIUS 2)))
 
 (define (make-world dc)
   (define worldstate0 (worldstate IT1 IT2))
@@ -138,7 +136,6 @@
                      [label "My Frame"]
                      [width CANVAS-SIZE]
                      [height CANVAS-SIZE]))
-  
   (define canvas
     (let* ([circ-radius 20]
            [circ (box (shape (posn 0 0) (* circ-radius 2) (* circ-radius 2)))])
