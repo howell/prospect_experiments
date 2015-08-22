@@ -96,7 +96,7 @@
   (< d^2 r^2))
 
 (define (circle-center sh)
-  (match-define (shape (tl-x tl-y) d _) sh)
+  (match-define (shape (posn tl-x tl-y) d _) sh)
   (define r (/ d 2))
   (posn (+ tl-x r) (- tl-y r)))
 
