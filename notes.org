@@ -31,3 +31,5 @@ all be patch-seq'd together.
 *** really just moving two pictures around a canvas with collision detection).
 *** Where should the state of each entity be?
 *** Seems ugly to always be retracting assertions - might as well just use messages
+*** Take 1: mimic big-bang program completely?
+**** one process holds on to all the state and does everything!
