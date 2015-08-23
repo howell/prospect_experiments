@@ -73,6 +73,8 @@
 ;; when
 ;; a drawing process D listens for every location and draws/erases to the screen as postions are asserted and retracted
 
+(struct dot-state (my-shape everyone-else) #:transparent)
+
 
 (define game-canvas%
   (class canvas%
