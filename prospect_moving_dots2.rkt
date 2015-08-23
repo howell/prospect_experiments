@@ -1,5 +1,7 @@
 #lang prospect
 
+(require racket/set)
+
 ;; protocol description - Take 2 (process for each dot)
 ;; key board events are injected into the system using messages of the form ('key-event k)
 ;; each dot process P asserts its current location as ('shape shape) and listens for the location of every other thing
@@ -19,5 +21,7 @@
   (match e
     [(patch added removed)
      ;; update the position of all shapes
-     (define others_1 (for/fold ([acc others])
-                                (matcher-project/set removed (
+     (define vacated (matcher-project/set removed shape-detector))
+     (define moved (matcher-project/set added shape-detector))
+     (transition (set-union (set-subtract others vacated) moved) '())]
+    [_ #f]))
