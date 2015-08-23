@@ -119,14 +119,14 @@
          (struct-copy worldstate ws [it1 it1-n]))]
     [_ ws]))
 
-(define (make-world dc)
+(define (make-world dc bot-right)
   (define worldstate0 (worldstate IT1 IT2))
   (draw-ws dc worldstate0)
   (spawn
    (lambda (e ws)
      (match e
        [(message (at-meta `(key-event ,key)))
-        (define ws-n (key-press ws key))
+        (define ws-n (key-press ws key bot-right))
         (draw-ws dc ws-n)
         (transition ws-n '())]
        [_ #f]))
