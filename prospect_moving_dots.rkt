@@ -69,10 +69,10 @@
 
 ;; protocol description - Take 2 (process for each dot)
 ;; key board events are injected into the system using messages of the form ('key-event k)
-;; each dot process P registers its initial location by asserting ('shape P shape)
-;; - when the dot wants to move to a new location, it asserts the new desired location with ('move P dx dy)
-;; a game process G takes all the inital shapes and draws the start screen
-;; - when handling a ('move P dx dy) assertion
+;; each dot process P asserts its current location as ('shape shape) and listens for the location of every other thing
+;; when
+;; a drawing process D listens for every location and draws/erases to the screen as postions are asserted and retracted
+
 
 (define game-canvas%
   (class canvas%
