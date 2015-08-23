@@ -15,32 +15,6 @@
     [(> x max) max]
     [else x]))
 
-#;(module+ test
-    (require rackunit)
-    (check-equal? (clip 5 0 0) 0)
-    (check-equal? (clip 0 0 0) 0)
-    (check-equal? (clip -1 10 20) 10)
-    (check-equal? (clip -1 -20 -10) -10)
-    (check-equal? (clip 1 1 2) 1)
-    (check-equal? (clip 2 1 2) 2))
-
-;; Move a point on a single dimension so that it is within [floor + margin-low, ceil - margin-high].
-;; If the point is already inside that range, return unchanged.
-;; Otherwise, make the minimum adjustment to put it into that range.
-(define (adjust-1d center margin-low margin-high floor ceil)
-  (clip center (+ floor margin-low) (- ceil margin-high)))
-
-#;(module+ test
-    (check-equal? (adjust-1d 5 10 10 0 100)
-                  10)
-    (check-equal? (adjust-1d 95 10 10 0 100)
-                  90)
-    (check-equal? (adjust-1d 50 10 10 0 100)
-                  50)
-    ;; weird case
-    (check-equal? (adjust-1d 50 100 100 0 100)
-                  100))
-
 ;; move a shape within a canvas
 ;; the canvas is assumed to be a rectangle with its top left corner at (0,0) and bottom right corner at bot-right-pos
 ;; the shape is moved in the x axis by dx and y axis by dy. The shape is not moved outside of the canvas.
