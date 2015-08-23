@@ -10,7 +10,7 @@
 
 (struct posn (x y) #:transparent)
 ;; kind of assumed to be rectangular
-(struct shape (top-left x-size y-size) #:transparent)
+(struct shape (top-left x-size y-size color) #:transparent)
 (struct dot-state (my-shape everyone-else) #:transparent)
 
 (define shape-detector
