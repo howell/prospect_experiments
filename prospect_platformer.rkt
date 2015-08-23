@@ -42,18 +42,6 @@
     ["d" "right"]
     [_ #f]))
 
-#;(module+ test
-    (check-equal? (key-to-posn-delta "left" 10)
-                  (posn -10 0))
-    (check-equal? (key-to-posn-delta "right" 42)
-                  (posn 42 0))
-    (check-equal? (key-to-posn-delta "down" 999)
-                  (posn 0 999))
-    (check-equal? (key-to-posn-delta "up" -3)
-                  (posn 0 3))
-    (check-equal? (key-to-posn-delta "w" 5)
-                  (posn 0 0)))
-
 (define (arrow? key)
   (match key
     [(or 'left 'right 'up 'down) #t]
@@ -145,14 +133,17 @@
    worldstate0
    (sub `(key-event ,?) #:meta-level 1)))
 
-(parameterize ((current-eventspace (make-eventspace)))
-  (define frame (new frame%
-                     [label "My Frame"]
-                     [width CANVAS-SIZE]
-                     [height CANVAS-SIZE]))
-  (define canvas
-    (new game-canvas%
-         [parent frame]
-         [key-handler (lambda (key) (send-ground-message `(key-event ,key)))]))
-  (send frame show #t)
-  (make-world (send canvas get-dc)))
+(define (make-frame)
+  (parameterize ((current-eventspace (make-eventspace)))
+    (define frame (new frame%
+                       [label "My Frame"]
+                       [width CANVAS-SIZE]
+                       [height CANVAS-SIZE]))
+    (define canvas
+      (new game-canvas%
+           [parent frame]
+           [key-handler (lambda (key) (send-ground-message `(key-event ,key)))]))
+    (send frame show #t)
+    (make-world (send canvas get-dc))))
+
+(make-frame)
