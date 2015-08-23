@@ -67,6 +67,13 @@
 ;; the God process listens for key events, translates them into commands, updates the
 ;; state of the world accordingly, and draws to the canvas.
 
+;; protocol description - Take 2 (process for each dot)
+;; key board events are injected into the system using messages of the form ('key-event k)
+;; each dot process P registers its initial location by asserting ('shape P shape)
+;; - when the dot wants to move to a new location, it asserts the new desired location with ('move P dx dy)
+;; a game process G takes all the inital shapes and draws the start screen
+;; - when handling a ('move P dx dy) assertion
+
 (define game-canvas%
   (class canvas%
     (init-field key-handler)
