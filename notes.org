@@ -33,6 +33,10 @@ all be patch-seq'd together.
 *** Seems ugly to always be retracting assertions - might as well just use messages
 *** Take 1: mimic big-bang program completely?
 **** one process holds on to all the state and does everything!
+*** Idea: Process for each 'thing' in the world
+Have a process for each shape that asserts the position where it wants to be.
+One other process listens for all these assertions and then decides where
+everything actually is.
 ** Strange error message
    ../prospect/prospect/lang.rkt:27:26: syntax-local-lift-module-end-declaration: not currently transforming an expression within a module declaration
 *** Apparently the result of using `(module+ test ...)`
