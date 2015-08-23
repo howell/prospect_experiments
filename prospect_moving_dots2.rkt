@@ -13,15 +13,27 @@
 (struct shape (top-left x-size y-size color) #:transparent)
 (struct dot-state (my-shape everyone-else) #:transparent)
 
+(struct arrow-keys (up left down right) #:transparent)
+
 (define shape-detector
   (compile-projection `(shape ,(?!))))
 
-(define (dot-behavior e s)
-  (match-define (dot-state me others) s)
-  (match e
-    [(patch added removed)
-     ;; update the position of all shapes
-     (define vacated (matcher-project/set removed shape-detector))
-     (define moved (matcher-project/set added shape-detector))
-     (transition (set-union (set-subtract others vacated) moved) '())]
-    [_ #f]))
+(define (dot-behavior keys)
+  (match-define (arrow-keys up left down right) keys)
+  (lambda (e s)
+    (match-define (dot-state me others) s)
+    (match e
+      [(patch added removed)
+       ;; update the position of all shapes
+       (define vacated (matcher-project/set removed shape-detector))
+       (define moved (matcher-project/set added shape-detector))
+       (transition (set-remove (set-union (set-subtract others vacated) moved) me) '())]
+      [_ #f])))
+
+(define (spawn-dot shape keys)
+  (spawn
+   (dot-behavior keys)
+   (dot-state shape (set))
+   (assert `(shape ,shape))
+   (sub `(shape ,?))
+   (sub `(key-event ,?) #:meta-level 1)))
