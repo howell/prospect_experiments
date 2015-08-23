@@ -70,7 +70,8 @@
 
 (define DELTA 20)
 
-(define (dot-behavior arr-keys)
+(define (dot-behavior arr-keys bot-right)
+  (match-define (arrow-keys up left down right) arr-keys)
   (lambda (e s)
     (match-define (dot-state me others) s)
     (match e
