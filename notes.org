@@ -40,3 +40,4 @@ everything actually is.
 ** Strange error message
    ../prospect/prospect/lang.rkt:27:26: syntax-local-lift-module-end-declaration: not currently transforming an expression within a module declaration
 *** Apparently the result of using `(module+ test ...)`
+** Am I cheating by calling directly into racket/gui and racket/draw so often?
