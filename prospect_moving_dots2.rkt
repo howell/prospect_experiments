@@ -127,7 +127,6 @@
 (define (spawn-drawer dc)
   (spawn
    (lambda (e shapes)
-     (printf "\n\ndrawer!\n\n")
      (match e
        [(patch added removed)
         ;; update the position of all shapes
@@ -175,9 +174,10 @@
     (define-values (x-max y-max) (send canvas get-client-size))
     (define bot-right (posn x-max y-max))
     (define dc (send canvas get-dc))
-    (spawn-drawer dc)))
+    (spawn-drawer dc)
+    bot-right))
 
-(make-frame 400 400)
+(define bot-right (make-frame 400 400))
 
-(spawn-dot DOT1 (arrow-keys "w" "a" "s" "d") (posn 400 400))
-(spawn-dot DOT2 (arrow-keys "up" "left" "down" "right") (posn 400 400))
+(spawn-dot DOT1 (arrow-keys "w" "a" "s" "d") bot-right)
+(spawn-dot DOT2 (arrow-keys "up" "left" "down" "right") bot-right)
