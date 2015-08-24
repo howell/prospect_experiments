@@ -147,7 +147,7 @@
 
 (define RADIUS 20)
 (define DOT1 (shape (posn 0 0) (* RADIUS 2) (* RADIUS 2) "blue"))
-(define DOT2 (shape (posn 340 340) (* RADIUS 2) (* RADIUS 2) "right"))
+(define DOT2 (shape (posn 340 340) (* RADIUS 2) (* RADIUS 2) "red"))
 
 (define (arrow? key)
   (match key
