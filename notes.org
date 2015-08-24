@@ -91,3 +91,4 @@ In order for an assertion to be included in a patch to a process, it needs to
 be tested against the patterns that process is interested in. But, once the
 patch is delivered, the process has to run each pattern against the patch to
 recover the shape of each assertion.
+** How to create a tiered network?
