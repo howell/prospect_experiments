@@ -94,7 +94,7 @@
           (define moved (move-shape-in-canvas me dx dy bot-right))
           (define any-colliding? (for/fold [(acc #f)]
                                            [(other others)]
-                                   (or acc (colliding-circles? (circle-center moved) (circle-center other)))))
+                                   (or acc (colliding-circles? (circle-center moved) RADIUS (circle-center other) RADIUS))))
           (if any-colliding?
               #f
               (transition (dot-state moved others)
@@ -131,8 +131,8 @@
      (match e
        [(patch added removed)
         ;; update the position of all shapes
-       (define vacated (matcher-project/set removed shape-detector))
-       (define moved (matcher-project/set added shape-detector))
+       (define vacated (match-shapes removed))
+       (define moved (match-shapes added))
        (define new-state (set-union (set-subtract shapes vacated) moved))
        (transition new-state '())]
        [_ #f]))
