@@ -171,4 +171,4 @@
     (spawn-dot DOT1 (arrow-keys "w" "a" "s" "d") bot-right)
     (spawn-dot DOT2 (arrow-keys "up" "left" "down" "right") bot-right)))
 
-(make-frame)
+(make-frame 400 400)
