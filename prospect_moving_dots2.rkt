@@ -175,8 +175,7 @@
     (define-values (x-max y-max) (send canvas get-client-size))
     (define bot-right (posn x-max y-max))
     (spawn-drawer (send canvas get-dc))
-    
     (spawn-dot DOT1 (arrow-keys "w" "a" "s" "d") bot-right)
-    #;(spawn-dot DOT2 (arrow-keys "up" "left" "down" "right") bot-right)))
+    (spawn-dot DOT2 (arrow-keys "up" "left" "down" "right") bot-right)))
 
 (make-frame 400 400)
