@@ -125,6 +125,15 @@
     (draw-shape-ellipse dc sh))
   (send dc resume-flush))
 
+(define (update-canvas dc added removed)
+  (define background (send dc get-background))
+  (send dc suspend-flush)
+  (for ([sh removed])
+    (draw-shape-ellipse dc (struct-copy shape sh [color background])))
+  (for ([sh added])
+    (draw-shape-ellipse dc sh))
+  (send dc resume-flush))
+
 (define (spawn-drawer dc)
   (spawn
    (lambda (e shapes)
@@ -134,7 +143,8 @@
         (define vacated (match-shapes removed))
         (define moved (match-shapes added))
         (define new-state (set-union (set-subtract shapes vacated) moved))
-        (draw-shapes dc new-state)
+        #;(draw-shapes dc new-state)
+        (update-canvas dc moved vacated)
         (transition new-state '())]
        [_ #f]))
    (set)
