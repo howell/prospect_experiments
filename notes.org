@@ -70,7 +70,7 @@ everything actually is.
 *** Take 2: one process for each dot plus a process for drawing
 - each dot process P asserts its current location as ('shape shape) and listens
   for the location of every other thing.
-- to move forme shape to shape', P retracts ('shape shape) and asserts
+- to move from shape to shape', P retracts ('shape shape) and asserts
   ('shape shape'). P should only assert shape'if it does not collide with any
   other asserted shape.
 - a drawing process D listens for every location and draws/erases to the screen
