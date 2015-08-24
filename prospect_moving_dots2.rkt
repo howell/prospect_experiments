@@ -183,3 +183,4 @@
 
 (spawn-dot DOT1 (arrow-keys "w" "a" "s" "d") (unbox bot-right))
 (spawn-dot DOT2 (arrow-keys "up" "left" "down" "right") (unbox bot-right))
+(spawn-dot DOT3 (arrow-keys "k" "h" "j" "l") (unbox bot-right))
