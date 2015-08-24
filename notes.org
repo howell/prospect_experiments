@@ -9,6 +9,10 @@
 ** Is there a way to look at the current assertions? Just use printf?
 ** How to get the assertions out of a patch?
 ** What is the distinction between (assert X) and (message X)?
+Time. An assertion is visible to anyone interested in it from when it is
+asserted until when it is retracted. A message, on the other hand, is transient.
+When a message is sent, it is delivered to everyone that is interested in it
+*at that time*.
 ** How to inject a keyboard event into the network?
 ** Initial network configuration
 The base layer of the network is called ground. The processes spawned at the
