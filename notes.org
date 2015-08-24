@@ -58,3 +58,4 @@ everything actually is.
 Seemed to have problems with prospect_moving_dots2.rkt spawning dot processes
 within that context
 ** Can't include a message or spawn in the initial list of actions passed to `spawn`?
+** Why aren't messages just folded in to patches when delivered to a behavior?
