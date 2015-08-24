@@ -86,3 +86,8 @@ within that context
 ** Why aren't messages just folded in to patches when delivered to a behavior?
 ** What happens if multiple processes assert the same thing?
 Does the event show up multiple times in a patch?
+** It feels like their is some redundancy in the way patches are handled.
+In order for an assertion to be included in a patch to a process, it needs to
+be tested against the patterns that process is interested in. But, once the
+patch is delivered, the process has to run each pattern against the patch to
+recover the shape of each assertion.
