@@ -52,3 +52,4 @@ everything actually is.
 ** Am I cheating by calling directly into racket/gui and racket/draw so often?
 ** What processes can I spawn within a `(parametrize current-eventspace ...)`
 Seemed to have problems with prospect_moving_dots2.rkt spawning dot processes
+within that context
