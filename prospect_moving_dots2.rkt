@@ -134,6 +134,7 @@
         (define vacated (match-shapes removed))
         (define moved (match-shapes added))
         (define new-state (set-union (set-subtract shapes vacated) moved))
+        (draw-shapes dc new-state)
         (transition new-state '())]
        [_ #f]))
    (set)
@@ -173,21 +174,8 @@
     (send frame show #t)
     (define-values (x-max y-max) (send canvas get-client-size))
     (define bot-right (posn x-max y-max))
-    #;(spawn-drawer (send canvas get-dc))
-    (define dc (send canvas get-dc))
-    (spawn
-     (lambda (e shapes)
-       (printf "\n\ndrawer!\n\n")
-       (match e
-         [(patch added removed)
-          ;; update the position of all shapes
-          (define vacated (match-shapes removed))
-          (define moved (match-shapes added))
-          (define new-state (set-union (set-subtract shapes vacated) moved))
-          (transition new-state '())]
-         [_ #f]))
-     (set)
-     (sub `(shape ,?)))
+    (spawn-drawer (send canvas get-dc))
+    
     (spawn-dot DOT1 (arrow-keys "w" "a" "s" "d") bot-right)
     #;(spawn-dot DOT2 (arrow-keys "up" "left" "down" "right") bot-right)))
 
