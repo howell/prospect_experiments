@@ -155,6 +155,7 @@
 (define DOT1 (shape (posn 0 0) (* RADIUS 2) (* RADIUS 2) "blue"))
 (define DOT2 (shape (posn 340 340) (* RADIUS 2) (* RADIUS 2) "red"))
 (define DOT3 (shape (posn 0 340) (* RADIUS 2) (* RADIUS 2) "green"))
+(define DOT4 (shape (posn 340 0) (* RADIUS 2) (* RADIUS 2) "purple"))
 
 (define (arrow? key)
   (match key
@@ -184,3 +185,4 @@
 (spawn-dot DOT1 (arrow-keys "w" "a" "s" "d") (unbox bot-right))
 (spawn-dot DOT2 (arrow-keys "up" "left" "down" "right") (unbox bot-right))
 (spawn-dot DOT3 (arrow-keys "k" "h" "j" "l") (unbox bot-right))
+(spawn-dot DOT4 (arrow-keys "i" "y" "u" "o") (unbox bot-right))
