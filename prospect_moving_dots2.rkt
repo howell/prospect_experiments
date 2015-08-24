@@ -35,11 +35,11 @@
 ;; the canvas is assumed to be a rectangle with its top left corner at (0,0) and bottom right corner at bot-right-pos
 ;; the shape is moved in the x axis by dx and y axis by dy. The shape is not moved outside of the canvas.
 (define (move-shape-in-canvas shp dx dy bot-right-pos)
-  (match-define (shape (posn tl-x tl-y) x-size y-size _) shp)
+  (match-define (shape (posn tl-x tl-y) x-size y-size c) shp)
   (match-define (posn x-max y-max) bot-right-pos)
   (shape (posn (clip (+ tl-x dx) 0 (- x-max x-size))
                (clip (+ tl-y dy) 0 (- y-max y-size)))
-         x-size y-size))
+         x-size y-size c))
 
 ;; translates a key press into a directional move - a (posn dx dy)
 (define (key-to-posn-delta key delta)
