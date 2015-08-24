@@ -97,9 +97,9 @@
          [_ #f]
       [_ #f])))
 
-(define (spawn-dot shape keys)
+(define (spawn-dot shape keys bot-right)
   (spawn
-   (dot-behavior keys)
+   (dot-behavior keys bot-right)
    (dot-state shape (set))
    (assert `(shape ,shape))
    (sub `(shape ,?))
@@ -132,3 +132,43 @@
        [_ #f]))
    (set)
    (sub `(shape ,?))))
+
+;; gui stuff
+(define game-canvas%
+  (class canvas%
+    (init-field key-handler)
+    (define/override (on-char event)
+      (define key-code (send event get-key-code))
+      (cond
+        [(char? key-code) (key-handler (string key-code))]
+        [(arrow? key-code) (key-handler (symbol->string key-code))]
+        [else (void)]))
+    (super-new)))
+
+(define RADIUS 20)
+(define DOT1 (shape (posn 0 0) (* RADIUS 2) (* RADIUS 2) "blue"))
+(define DOT2 (shape (posn 340 340) (* RADIUS 2) (* RADIUS 2) "right"))
+
+(define (arrow? key)
+  (match key
+    [(or 'left 'right 'up 'down) #t]
+    [_ #f]))
+
+(define (make-frame width height)
+  (parameterize ((current-eventspace (make-eventspace)))
+    (define frame (new frame%
+                       [label "My Frame"]
+                       [width width]
+                       [height height]))
+    (define canvas
+      (new game-canvas%
+           [parent frame]
+           [key-handler (lambda (key) (send-ground-message `(key-event ,key)))]))
+    (send frame show #t)
+    (define-values (x-max y-max) (send canvas get-client-size))
+    (define bot-right (posn x-max y-max))
+    (spawn-drawer (send canvas get-dc))
+    (spawn-dot DOT1 (arrow-keys "w" "a" "s" "d") bot-right)
+    (spawn-dot DOT2 (arrow-keys "up" "left" "down" "right") bot-right)))
+
+(make-frame)
