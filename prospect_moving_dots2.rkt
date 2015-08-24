@@ -78,8 +78,8 @@
     (match e
       [(patch added removed)
        ;; update the position of all shapes
-       (define vacated (matcher-project/set removed shape-detector))
-       (define moved (matcher-project/set added shape-detector))
+       (define vacated (set-map (matcher-project/set removed shape-detector) car))
+       (define moved (set-map (matcher-project/set added shape-detector) car))
        (transition (set-remove (set-union (set-subtract others vacated) moved) me) '())]
       [(message (at-meta `(key-event ,key)))
        (match key
