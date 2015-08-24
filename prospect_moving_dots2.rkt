@@ -15,9 +15,6 @@
 
 (struct arrow-keys (up left down right) #:transparent)
 
-(define shape-detector
-  (compile-projection `(shape ,(?!))))
-
 (define (key-to-arrow arr-keys key)
   (match-define (arrow-keys up left down right) arr-keys)
   (match key
@@ -70,6 +67,14 @@
 
 (define DELTA 20)
 
+(define shape-detector
+  (compile-projection `(shape ,(?!))))
+
+(define (match-shapes m)
+  (for/set [(x (matcher-project/set m shape-detector))]
+    (match-define (list sh) x)
+    sh))
+
 (define (dot-behavior arr-keys bot-right)
   (match-define (arrow-keys up left down right) arr-keys)
   (lambda (e s)
@@ -78,8 +83,8 @@
     (match e
       [(patch added removed)
        ;; update the position of all shapes
-       (define vacated (set-map (matcher-project/set removed shape-detector) car))
-       (define moved (set-map (matcher-project/set added shape-detector) car))
+       (define vacated (match-shapes removed))
+       (define moved (match-shapes added))
        (transition (set-remove (set-union (set-subtract others vacated) moved) me) '())]
       [(message (at-meta `(key-event ,key)))
        (match key
