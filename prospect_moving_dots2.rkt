@@ -85,7 +85,7 @@
        ;; update the position of all shapes
        (define vacated (match-shapes removed))
        (define moved (match-shapes added))
-       (transition (set-remove (set-union (set-subtract others vacated) moved) me) '())]
+       (transition (dot-state me (set-remove (set-union (set-subtract others vacated) moved) me)) '())]
       [(message (at-meta `(key-event ,key)))
        (match key
          [(or (== up) (== left) (== down) (== right))
