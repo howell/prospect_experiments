@@ -78,7 +78,6 @@
 (define (dot-behavior arr-keys bot-right)
   (match-define (arrow-keys up left down right) arr-keys)
   (lambda (e s)
-    (printf "\n\n~v\n\n" s)
     (match-define (dot-state me others) s)
     (match e
       [(patch added removed)
@@ -176,6 +175,6 @@
     (define bot-right (posn x-max y-max))
     (spawn-drawer (send canvas get-dc))
     (spawn-dot DOT1 (arrow-keys "w" "a" "s" "d") bot-right)
-    (spawn-dot DOT2 (arrow-keys "up" "left" "down" "right") bot-right)))
+    #;(spawn-dot DOT2 (arrow-keys "up" "left" "down" "right") bot-right)))
 
 (make-frame 400 400)
