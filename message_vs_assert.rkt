@@ -28,9 +28,14 @@
 (spawn
  (lambda (e s) #f)
  (void)
+ (assert 'foo)
  (message 'foo)
  (spawn (lambda (e s)
           (match e
+            [(? patch/added? p)
+            (define matches (matcher-project/set (patch-added p) (compile-projection (?!))))
+            (printf "patch ~v\n" matches)
+            #f]
             [(message m)
              (printf "message ~v\n" m)
              #f]
