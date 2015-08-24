@@ -99,8 +99,8 @@
               #f
               (transition (dot-state moved others)
                           (patch-seq (retract `(shape ,?))
-                                     (assert `(shape ,moved)))))])]
-         [_ #f]
+                                     (assert `(shape ,moved)))))]
+         [_ #f])]
       [_ #f])))
 
 (define (spawn-dot shape keys bot-right)
@@ -131,10 +131,10 @@
      (match e
        [(patch added removed)
         ;; update the position of all shapes
-       (define vacated (match-shapes removed))
-       (define moved (match-shapes added))
-       (define new-state (set-union (set-subtract shapes vacated) moved))
-       (transition new-state '())]
+        (define vacated (match-shapes removed))
+        (define moved (match-shapes added))
+        (define new-state (set-union (set-subtract shapes vacated) moved))
+        (transition new-state '())]
        [_ #f]))
    (set)
    (sub `(shape ,?))))
