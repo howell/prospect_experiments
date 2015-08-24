@@ -38,6 +38,14 @@ Have a process for each shape that asserts the position where it wants to be.
 One other process listens for all these assertions and then decides where
 everything actually is.
 **** Problem with trying to assert the same thing multiple times before the game logic process can catch up
+*** Take 2: one process for each dot plus a process for drawing
+- each dot process P asserts its current location as ('shape shape) and listens
+  for the location of every other thing.
+- to move forme shape to shape', P retracts ('shape shape) and asserts
+  ('shape shape'). P should only assert shape'if it does not collide with any
+  other asserted shape.
+- a drawing process D listens for every location and draws/erases to the screen
+  as postions are asserted and retracted.
 ** Strange error message
    ../prospect/prospect/lang.rkt:27:26: syntax-local-lift-module-end-declaration: not currently transforming an expression within a module declaration
 *** Apparently the result of using `(module+ test ...)`
