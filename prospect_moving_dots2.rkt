@@ -154,11 +154,14 @@
 (define RADIUS 20)
 (define DOT1 (shape (posn 0 0) (* RADIUS 2) (* RADIUS 2) "blue"))
 (define DOT2 (shape (posn 340 340) (* RADIUS 2) (* RADIUS 2) "red"))
+(define DOT3 (shape (posn 0 340) (* RADIUS 2) (* RADIUS 2) "green"))
 
 (define (arrow? key)
   (match key
     [(or 'left 'right 'up 'down) #t]
     [_ #f]))
+
+(define bot-right (box #f))
 
 (define (make-frame width height)
   (parameterize ((current-eventspace (make-eventspace)))
@@ -172,12 +175,11 @@
            [key-handler (lambda (key) (send-ground-message `(key-event ,key)))]))
     (send frame show #t)
     (define-values (x-max y-max) (send canvas get-client-size))
-    (define bot-right (posn x-max y-max))
+    (set-box! bot-right (posn x-max y-max))
     (define dc (send canvas get-dc))
-    (spawn-drawer dc)
-    bot-right))
+    (spawn-drawer dc)))
 
-(define bot-right (make-frame 400 400))
+(make-frame 400 400)
 
-(spawn-dot DOT1 (arrow-keys "w" "a" "s" "d") bot-right)
-(spawn-dot DOT2 (arrow-keys "up" "left" "down" "right") bot-right)
+(spawn-dot DOT1 (arrow-keys "w" "a" "s" "d") (unbox bot-right))
+(spawn-dot DOT2 (arrow-keys "up" "left" "down" "right") (unbox bot-right))
