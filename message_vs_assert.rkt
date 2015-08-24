@@ -1,6 +1,6 @@
 #lang prospect
 
-(spawn
+#;(spawn
  (lambda (e s)
    #f)
  (void)
@@ -9,7 +9,7 @@
 
 
 
-(spawn (lambda (e s)
+#;(spawn (lambda (e s)
          (match e
            [(? patch/added? p)
             (define matches (matcher-project/set (patch-added p) (compile-projection (?!))))
@@ -24,3 +24,16 @@
        (sub 'invisible))
 
 (send-ground-message 'invisible)
+
+(spawn
+ (lambda (e s) #f)
+ (void)
+ (message 'foo)
+ (spawn (lambda (e s)
+          (match e
+            [(message m)
+             (printf "message ~v\n" m)
+             #f]
+            [_ #f]))
+        (void)
+        (sub 'foo)))
