@@ -114,7 +114,7 @@
 (define (draw-shape-ellipse dc sh)
   (match-define (shape (posn tl-x tl-y) x-size y-size color) sh)
   (send dc set-brush color 'solid)
-  (send dc set-pen color 1 'transparent)
+  #;(send dc set-pen color 1 'transparent)
   (send dc set-smoothing 'aligned)
   (send dc draw-ellipse tl-x tl-y x-size y-size))
 
