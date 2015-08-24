@@ -14,6 +14,7 @@ asserted until when it is retracted. A message, on the other hand, is transient.
 When a message is sent, it is delivered to everyone that is interested in it
 *at that time*.
 ** How to inject a keyboard event into the network?
+Use `send-ground-message`.
 ** Initial network configuration
 The base layer of the network is called ground. The processes spawned at the
 top level of the module are one level removed from ground as evident by the
