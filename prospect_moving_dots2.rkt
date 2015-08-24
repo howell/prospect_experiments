@@ -1,6 +1,6 @@
 #lang prospect
 
-(require racket/set)
+(require racket/set racket/gui racket/draw)
 
 ;; protocol description - Take 2 (process for each dot)
 ;; key board events are injected into the system using messages of the form ('key-event k)
@@ -104,3 +104,31 @@
    (assert `(shape ,shape))
    (sub `(shape ,?))
    (sub `(key-event ,?) #:meta-level 1)))
+
+(define (draw-shape-ellipse dc sh)
+  (match-define (shape (posn tl-x tl-y) x-size y-size color) sh)
+  (send dc set-brush color 'solid)
+  (send dc set-pen color 1 'transparent)
+  (send dc set-smoothing 'aligned)
+  (send dc draw-ellipse tl-x tl-y x-size y-size))
+
+(define (draw-shapes dc shapes)
+  (send dc suspend-flush)
+  (send dc clear)
+  (for ([sh shapes])
+    (draw-shape-ellipse dc sh))
+  (send dc resume-flush))
+
+(define (spawn-drawer dc)
+  (spawn
+   (lambda (e shapes)
+     (match e
+       [(patch added removed)
+        ;; update the position of all shapes
+       (define vacated (matcher-project/set removed shape-detector))
+       (define moved (matcher-project/set added shape-detector))
+       (define new-state (set-union (set-subtract shapes vacated) moved))
+       (transition new-state '())]
+       [_ #f]))
+   (set)
+   (sub `(shape ,?))))
