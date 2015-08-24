@@ -128,6 +128,7 @@
 (define (spawn-drawer dc)
   (spawn
    (lambda (e shapes)
+     (printf "\n\ndrawer!\n\n")
      (match e
        [(patch added removed)
         ;; update the position of all shapes
