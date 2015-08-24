@@ -8,6 +8,28 @@
 ** What is the pattern language?
 ** Is there a way to look at the current assertions? Just use printf?
 ** How to get the assertions out of a patch?
+- A patch consists of two matchers, added and removed
+- To get assertions out of a matcher, you have to decide what sort of assertions
+  you are interested in, compile a pattern for those assertions, and pass that
+  along with the matcher to `matcher-project/set`.
+- matcher-project/set takes a matcher and a pattern and returns a set of lists
+- Say you are in interested in assertions of the shape ('posn x y).
+  -- compile the pattern using `(compile-projection `(posn ,(?!) ,(?!)))`
+  -- the (?!) is for /capturing/ the matched value. Use ? if you want to match
+     but don't care about the actual value.
+  -- the lists returned by matcher-project/set contain the captured values in
+     order.
+- Say we are receiving a patch p where the assertion ('posn 2 3) was added.
+- The result of
+  `(matcher-project/set (patch-added p)
+                        (compile-projection `(posn ,(?!) ,(?!))))`
+  would be `(set (list 2 3))`.
+- If we only cared about the y position, we could instead do
+  `(matcher-project/set (patch-added p)
+                        (compile-projection `(posn ,? ,(?!))))`
+  and get the result `(set (list 3))`.
+- patch-project/set uses `values` to return the result of matching a projection
+  against both the added and removed bits of a patch.
 ** What is the distinction between (assert X) and (message X)?
 Time. An assertion is visible to anyone interested in it from when it is
 asserted until when it is retracted. A message, on the other hand, is transient.
@@ -60,3 +82,5 @@ Seemed to have problems with prospect_moving_dots2.rkt spawning dot processes
 within that context
 ** Can't include a message or spawn in the initial list of actions passed to `spawn`?
 ** Why aren't messages just folded in to patches when delivered to a behavior?
+** What happens if multiple processes assert the same thing?
+Does the event show up multiple times in a patch?
