@@ -73,6 +73,7 @@
 (define (dot-behavior arr-keys bot-right)
   (match-define (arrow-keys up left down right) arr-keys)
   (lambda (e s)
+    (printf "\n\n~v\n\n" s)
     (match-define (dot-state me others) s)
     (match e
       [(patch added removed)
