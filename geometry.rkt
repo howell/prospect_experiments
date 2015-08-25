@@ -139,3 +139,9 @@
        [(cons x1 x2) (cons (posn x1 (line-y-at-x l x1))
                            (posn x2 (line-y-at-x l x2)))]
        [x (posn x (line-y-at-x x))])]))
+
+(module+ test
+  (define unit-circle (circle (posn 0 0) 1))
+  (define x=0 (line 1 0 0))
+  (check-equal? (intersection-circle-line unit-circle x=0)
+                (cons (posn 0 1) (posn 0 -1))))
