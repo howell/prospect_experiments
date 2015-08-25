@@ -89,6 +89,11 @@ everything actually is.
   new location.
 - a drawing process D listens for every location and draws/erases to the screen
   as postions are asserted and retracted.
+*** Take 4: motion messages
+- key board events are injected into the system using messages of the form
+  ('key-event k)
+- each dot process has a unique label P and asserts its existence with
+  ('shape P shape).
 ** Strange error message
    ../prospect/prospect/lang.rkt:27:26: syntax-local-lift-module-end-declaration: not currently transforming an expression within a module declaration
 *** Apparently the result of using `(module+ test ...)`
