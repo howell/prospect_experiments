@@ -116,10 +116,18 @@
   (match-define (circle (posn x0 y0) r) c)
   (match-define (line a b c) l)
   (cond
-    [(equal? a 0) ;; horizontal line
-     #f]
-    [(equal? b 0) ;; vertical line
-     #f]
+    [(equal? a 0) ;; horizontal line: y = c/b
+     (define c/b (/ c b))
+     (match (circle-x-at-y c/b)
+       [#f #f]
+       [(cons x1 x2) (cons (posn x1 c/b) (posn x2 c/b))]
+       [x (posn x c/b)])]
+    [(equal? b 0) ;; vertical line: x = c/a
+     (define c/a (/ c a))
+     (match (circle-y-at-x c c/a)
+       [#f #f]
+       [(cons y1 y2) (cons (posn c/a y1) (posn c/a y2))]
+       [y (posn c/a y)])]
     [else
      (define slope (/ (- a) b))
      (define y-int (/ c b))
