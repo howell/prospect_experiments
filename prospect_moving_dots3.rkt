@@ -6,7 +6,7 @@
 ;;   To move from shape to shape', P retracts ('shape P shape) and asserts ('shape P shape').
 ;; - A collision detection process listens for ('shape ? ?) assertions and maintains a state of
 ;;   where everything is. If a collision is detected between dots P and Q, the process sends a
-;;   message ('move P dx dy) and ('move Q dx dy) to each process.
+;;   message ('move P dx dy) and ('move Q dx dy) to P and Q.
 ;; - When a dot P receives a move message it updates its assertions to reflect the new location
 ;; - a drawing process D listens for every location and draws/erases to the screen as postions
 ;;   are asserted and retracted
