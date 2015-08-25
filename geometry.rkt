@@ -147,4 +147,9 @@
   (check-equal? (intersection-circle-line unit-circle x=0)
                 (cons (posn 0 1) (posn 0 -1)))
   (check-equal? (intersection-circle-line unit-circle y=0)
-                (cons (posn 1 0) (posn -1 0))))
+                (cons (posn 1 0) (posn -1 0)))
+  (define y=x (line -1 1 0))
+  (check-equal? (intersection-circle-line unit-circle y=x)
+                (cons (posn (/ (sqrt 2) 2) (/ (sqrt 2) 2))
+                      (posn (- (/ (sqrt 2) 2)) (- (/ (sqrt 2) 2))))))
+                      
