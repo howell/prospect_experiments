@@ -84,11 +84,13 @@ everything actually is.
   ('shape P shape').
 - A collision detection process listens for ('shape ? ?) assertions and
   maintains a state of where everything is. If a collision is detected between
-  dots P and Q, the process sends a message ('move L dx dy) to one of P or Q.
+  dots P and Q, the process sends a message ('move L dx dy) to one of P or Q,
+  where dx and dy are randomly chosen.
 - When a dot P receives a move message it updates its assertions to reflect the
   new location.
 - a drawing process D listens for every location and draws/erases to the screen
   as postions are asserted and retracted.
+*** Improvement needed: deliberate, instead of random, collision reaction.
 *** Take 4: motion messages
 - key board events are injected into the system using messages of the form
   ('key-event k)
