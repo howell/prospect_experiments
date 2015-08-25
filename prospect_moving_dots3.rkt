@@ -147,7 +147,7 @@
             (match-define (shape-l label sh) new-dot)
             (define dots-n2 (hash-set dots-n label sh))
             (when (hash-has-key? dots-n label) (error 'collision "\n\nboohoo\n\n"))
-            (if (any-colliding? shape (hash-values dots-n))
+            (if (any-colliding? sh (hash-values dots-n))
                 (cons dots-n2 (cons (message `(move ,label
                                                     ,(random-in-range (- BACKOFF) BACKOFF)
                                                     ,(random-in-range (- BACKOFF) BACKOFF)))
