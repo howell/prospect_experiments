@@ -143,8 +143,8 @@
         (define vacated (match-shapes removed))
         (define moved (match-shapes added))
         (define new-state (set-union (set-subtract shapes vacated) moved))
-        (draw-shapes dc new-state)
-        #;(update-canvas dc moved vacated)
+        #;(draw-shapes dc new-state)
+        (update-canvas dc moved vacated)
         (transition new-state '())]
        [_ #f]))
    (set)
