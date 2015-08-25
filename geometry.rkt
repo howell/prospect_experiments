@@ -89,9 +89,15 @@
   (check-equal? (circle-y-at-x circle0 2)
                 #f))
 
-(define (circlye-x-at-y c y)
+(define (circle-x-at-y c y)
   (match-define (circle (posn x0 y0) r) c)
   (circle-y-at-x (circle (posn y0 x0) r) y))
+
+(module+ test
+  ;; (x - 3)^2 + (y - 4)^2 = 3^2
+  (define circle1 (circle (posn 3 4) 3))
+  (check-equal? (circle-x-at-y circle1 4)
+                (cons 6 0)))
 
 
 ;; compute the intersecting points of a circle c and line l
@@ -99,10 +105,8 @@
 ;; if there is one such point (x, y), return (posn x y)
 ;; if there are two such points (x1, y1) (x2, y2), return (cons (posn x1 y1) (posn x2 y2))
 (define (intersection-circle-line c l)
-  (match-define (circle (posn -x0 -y0) r) c)
+  (match-define (circle (posn x0 y0) r) c)
   (match-define (line m b c) l)
-  (define x0 (- -x0))
-  (define y0 (- -y0))
   (define A (+ 1 (expt m 2)))
   (define B (* 2 (- (* m b) (* m y0) x0)))
   (define C (+ (expt y0 2) (- (expt r 2)) (expt x0 2) (* -2 b y0) (expt b 2)))
