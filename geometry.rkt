@@ -89,6 +89,10 @@
   (check-equal? (circle-y-at-x circle0 2)
                 #f))
 
+;; compute the x value(s) of a circle for a given y value
+;; returns #f if there are none
+;; returns x if there is exactly one
+;; returns (cons x1 x2) if there are two, with x1 > x2
 (define (circle-x-at-y c y)
   (match-define (circle (posn x0 y0) r) c)
   (circle-y-at-x (circle (posn y0 x0) r) y))
@@ -97,7 +101,11 @@
   ;; (x - 3)^2 + (y - 4)^2 = 3^2
   (define circle1 (circle (posn 3 4) 3))
   (check-equal? (circle-x-at-y circle1 4)
-                (cons 6 0)))
+                (cons 6 0))
+  (check-equal? (circle-x-at-y circle1 1)
+                3)
+  (check-equal? (circle-x-at-y circle1 7)
+                3))
 
 
 ;; compute the intersecting points of a circle c and line l
