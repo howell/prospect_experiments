@@ -120,7 +120,6 @@
 (define (any-colliding? sh others)
   (for/fold [(acc #f)]
             [(other others)]
-    #;(printf "sh: ~v other: ~v\n" sh other)
     (or acc (colliding-circles? (circle-center sh) RADIUS (circle-center other) RADIUS))))
 
 (define (random-in-range low high)
@@ -140,14 +139,12 @@
           (for/fold ([acc dots-old])
                     ([removed vacated])
             (hash-remove acc (shape-l-label removed))))
-        #;(printf "\n\nold: ~v\ndots-n: ~v\n\n" dots-old dots-n)
         (match-define (cons next-dots msgs)
           (for/fold ([acc (cons dots-n '())])
                      ([new-dot new-locs])
             (match-define (cons dots-n msgs) acc)
             (match-define (shape-l label sh) new-dot)
             (define dots-n2 (hash-set dots-n label sh))
-            (when (hash-has-key? dots-n label) (error 'collision "\n\nboohoo\n\n"))
             (if (any-colliding? sh (hash-values dots-n))
                 (cons dots-n2 (cons (message `(move ,label
                                                     ,(random-in-range (- BACKOFF) BACKOFF)
