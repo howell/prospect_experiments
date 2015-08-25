@@ -143,9 +143,10 @@
           (for/fold ([acc (cons dots-n '())])
                      ([new-dot new-locs])
             (match-define (cons dots-n msgs) acc)
-            (define dots-n2 (hash-set dots-n (shape-l-label new-dot) (shape-l-shape new-dot)))
-            (if (any-colliding? (shape-l-shape new-dot) (hash-values dots-n))
-                (cons dots-n2 (cons (message `(move ,(shape-l-label new-dot)
+            (match-define (shape-l label sh) new-dot)
+            (define dots-n2 (hash-set dots-n label sh))
+            (if (any-colliding? shape (hash-values dots-n))
+                (cons dots-n2 (cons (message `(move ,label
                                                     ,(random-in-range (- BACKOFF) BACKOFF)
                                                     ,(random-in-range (- BACKOFF) BACKOFF)))
                                     msgs))
