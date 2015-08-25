@@ -102,8 +102,7 @@
     (new timer%
          [notify-callback (lambda ()
                             (printf "\n\ntimer!\n\n")
-                            (make-frame)
-                            #;(send-ground-message 'spawn-frame))]
+                            (send-ground-message 'spawn-frame))]
          [interval 10000]
          [just-once? #f])))
 
