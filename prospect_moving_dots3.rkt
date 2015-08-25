@@ -116,7 +116,7 @@
     (match-define (list lbl sh) x)
     (shape-l lbl sh)))
 
-;; test if a labeled shape is colliding with any others in a set of shapes
+;; test if a labeled shape is colliding with any others in a collection of shapes
 (define (any-colliding? sh-l others)
   (match-define (shape-l _ sh1) sh-l)
   (for/fold [(acc #f)]
@@ -137,13 +137,16 @@
        [(patch added removed)
         (define vacated (match-shapes removed))
         (define new-locs (match-shapes added))
-        (define dots-n (set-subtract dots-old vacated))
+        (define dots-n
+          (for/fold ([acc dots-old])
+                    ([removed vacated])
+            (hash-remove acc removed)))
         (match-define (cons next-dots msgs)
           (for/fold ([acc (cons dots-n '())])
                      ([new-dot new-locs])
             (match-define (cons dots-n msgs) acc)
-            (define dots-n2 (set-add dots-n new-dot))
-            (if (any-colliding? new-dot dots-n)
+            (define dots-n2 (hash-set dots-n (shape-l-label new-dot) (shape-l-shape new-dot)))
+            (if (any-colliding? new-dot (hash-values dots-n))
                 (cons dots-n2 (cons (message `(move ,(shape-l-label new-dot)
                                                     ,(random-in-range (- BACKOFF) BACKOFF)
                                                     ,(random-in-range (- BACKOFF) BACKOFF)))
@@ -151,7 +154,7 @@
                 (cons dots-n2 msgs))))
         (transition next-dots msgs)]
        [_ #f]))
-   (set)
+   (hash)
    (sub `(shape ,? ,?))))
    
 
