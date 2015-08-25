@@ -89,6 +89,10 @@
   (check-equal? (circle-y-at-x circle0 2)
                 #f))
 
+(define (circlye-x-at-y c y)
+  (match-define (circle (posn x0 y0) r) c)
+  (circle-y-at-x (circle (posn y0 x0) r) y))
+
 
 ;; compute the intersecting points of a circle c and line l
 ;; if there are no such points return #f
