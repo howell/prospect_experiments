@@ -112,19 +112,19 @@
 ;; if there are no such points return #f
 ;; if there is one such point (x, y), return (posn x y)
 ;; if there are two such points (x1, y1) (x2, y2), return (cons (posn x1 y1) (posn x2 y2))
-(define (intersection-circle-line c l)
-  (match-define (circle (posn x0 y0) r) c)
+(define (intersection-circle-line circ l)
+  (match-define (circle (posn x0 y0) r) circ)
   (match-define (line a b c) l)
   (cond
     [(equal? a 0) ;; horizontal line: y = c/b
      (define c/b (/ c b))
-     (match (circle-x-at-y c/b)
+     (match (circle-x-at-y circ c/b)
        [#f #f]
        [(cons x1 x2) (cons (posn x1 c/b) (posn x2 c/b))]
        [x (posn x c/b)])]
     [(equal? b 0) ;; vertical line: x = c/a
      (define c/a (/ c a))
-     (match (circle-y-at-x c c/a)
+     (match (circle-y-at-x circ c/a)
        [#f #f]
        [(cons y1 y2) (cons (posn c/a y1) (posn c/a y2))]
        [y (posn c/a y)])]
