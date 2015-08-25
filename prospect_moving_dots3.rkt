@@ -72,20 +72,11 @@
 
 (define DELTA 20)
 
-(define shape-detector
-  (compile-projection `(shape ,(?!))))
-
-(define (match-shapes m)
-  (for/set [(x (matcher-project/set m shape-detector))]
-    (match-define (list sh) x)
-    sh))
-
 ;; listen for key event messages
 ;; assert current location
 ;; listen for move commands from collision detector
-(define (dot-behavior arr-keys bot-right)
+(define (dot-behavior label arr-keys bot-right)
   (match-define (arrow-keys up left down right) arr-keys)
-  (define label (gensym "dot"))
   (lambda (e me)
     (match e
       [(message (at-meta `(key-event ,key)))
@@ -100,18 +91,63 @@
          [_ #f])]
       [(message `(move ,(== label) ,dx ,dy))
        (define moved (move-shape-in-canvas me dx dy bot-right))
-          (transition moved
-                      (patch-seq (retract `(shape ,label ,?))
-                                 (assert `(shape ,label ,moved))))]
+       (transition moved
+                   (patch-seq (retract `(shape ,label ,?))
+                              (assert `(shape ,label ,moved))))]
       [_ #f])))
 
 (define (spawn-dot shape keys bot-right)
+  (define label (gensym "dot"))
   (spawn
-   (dot-behavior keys bot-right)
-   (dot-state shape (set))
-   (assert `(shape ,shape))
-   (sub `(shape ,?))
+   (dot-behavior label keys bot-right)
+   shape
+   (assert `(shape ,label ,shape))
+   (sub `(move ,label ,? ,?))
    (sub `(key-event ,?) #:meta-level 1)))
+
+(define shape-detector
+  (compile-projection `(shape ,(?!) ,(?!))))
+
+;; labeled shapes
+(struct shape-l (label shape) #:transparent)
+
+(define (match-shapes m)
+  (for/set [(x (matcher-project/set m shape-detector))]
+    (match-define (list lbl sh) x)
+    (shape-l lbl sh)))
+
+;; test if a labeled shape is colliding with any others in a set of shapes
+(define (any-colliding? sh-l others)
+  (match-define (shape-l _ sh1) sh-l)
+  (for/fold [(acc #f)]
+            [(other others)]
+    (match-define (shape-l _ sh2) other)
+    (or acc (colliding-circles? (circle-center sh1) RADIUS (circle-center sh2) RADIUS))))
+
+(define (random-in-range low high)
+  (+ low (random (abs (- (abs high) (abs low)))))
+
+;; listen for the location of every dot. When a collision is detected between two dots,
+;; tell one of them to move a random amount.
+(define (spawn-collision-detector)
+  (spawn
+   (lambda (e dots-old)
+     (match e
+       [(patch added removed)
+        (define vacated (match-shapes removed))
+        (define new-locs (match-shapes added))
+        (define dots-n (set-subtract dots-old vacated))
+        (match-define (cons dots-n msgs)
+          (for/fold ([acc (cons dots-n '())])
+                     ([new-dot new-locs])
+            (match-define (cons dots-n msgs) acc)
+            (define dots-n2 (set-add dots-n new-dot))
+            (if (any-colliding? new-dot dots-n)
+                (cons dots-n2 (cons (message `(move `(shape-l-label new-dot)
+                                                    `
+   (set)
+   (sub `(shape ,? ,?))))
+   
 
 (define (draw-shape-ellipse dc sh smoothing)
   (match-define (shape (posn tl-x tl-y) x-size y-size color) sh)
