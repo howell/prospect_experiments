@@ -5,7 +5,7 @@
 ;; protocol description - Take 2 (process for each dot)
 ;; key board events are injected into the system using messages of the form ('key-event k)
 ;; each dot process P asserts its current location as ('shape shape) and listens for the location of every other thing
-;; to move forme shape to shape', P retracts ('shape shape) and asserts ('shape shape'). P should only assert shape'
+;; to move from shape to shape', P retracts ('shape shape) and asserts ('shape shape'). P should only assert shape'
 ;; if it does not collide with any other asserted shape.
 ;; a drawing process D listens for every location and draws/erases to the screen as postions are asserted and retracted
 
