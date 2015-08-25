@@ -114,12 +114,20 @@
 ;; if there are two such points (x1, y1) (x2, y2), return (cons (posn x1 y1) (posn x2 y2))
 (define (intersection-circle-line c l)
   (match-define (circle (posn x0 y0) r) c)
-  (match-define (line m b c) l)
-  (define A (+ 1 (expt m 2)))
-  (define B (* 2 (- (* m b) (* m y0) x0)))
-  (define C (+ (expt y0 2) (- (expt r 2)) (expt x0 2) (* -2 b y0) (expt b 2)))
-  (match (solve-quadratic A B C)
-    [#f #f]
-    [(cons x1 x2) (cons (posn x1 (line-y-at-x l x1))
-                        (posn x2 (line-y-at-x l x2)))]
-    [x (posn x (line-y-at-x x))]))
+  (match-define (line a b c) l)
+  (cond
+    [(equal? a 0) ;; horizontal line
+     #f]
+    [(equal? b 0) ;; vertical line
+     #f]
+    [else
+     (define slope (/ (- a) b))
+     (define y-int (/ c b))
+     (define A (+ 1 (expt slope 2)))
+     (define B (* 2 (- (* slope y-int) (* slope y0) x0)))
+     (define C (+ (expt y0 2) (- (expt r 2)) (expt x0 2) (* -2 y-int y0) (expt y-int 2)))
+     (match (solve-quadratic A B C)
+       [#f #f]
+       [(cons x1 x2) (cons (posn x1 (line-y-at-x l x1))
+                           (posn x2 (line-y-at-x l x2)))]
+       [x (posn x (line-y-at-x x))])]))
