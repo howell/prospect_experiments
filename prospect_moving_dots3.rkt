@@ -125,7 +125,7 @@
     (or acc (colliding-circles? (circle-center sh1) RADIUS (circle-center sh2) RADIUS))))
 
 (define (random-in-range low high)
-  (+ low (random (abs (- (abs high) (abs low))))))
+  (+ low (random (- high low))))
 
 ;; listen for the location of every dot. When a collision is detected between two dots,
 ;; tell one of them to move a random amount.
