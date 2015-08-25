@@ -120,6 +120,7 @@
 (define (any-colliding? sh others)
   (for/fold [(acc #f)]
             [(other others)]
+    (printf "sh: ~v other: ~v\n" sh other)
     (or acc (colliding-circles? (circle-center sh) RADIUS (circle-center other) RADIUS))))
 
 (define (random-in-range low high)
