@@ -143,5 +143,8 @@
 (module+ test
   (define unit-circle (circle (posn 0 0) 1))
   (define x=0 (line 1 0 0))
+  (define y=0 (line 0 1 0))
   (check-equal? (intersection-circle-line unit-circle x=0)
-                (cons (posn 0 1) (posn 0 -1))))
+                (cons (posn 0 1) (posn 0 -1)))
+  (check-equal? (intersection-circle-line unit-circle y=0)
+                (cons (posn 1 0) (posn -1 0))))
