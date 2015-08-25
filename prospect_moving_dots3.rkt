@@ -188,7 +188,7 @@
         #f]
        [_ #f]))
    (void)
-   (sub `(shape ,?))))
+   (sub `(shape ,? ,?))))
 
 ;; gui stuff
 (define game-canvas%
