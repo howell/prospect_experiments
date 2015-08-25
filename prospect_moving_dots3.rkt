@@ -88,11 +88,6 @@
   (define label (gensym "dot"))
   (lambda (e me)
     (match e
-      [(patch added removed)
-       ;; update the position of all shapes
-       (define vacated (match-shapes removed))
-       (define moved (match-shapes added))
-       (transition (dot-state me (set-remove (set-union (set-subtract others vacated) moved) me)) '())]
       [(message (at-meta `(key-event ,key)))
        (match key
          [(or (== up) (== left) (== down) (== right))
@@ -103,6 +98,11 @@
                       (patch-seq (retract `(shape ,label ,?))
                                  (assert `(shape ,label ,moved))))]
          [_ #f])]
+      [(message `(move ,(== label) ,dx ,dy))
+       (define moved (move-shape-in-canvas me dx dy bot-right))
+          (transition moved
+                      (patch-seq (retract `(shape ,label ,?))
+                                 (assert `(shape ,label ,moved))))]
       [_ #f])))
 
 (define (spawn-dot shape keys bot-right)
