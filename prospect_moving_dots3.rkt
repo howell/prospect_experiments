@@ -139,7 +139,8 @@
         (define dots-n
           (for/fold ([acc dots-old])
                     ([removed vacated])
-            (hash-remove acc removed)))
+            (hash-remove acc (shape-l-label removed))))
+        #;(printf "\n\nold: ~v\ndots-n: ~v\n\n" dots-old dots-n)
         (match-define (cons next-dots msgs)
           (for/fold ([acc (cons dots-n '())])
                      ([new-dot new-locs])
