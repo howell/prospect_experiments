@@ -80,10 +80,13 @@
     (match-define (list sh) x)
     sh))
 
+;; listen for key event messages
+;; assert current location
+;; listen for move commands from collision detector
 (define (dot-behavior arr-keys bot-right)
   (match-define (arrow-keys up left down right) arr-keys)
-  (lambda (e s)
-    (match-define (dot-state me others) s)
+  (define label (gensym "dot"))
+  (lambda (e me)
     (match e
       [(patch added removed)
        ;; update the position of all shapes
@@ -96,14 +99,9 @@
           (define arrow-key (key-to-arrow arr-keys key))
           (match-define (posn dx dy) (key-to-posn-delta arrow-key DELTA))
           (define moved (move-shape-in-canvas me dx dy bot-right))
-          (define any-colliding? (for/fold [(acc #f)]
-                                           [(other others)]
-                                   (or acc (colliding-circles? (circle-center moved) RADIUS (circle-center other) RADIUS))))
-          (if any-colliding?
-              #f
-              (transition (dot-state moved others)
-                          (patch-seq (retract `(shape ,?))
-                                     (assert `(shape ,moved)))))]
+          (transition moved
+                      (patch-seq (retract `(shape ,label ,?))
+                                 (assert `(shape ,label ,moved))))]
          [_ #f])]
       [_ #f])))
 
