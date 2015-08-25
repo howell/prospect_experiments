@@ -136,18 +136,15 @@
 
 (define (spawn-drawer dc)
   (spawn
-   (lambda (e shapes)
+   (lambda (e s)
      (match e
        [(patch added removed)
-        ;; update the position of all shapes
         (define vacated (match-shapes removed))
         (define moved (match-shapes added))
-        (define new-state (set-union (set-subtract shapes vacated) moved))
-        #;(draw-shapes dc new-state)
         (update-canvas dc moved vacated)
-        (transition new-state '())]
+        #f]
        [_ #f]))
-   (set)
+   (void)
    (sub `(shape ,?))))
 
 ;; gui stuff
