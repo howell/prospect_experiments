@@ -182,8 +182,8 @@
    (lambda (e s)
      (match e
        [(patch added removed)
-        (define vacated (match-shapes removed))
-        (define moved (match-shapes added))
+        (define vacated (set-map (match-shapes removed) shape-l-shape))
+        (define moved (set-map (match-shapes added) shape-l-shape))
         (update-canvas dc moved vacated)
         #f]
        [_ #f]))
@@ -233,6 +233,7 @@
 
 (make-frame 400 400)
 
+(spawn-collision-detector)
 (spawn-dot DOT1 (arrow-keys "w" "a" "s" "d") (unbox bot-right))
 (spawn-dot DOT2 (arrow-keys "up" "left" "down" "right") (unbox bot-right))
 (spawn-dot DOT3 (arrow-keys "k" "h" "j" "l") (unbox bot-right))
