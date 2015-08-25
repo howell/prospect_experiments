@@ -125,7 +125,7 @@
     (or acc (colliding-circles? (circle-center sh1) RADIUS (circle-center sh2) RADIUS))))
 
 (define (random-in-range low high)
-  (+ low (random (abs (- (abs high) (abs low)))))
+  (+ low (random (abs (- (abs high) (abs low))))))
 
 ;; listen for the location of every dot. When a collision is detected between two dots,
 ;; tell one of them to move a random amount.
@@ -137,14 +137,19 @@
         (define vacated (match-shapes removed))
         (define new-locs (match-shapes added))
         (define dots-n (set-subtract dots-old vacated))
-        (match-define (cons dots-n msgs)
+        (match-define (cons next-dots msgs)
           (for/fold ([acc (cons dots-n '())])
                      ([new-dot new-locs])
             (match-define (cons dots-n msgs) acc)
             (define dots-n2 (set-add dots-n new-dot))
             (if (any-colliding? new-dot dots-n)
                 (cons dots-n2 (cons (message `(move `(shape-l-label new-dot)
-                                                    `
+                                                    `(random-in-range DELTA)
+                                                    `(random-in-range DELTA)))
+                                    msgs))
+                (cons dots-n2 msgs))))
+        (transition next-dots msgs)]
+       [_ #f]))
    (set)
    (sub `(shape ,? ,?))))
    
