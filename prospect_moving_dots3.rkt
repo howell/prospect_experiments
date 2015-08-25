@@ -117,12 +117,10 @@
     (shape-l lbl sh)))
 
 ;; test if a labeled shape is colliding with any others in a collection of shapes
-(define (any-colliding? sh-l others)
-  (match-define (shape-l _ sh1) sh-l)
+(define (any-colliding? sh others)
   (for/fold [(acc #f)]
             [(other others)]
-    (match-define (shape-l _ sh2) other)
-    (or acc (colliding-circles? (circle-center sh1) RADIUS (circle-center sh2) RADIUS))))
+    (or acc (colliding-circles? (circle-center sh) RADIUS (circle-center other) RADIUS))))
 
 (define (random-in-range low high)
   (+ low (random (- high low))))
@@ -146,7 +144,7 @@
                      ([new-dot new-locs])
             (match-define (cons dots-n msgs) acc)
             (define dots-n2 (hash-set dots-n (shape-l-label new-dot) (shape-l-shape new-dot)))
-            (if (any-colliding? new-dot (hash-values dots-n))
+            (if (any-colliding? (shape-l-shape new-dot) (hash-values dots-n))
                 (cons dots-n2 (cons (message `(move ,(shape-l-label new-dot)
                                                     ,(random-in-range (- BACKOFF) BACKOFF)
                                                     ,(random-in-range (- BACKOFF) BACKOFF)))
