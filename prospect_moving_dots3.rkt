@@ -130,6 +130,7 @@
 ;; listen for the location of every dot. When a collision is detected between two dots,
 ;; tell one of them to move a random amount.
 (define (spawn-collision-detector)
+  (define BACKOFF (/ DELTA 2))
   (spawn
    (lambda (e dots-old)
      (match e
@@ -144,8 +145,8 @@
             (define dots-n2 (set-add dots-n new-dot))
             (if (any-colliding? new-dot dots-n)
                 (cons dots-n2 (cons (message `(move ,(shape-l-label new-dot)
-                                                    ,(random-in-range (- DELTA) DELTA)
-                                                    ,(random-in-range (- DELTA) DELTA)))
+                                                    ,(random-in-range (- BACKOFF) BACKOFF)
+                                                    ,(random-in-range (- BACKOFF) BACKOFF)))
                                     msgs))
                 (cons dots-n2 msgs))))
         (transition next-dots msgs)]
