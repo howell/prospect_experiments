@@ -144,8 +144,8 @@
             (define dots-n2 (set-add dots-n new-dot))
             (if (any-colliding? new-dot dots-n)
                 (cons dots-n2 (cons (message `(move ,(shape-l-label new-dot)
-                                                    ,(random-in-range DELTA)
-                                                    ,(random-in-range DELTA)))
+                                                    ,(random-in-range (- DELTA) DELTA)
+                                                    ,(random-in-range (- DELTA) DELTA)))
                                     msgs))
                 (cons dots-n2 msgs))))
         (transition next-dots msgs)]
