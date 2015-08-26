@@ -125,6 +125,19 @@
 (define (random-in-range low high)
   (+ low (random (- high low))))
 
+(define (shape-to-circle sh)
+  (match-define (shape (posn tl-x tl-y) d _) sh)
+  (define r (/ d 2))
+  (circle (posn (+ r tl-x) (+ r tl-y)) r))
+
+;; if there exists a colliding circle C:
+;; determine the previous location of this dot, (x0,y0)
+;; determine the line L through (x0, y0) and the desired (colliding) location (x1, y1)
+;; fine the nearest point p to (x0, y0) where L interesects C
+;; place the new circle center a distance of RADIUS along L (towards (x0, y0)) from p
+(define (collision-calculation old-shape new-shape colliding-shape)
+  (match-define (posn 
+
 ;; listen for the location of every dot. When a collision is detected between two dots,
 ;; tell one of them to move a random amount.
 (define (spawn-collision-detector)
