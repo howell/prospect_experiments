@@ -4,7 +4,8 @@
  (struct-out posn)
  (struct-out circle)
  (struct-out line)
- intersection-circle-line)
+ intersection-circle-line
+ line-through-points)
  
 
 (struct posn (x y) #:transparent)

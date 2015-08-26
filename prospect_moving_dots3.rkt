@@ -1,6 +1,7 @@
 #lang prospect
 
 (require racket/gui racket/draw racket/set)
+(require "./geometry.rkt")
 
 ;; Protocol description - take 3 (collision detection)
 ;; key board events are injected into the system using messages of the form ('key-event k)
@@ -13,7 +14,6 @@
 ;; - a drawing process D listens for every location and draws/erases to the screen as postions
 ;;   are asserted and retracted
 
-(struct posn (x y) #:transparent)
 ;; kind of assumed to be rectangular
 (struct shape (top-left x-size y-size color) #:transparent)
 (struct dot-state (my-shape everyone-else) #:transparent)
@@ -65,7 +65,7 @@
   (define r^2 (expt (+ r1 r2) 2))
   (< d^2 r^2))
 
-(define (circle-center sh)
+(define (sh-circle-center sh)
   (match-define (shape (posn tl-x tl-y) d _ _) sh)
   (define r (/ d 2))
   (posn (+ tl-x r) (- tl-y r)))
@@ -120,7 +120,7 @@
 (define (any-colliding? sh others)
   (for/fold [(acc #f)]
             [(other others)]
-    (or acc (colliding-circles? (circle-center sh) RADIUS (circle-center other) RADIUS))))
+    (or acc (colliding-circles? (sh-circle-center sh) RADIUS (sh-circle-center other) RADIUS))))
 
 (define (random-in-range low high)
   (+ low (random (- high low))))
