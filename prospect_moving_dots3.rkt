@@ -159,6 +159,7 @@
       [(equal? int-y y0) 0]
       [(< int-y y0) 1]
       [else -1]))
+  (printf "\n\nint-x = ~v, int-y = ~v\n\n" int-x int-y)
   (cond
     [(zero? x-direction) (posn 0 (* y-direction (abs (- y0 int-y))))]
     [(zero? y-direction) (posn (* x-direction (abs (- x0 int-x))) 0)]
