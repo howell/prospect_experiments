@@ -187,5 +187,9 @@
   (check-equal? (line-through-points (posn -5 5) (posn 4 -4))
                 y=-x))
 
+(define (point-distance p1 p2)
+  (match-define (cons (posn x1 y1) (posn x2 y2)) (cons p1 p2))
+  (sqrt (+ (expt (- x1 x2) 2)
+           (expt (- y1 y2) 2))))
 
   
