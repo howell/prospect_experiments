@@ -160,6 +160,7 @@
       [(< int-y y0) 1]
       [else -1]))
   (printf "\n\nint-x = ~v, int-y = ~v\n\n" int-x int-y)
+  (printf "\n\nx0 = ~v, y0 = ~v\n\n" x0 y0)
   (cond
     [(zero? x-direction) (posn 0 (* y-direction (abs (- y0 int-y))))]
     [(zero? y-direction) (posn (* x-direction (abs (- x0 int-x))) 0)]
