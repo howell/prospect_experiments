@@ -166,4 +166,6 @@
   (define y2-y1 (- y2 y1))
   (define x2-x1 (- x2 x1))
   (line (- y2-y1) x2-x1 (- (* y1 x2-x1) (* x1 y2-y1))))
+
+
   
