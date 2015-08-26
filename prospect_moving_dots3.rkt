@@ -159,12 +159,16 @@
       [(equal? int-y y0) 0]
       [(< int-y y0) 1]
       [else -1]))
-  (define θ (atan (/ (abs (- y0 int-y)) (abs (- x0 int-x)))))
-  (define r (circle-radius old-c))
-  (define dx (* x-direction (sin θ) r))
-  (define dy (* y-direction (cos θ) r))
-  (posn dx dy))
-    
+  (cond
+    [(zero? x-direction) (posn 0 (* y-direction (abs (- y0 int-y))))]
+    [(zero? y-direction) (posn (* x-direction (abs (- x0 int-x))) 0)]
+    [else
+     (define θ (atan (/ (abs (- y0 int-y)) (abs (- x0 int-x)))))
+     (define r (circle-radius old-c))
+     (define dx (* x-direction (sin θ) r))
+     (define dy (* y-direction (cos θ) r))
+     (posn dx dy)]))
+
 ;; listen for the location of every dot. When a collision is detected between two dots,
 ;; tell one of them to move a random amount.
 (define (spawn-collision-detector)
@@ -181,7 +185,7 @@
             (hash-remove acc (shape-l-label removed))))
         (match-define (cons next-dots msgs)
           (for/fold ([acc (cons dots-n '())])
-                     ([new-dot new-locs])
+                    ([new-dot new-locs])
             (match-define (cons dots-n msgs) acc)
             (match-define (shape-l label sh) new-dot)
             (define dots-n2 (hash-set dots-n label sh))
@@ -191,12 +195,12 @@
                (define old-shape (hash-ref dots-old label))
                (match-define (posn dx dy) (collision-calculation old-shape sh colliding-sh))
                (cons dots-n2 (cons (message `(move ,label ,dx ,dy))
-                                    msgs))])))
+                                   msgs))])))
         (transition next-dots msgs)]
        [_ #f]))
    (hash)
    (sub `(shape ,? ,?))))
-   
+
 
 (define (draw-shape-ellipse dc sh smoothing)
   (match-define (shape (posn tl-x tl-y) x-size y-size color) sh)
