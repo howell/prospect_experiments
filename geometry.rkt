@@ -159,4 +159,11 @@
   (check-equal? (intersection-circle-line unit-circle y=x)
                 (cons (posn (/ (sqrt 2) 2) (/ (sqrt 2) 2))
                       (posn (- (/ (sqrt 2) 2)) (- (/ (sqrt 2) 2))))))
-                      
+
+;; construct the line passing through points p1 and p2
+(define (line-through-points p1 p2)
+  (match-define (cons (posn x1 y1) (posn x2 y2)) (cons p1 p2))
+  (define y2-y1 (- y2 y1))
+  (define x2-x1 (- x2 x1))
+  (line (- y2-y1) x2-x1 (- (* y1 x2-x1) (* x1 y2-y1))))
+  
