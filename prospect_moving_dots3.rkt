@@ -183,12 +183,13 @@
             (match-define (cons dots-n msgs) acc)
             (match-define (shape-l label sh) new-dot)
             (define dots-n2 (hash-set dots-n label sh))
-            (if (any-colliding? sh (hash-values dots-n))
-                (cons dots-n2 (cons (message `(move ,label
-                                                    ,(random-in-range (- BACKOFF) BACKOFF)
-                                                    ,(random-in-range (- BACKOFF) BACKOFF)))
-                                    msgs))
-                (cons dots-n2 msgs))))
+            (match (first-colliding sh (hash-values dots-n))
+              [#f (cons dots-n2 msgs)]
+              [colliding-sh
+               (define old-shape (hash-ref dots-old label))
+               (match-define (posn dx dy) (collision-calculation old-shape sh colliding-sh))
+               (cons dots-n2 (cons (message `(move ,label ,dx ,dy))
+                                    msgs))])))
         (transition next-dots msgs)]
        [_ #f]))
    (hash)
