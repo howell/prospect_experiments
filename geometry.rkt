@@ -161,10 +161,12 @@
                       (posn (- (/ (sqrt 2) 2)) (- (/ (sqrt 2) 2))))))
 
 ;; Reduce the coefficients of a line to the smallest integer equivalents
+;; and ensure that the y coefficient (b) is non-negative
 (define (normalize-line l)
   (match-define (line a b c) l)
   (define d (gcd a b c))
-  (line (/ a d) (/ b d) (/ c d)))
+  (define s (if (< b 0) -1 1))
+  (line (/ a d s) (/ b d s) (/ c d s)))
 
 ;; construct the line passing through points p1 and p2
 (define (line-through-points p1 p2)
@@ -179,7 +181,10 @@
   (check-equal? (line-through-points (posn 0 0) (posn 1 1))
                 y=x)
   (check-equal? (line-through-points (posn -100 -100) (posn 12345 12345))
-                y=x))
+                y=x)
+  (define y=-x (line 1 1 0))
+  (check-equal? (line-through-points (posn -5 5) (posn 4 -4))
+                y=-x))
 
 
   
