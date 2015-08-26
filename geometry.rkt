@@ -6,7 +6,7 @@
  (struct-out line)
  intersection-circle-line
  line-through-points)
- 
+
 
 (struct posn (x y) #:transparent)
 
@@ -200,9 +200,10 @@
                 1)
   (check-equal? (point-distance (posn -2 4) (posn -2 0))
                 4)
-  (check-equal? (point-distance (posn -1 -1) (posn 1 1))
-                (/ 4 (sqrt 2))))
+  (check-= (point-distance (posn -1 -1) (posn 1 1))
+           (/ 4 (sqrt 2))
+           .0002))
 
 
 
-  
+
