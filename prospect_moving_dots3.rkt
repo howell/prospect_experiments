@@ -150,13 +150,15 @@
                         p2)]
       [p p]))
   (define x-direction
-    (if (< int-x x0)
-        1
-        -1))
+    (cond
+      [(equal? int-x x0) 0]
+      [(< int-x x0) 1]
+      [else -1]))
   (define y-direction
-    (if (< int-y y0)
-        1
-        -1))
+    (cond
+      [(equal? int-y y0) 0]
+      [(< int-y y0) 1]
+      [else -1]))
   (define θ (atan (/ (abs (- y0 int-y)) (abs (- x0 int-x)))))
   (define r (circle-radius old-c))
   (define dx (* x-direction (sin θ) r))
