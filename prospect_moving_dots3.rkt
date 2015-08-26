@@ -155,7 +155,7 @@
     (if (< int-y y0)
         1
         -1))
-  (define θ (arctan (/ (abs (- y0 int-y)) (abs (- x0 int-x)))))
+  (define θ (atan (/ (abs (- y0 int-y)) (abs (- x0 int-x)))))
   (define r (circle-radius old-c))
   (define dx (* x-direction (sin θ) r))
   (define dy (* y-direction (cos θ) r))
