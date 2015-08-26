@@ -117,10 +117,12 @@
     (shape-l lbl sh)))
 
 ;; test if a labeled shape is colliding with any others in a collection of shapes
-(define (any-colliding? sh others)
+(define (first-colliding sh others)
   (for/fold [(acc #f)]
             [(other others)]
-    (or acc (colliding-circles? (sh-circle-center sh) RADIUS (sh-circle-center other) RADIUS))))
+    (or acc (if (colliding-circles? (sh-circle-center sh) RADIUS (sh-circle-center other) RADIUS)
+                other
+                #f))))
 
 (define (random-in-range low high)
   (+ low (random (- high low))))
