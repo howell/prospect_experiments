@@ -143,8 +143,9 @@
   (printf "\n\n~v\n\n" (list old-c new-c coll-c))
   (match-define (posn x0 y0) (circle-center old-c))
   (define L (line-through-points (circle-center old-c) (circle-center new-c)))
+  (printf "\nL = ~vx + ~vy = ~v\n" (line-a L) (line-b L) (line-c L))
   (match-define (posn int-x int-y)
-    (match (intersection-circle-line new-c L)
+    (match (intersection-circle-line coll-c L)
       [#f (error 'collision-calculation (format "no intersection ~v ~v" new-c L))]
       [(cons p1 p2) (if (< (point-distance p1 (circle-center old-c)) (point-distance p2 (circle-center old-c)))
                         p1
