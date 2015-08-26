@@ -167,5 +167,13 @@
   (define x2-x1 (- x2 x1))
   (line (- y2-y1) x2-x1 (- (* y1 x2-x1) (* x1 y2-y1))))
 
+(module+ test
+  (check-equal? (line-through-points (posn 0 0) (posn 1 0))
+                (line 0 1 0))
+  (check-equal? (line-through-points (posn 0 0) (posn 1 1))
+                y=x)
+  (check-equal? (line-through-points (posn -100 -100) (posn 12345 12345))
+                y=x))
+
 
   
