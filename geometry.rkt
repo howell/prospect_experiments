@@ -199,7 +199,9 @@
   (check-equal? (point-distance (posn 1 1) (posn 0 1))
                 1)
   (check-equal? (point-distance (posn -2 4) (posn -2 0))
-                4))
+                4)
+  (check-equal? (point-distance (posn -1 -1) (posn 1 1))
+                (/ 4 (sqrt 2))))
 
 
 
