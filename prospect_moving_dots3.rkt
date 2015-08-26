@@ -126,7 +126,7 @@
   (+ low (random (- high low))))
 
 (define (shape-to-circle sh)
-  (match-define (shape (posn tl-x tl-y) d _) sh)
+  (match-define (shape (posn tl-x tl-y) d _ _) sh)
   (define r (/ d 2))
   (circle (posn (+ r tl-x) (+ r tl-y)) r))
 
@@ -140,14 +140,27 @@
   (match-define (list old-c new-c coll-c) (map shape-to-circle (list old-shape new-shape colliding-shape)))
   (match-define (posn x0 y0) (circle-center old-c))
   (define L (line-through-points (circle-center old-c) (circle-center new-c)))
-  (define intersection
+  (match-define (posn int-x int-y)
     (match (intersection-circle-line new-c L)
       [#f (error 'collision-calculation (format "no intersection ~v ~v" new-c L))]
       [(cons p1 p2) (if (< (point-distance p1 (circle-center old-c)) (point-distance p2 (circle-center old-c)))
                         p1
                         p2)]
       [p p]))
-
+  (define x-direction
+    (if (< int-x x0)
+        1
+        -1))
+  (define y-direction
+    (if (< int-y y0)
+        1
+        -1))
+  (define θ (arctan (/ (abs (- y0 int-y)) (abs (- x0 int-x)))))
+  (define r (circle-radius old-c))
+  (define dx (* x-direction (sin θ) r))
+  (define dy (* y-direction (cos θ) r))
+  (posn dx dy))
+    
 ;; listen for the location of every dot. When a collision is detected between two dots,
 ;; tell one of them to move a random amount.
 (define (spawn-collision-detector)
