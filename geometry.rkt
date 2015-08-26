@@ -160,12 +160,18 @@
                 (cons (posn (/ (sqrt 2) 2) (/ (sqrt 2) 2))
                       (posn (- (/ (sqrt 2) 2)) (- (/ (sqrt 2) 2))))))
 
+;; Reduce the coefficients of a line to the smallest integer equivalents
+(define (normalize-line l)
+  (match-define (line a b c) l)
+  (define d (gcd a b c))
+  (line (/ a d) (/ b d) (/ c d)))
+
 ;; construct the line passing through points p1 and p2
 (define (line-through-points p1 p2)
   (match-define (cons (posn x1 y1) (posn x2 y2)) (cons p1 p2))
   (define y2-y1 (- y2 y1))
   (define x2-x1 (- x2 x1))
-  (line (- y2-y1) x2-x1 (- (* y1 x2-x1) (* x1 y2-y1))))
+  (normalize-line (line (- y2-y1) x2-x1 (- (* y1 x2-x1) (* x1 y2-y1)))))
 
 (module+ test
   (check-equal? (line-through-points (posn 0 0) (posn 1 0))
