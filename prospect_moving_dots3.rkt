@@ -140,6 +140,7 @@
 ;; place the new circle center a distance of RADIUS along L (towards (x0, y0)) from p
 (define (collision-calculation old-shape new-shape colliding-shape)
   (match-define (list old-c new-c coll-c) (map shape-to-circle (list old-shape new-shape colliding-shape)))
+  (printf "\n\n~v\n\n" (list old-c new-c coll-c))
   (match-define (posn x0 y0) (circle-center old-c))
   (define L (line-through-points (circle-center old-c) (circle-center new-c)))
   (match-define (posn int-x int-y)
@@ -255,7 +256,7 @@
 
 (define RADIUS 20)
 (define DOT1 (shape (posn 0 0) (* RADIUS 2) (* RADIUS 2) "blue"))
-(define DOT2 (shape (posn 340 340) (* RADIUS 2) (* RADIUS 2) "red"))
+(define DOT2 (shape (posn 340 100) (* RADIUS 2) (* RADIUS 2) "red"))
 (define DOT3 (shape (posn 0 340) (* RADIUS 2) (* RADIUS 2) "green"))
 (define DOT4 (shape (posn 340 0) (* RADIUS 2) (* RADIUS 2) "purple"))
 
