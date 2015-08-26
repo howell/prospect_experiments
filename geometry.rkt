@@ -1,5 +1,12 @@
 #lang racket
 
+(provide
+ (struct-out posn)
+ (struct-out circle)
+ (struct-out line)
+ intersection-circle-line)
+ 
+
 (struct posn (x y) #:transparent)
 
 (struct circle (center radius) #:transparent)
