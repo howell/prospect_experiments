@@ -133,10 +133,20 @@
 ;; if there exists a colliding circle C:
 ;; determine the previous location of this dot, (x0,y0)
 ;; determine the line L through (x0, y0) and the desired (colliding) location (x1, y1)
+;; (location means center of the circle)
 ;; fine the nearest point p to (x0, y0) where L interesects C
 ;; place the new circle center a distance of RADIUS along L (towards (x0, y0)) from p
 (define (collision-calculation old-shape new-shape colliding-shape)
-  (match-define (posn 
+  (match-define (list old-c new-c coll-c) (map shape-to-circle (list old-shape new-shape colliding-shape)))
+  (match-define (posn x0 y0) (circle-center old-c))
+  (define L (line-through-points (circle-center old-c) (circle-center new-c)))
+  (define intersection
+    (match (intersection-circle-line new-c L)
+      [#f (error 'collision-calculation (format "no intersection ~v ~v" new-c L))]
+      [(cons p1 p2) (if (< (point-distance p1 (circle-center old-c)) (point-distance p2 (circle-center old-c)))
+                        p1
+                        p2)]
+      [p p]))
 
 ;; listen for the location of every dot. When a collision is detected between two dots,
 ;; tell one of them to move a random amount.
