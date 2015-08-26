@@ -187,9 +187,20 @@
   (check-equal? (line-through-points (posn -5 5) (posn 4 -4))
                 y=-x))
 
+;; calculate the distance between two points
 (define (point-distance p1 p2)
   (match-define (cons (posn x1 y1) (posn x2 y2)) (cons p1 p2))
   (sqrt (+ (expt (- x1 x2) 2)
            (expt (- y1 y2) 2))))
+
+(module+ test
+  (check-equal? (point-distance (posn 0 0) (posn 0 0))
+                0)
+  (check-equal? (point-distance (posn 1 1) (posn 0 1))
+                1)
+  (check-equal? (point-distance (posn -2 4) (posn -2 0))
+                4))
+
+
 
   
