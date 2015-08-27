@@ -205,6 +205,15 @@
            (/ 4 (sqrt 2))
            .0002))
 
+;; calculate if p is between p1 p2
+(define (point-between? p1 p2 p)
+  (match-define (list (posn x0 y0) (posn x1 y1) (posn x y)) (list p1 p2 p))
+  (and (>= x (min x0 x1))
+       (<= x (max x0 x1))
+       (>= y (min y0 y1))
+       (<= y (max y0 y1))))
 
+(module+ test
+  (check-true (point-between? (posn 0 0) (posn 0 0) (posn 0 0))))
 
 
