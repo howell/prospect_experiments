@@ -161,7 +161,11 @@
   (define y=x (line -1 1 0))
   (check-equal? (intersection-circle-line unit-circle y=x)
                 (cons (posn (/ (sqrt 2) 2) (/ (sqrt 2) 2))
-                      (posn (- (/ (sqrt 2) 2)) (- (/ (sqrt 2) 2))))))
+                      (posn (- (/ (sqrt 2) 2)) (- (/ (sqrt 2) 2)))))
+  (define L (line 1.0 0.0 340.0))
+  (define C (circle (posn 360 20) 40))
+  (check-equal? (intersection-circle-line C L)
+                (cons (posn 340.0 54.64101615137755) (posn 340.0 -14.64101615137755))))
 
 ;; Reduce the coefficients of a line to the smallest integer equivalents
 ;; and ensure that the y coefficient (b) is non-negative
