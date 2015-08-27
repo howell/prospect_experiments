@@ -199,6 +199,7 @@
                         p1
                         p2)]
     [p p]))
+  (printf "\n\n(x3, y3) = (~v, ~v)\n\n" x3 y3)
   (posn (- x3 x1) (- y3 y1)))
 
 ;; listen for the location of every dot. When a collision is detected between two dots,
