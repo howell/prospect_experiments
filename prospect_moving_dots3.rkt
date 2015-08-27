@@ -195,12 +195,12 @@
   (match-define (posn x3 y3)
     (match (intersection-circle-line C L)
       [#f (error 'collision-calc (format "no intersection ~v ~v" C L))]
-      [(cons p1 p2) (if (point-between? (posn x0 y0) (posn x1 y1) p1)
+      [(cons p1 p2) (printf "\n\n~v\n~v\n\n" p1 p2) (if (point-between? (posn x0 y0) (posn x1 y1) p1)
                         p1
                         p2)]
     [p p]))
   (printf "\n\n(x3, y3) = (~v, ~v)\n\n" x3 y3)
-  (posn (- x3 x1) (- y3 y1)))
+  (posn (round (- x3 x1)) (round (- y3 y1))))
 
 ;; listen for the location of every dot. When a collision is detected between two dots,
 ;; tell one of them to move a random amount.
