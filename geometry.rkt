@@ -126,13 +126,13 @@
   (match-define (circle (posn x0 y0) r) circ)
   (match-define (line a b c) l)
   (cond
-    [(equal? a 0) ;; horizontal line: y = c/b
+    [(zero? a) ;; horizontal line: y = c/b
      (define c/b (/ c b))
      (match (circle-x-at-y circ c/b)
        [#f #f]
        [(cons x1 x2) (cons (posn x1 c/b) (posn x2 c/b))]
        [x (posn x c/b)])]
-    [(equal? b 0) ;; vertical line: x = c/a
+    [(zero? b) ;; vertical line: x = c/a
      (define c/a (/ c a))
      (match (circle-y-at-x circ c/a)
        [#f #f]
