@@ -171,7 +171,8 @@
      (define r (circle-radius old-c))
      (define dx (* x-direction (sin θ) r))
      (define dy (* y-direction (cos θ) r))
-     (posn dx dy)]))
+     (posn 0 0)
+     #;(posn dx dy)]))
 
 ;; 2nd attempt
 ;; let (x0, y0) denote the center of the dot's previous location
@@ -197,7 +198,7 @@
   (match-define (posn x3 y3)
     (match (intersection-circle-line C L)
       [#f (error 'collision-calc (format "no intersection ~v ~v" C L))]
-      [(cons p1 p2) p1 #;(printf "\n\n~v\n~v\n\n" p1 p2) #;(if (point-between? (posn x0 y0) (posn x1 y1) p1)
+      [(cons p1 p2) #;(printf "\n\n~v\n~v\n\n" p1 p2) (if (point-between? (posn x0 y0) (posn x1 y1) p1)
                         p1
                         p2)]
     [p p]))
