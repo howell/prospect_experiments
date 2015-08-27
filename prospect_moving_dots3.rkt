@@ -221,7 +221,7 @@
               [#f (cons dots-n2 msgs)]
               [colliding-sh
                (define old-shape (hash-ref dots-old label))
-               (match-define (posn dx dy) (collision-calculation old-shape sh colliding-sh))
+               (match-define (posn dx dy) (collision-calc2 old-shape sh colliding-sh))
                (cons dots-n2 (cons (message `(move ,label ,dx ,dy))
                                    msgs))])))
         (transition next-dots msgs)]
