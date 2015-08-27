@@ -6,7 +6,8 @@
  (struct-out line)
  intersection-circle-line
  line-through-points
- point-distance)
+ point-distance
+ point-between?)
 
 
 (struct posn (x y) #:transparent)
@@ -214,6 +215,9 @@
        (<= y (max y0 y1))))
 
 (module+ test
-  (check-true (point-between? (posn 0 0) (posn 0 0) (posn 0 0))))
+  (check-true (point-between? (posn 0 0) (posn 0 0) (posn 0 0)))
+  (check-true (point-between? (posn -1 -1) (posn 1 1) (posn 0 0)))
+  (check-true (point-between? (posn -1 -1) (posn 1 1) (posn 0 1)))
+  (check-false (point-between? (posn -1 -1) (posn 1 1) (posn 2 0))))
 
 
