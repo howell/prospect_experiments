@@ -173,6 +173,22 @@
      (define dy (* y-direction (cos θ) r))
      (posn dx dy)]))
 
+;; 2nd attempt
+;; let (x0, y0) denote the center of the dot's previous location
+;; let (x1, y1) denote the center of the dot's new (colliding) location
+;; let (x2, y2) denote the center of the circle the dot collided with
+;; let L be the line passing through (x0, y0) and (x1, y1)
+;; we want to determine a point on the line L between (x0, y0) and (x1, y1) such that there is no collision
+;; particularly, we want the closest point on L to the colliding shape where there is no collision
+;; let r1 be the radius of the moving circle
+;; let r2 be the radius of the colliding circle
+;; then the center of the relocated circle will be on L a distance of r1 + r2 away from the (x2, y2)
+;; we can find this point by imagining a circle C with center (x2, y2) and radius r1 + r2
+;; the desired point will be the intersection of C and L between (x0, y0) and (x1, y1)
+(define (collision-calc2 old-shape new-shape colliding-shape)
+  (match-define (list old-c new-c coll-c) (map shape-to-circle (list old-shape new-shape colliding-shape)))
+  #f)
+
 ;; listen for the location of every dot. When a collision is detected between two dots,
 ;; tell one of them to move a random amount.
 (define (spawn-collision-detector)
