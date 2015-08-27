@@ -191,7 +191,9 @@
   (match-define (posn x1 y1) (circle-center new-c))
   (match-define (circle (posn x2 y2) r2) coll-c)
   (define L (line-through-points (posn x0 y0) (posn x1 y1)))
+  (printf "\n\nL = ~v\n\n" L)
   (define C (circle (posn x2 y2) (+ r1 r2)))
+  (printf "\n\nC = ~v\n\n" C)
   (match-define (posn x3 y3)
     (match (intersection-circle-line C L)
       [#f (error 'collision-calc (format "no intersection ~v ~v" C L))]
