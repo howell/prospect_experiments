@@ -171,8 +171,7 @@
      (define r (circle-radius old-c))
      (define dx (* x-direction (sin θ) r))
      (define dy (* y-direction (cos θ) r))
-     (posn 0 0)
-     #;(posn dx dy)]))
+     (posn dx dy)]))
 
 ;; 2nd attempt
 ;; let (x0, y0) denote the center of the dot's previous location
