@@ -187,7 +187,15 @@
 ;; the desired point will be the intersection of C and L between (x0, y0) and (x1, y1)
 (define (collision-calc2 old-shape new-shape colliding-shape)
   (match-define (list old-c new-c coll-c) (map shape-to-circle (list old-shape new-shape colliding-shape)))
-  #f)
+  (match-define (circle (posn x0 y0) r1) old-c)
+  (match-define (posn x1 y1) (circle-center new-c))
+  (match-define (circle (posn x2 y2) r2) coll-c)
+  (define L (line-through-points (posn x0 y0) (posn x1 y1)))
+  (define C (circle (posn x2 y2) (+ r1 r2)))
+  (match (intersection-circle-line C L)
+    [#f (error 'collision-calc (format "no intersection ~v ~v" C L))]
+    [(cons p1 p2) (error 'collision-calc "totally unexpected")]
+    [(posn x3 y3) (posn (- x3 x1) (- y3 y1))]))
 
 ;; listen for the location of every dot. When a collision is detected between two dots,
 ;; tell one of them to move a random amount.
