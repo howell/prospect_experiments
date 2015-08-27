@@ -192,10 +192,14 @@
   (match-define (circle (posn x2 y2) r2) coll-c)
   (define L (line-through-points (posn x0 y0) (posn x1 y1)))
   (define C (circle (posn x2 y2) (+ r1 r2)))
-  (match (intersection-circle-line C L)
-    [#f (error 'collision-calc (format "no intersection ~v ~v" C L))]
-    [(cons p1 p2) (error 'collision-calc "totally unexpected")]
-    [(posn x3 y3) (posn (- x3 x1) (- y3 y1))]))
+  (match-define (posn x3 y3)
+    (match (intersection-circle-line C L)
+      [#f (error 'collision-calc (format "no intersection ~v ~v" C L))]
+      [(cons p1 p2) (if (point-between? (posn x0 y0) (posn x1 y1) p1)
+                        p1
+                        p2)]
+    [p p]))
+  (posn (- x3 x1) (- y3 y1)))
 
 ;; listen for the location of every dot. When a collision is detected between two dots,
 ;; tell one of them to move a random amount.
