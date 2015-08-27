@@ -197,7 +197,7 @@
   (match-define (posn x3 y3)
     (match (intersection-circle-line C L)
       [#f (error 'collision-calc (format "no intersection ~v ~v" C L))]
-      [(cons p1 p2) (if (< (point-distance p1 (circle-center old-c)) (point-distance p2 (circle-center old-c)))
+      [(cons p1 p2) (if (< (point-distance p1 (circle-center new-c)) (point-distance p2 (circle-center new-c)))
                         p1
                         p2)
                     #;(printf "\n\n~v\n~v\n\n" p1 p2) #;(if (point-between? (posn x0 y0) (posn x1 y1) p1)
