@@ -90,7 +90,7 @@ everything actually is.
   new location.
 - a drawing process D listens for every location and draws/erases to the screen
   as postions are asserted and retracted.
-*** Improvement needed: deliberate, instead of random, collision reaction.
+*** TODO Improvement needed: deliberate, instead of random, collision reaction.
 *** Take 4: motion messages
 - key board events are injected into the system using messages of the form
   ('key-event k)
