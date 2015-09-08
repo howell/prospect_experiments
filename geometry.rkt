@@ -235,14 +235,17 @@
   (check-false (point-between? (posn -1 -1) (posn 1 1) (posn 2 0)))
   (check-true (point-between? (posn 0 -3) (posn 0 4) (posn 0 0))))
 
-;; line  line -> (U posn #f)
+;; line  line -> (U posn line #f)
 ;; find the intersection of two lines, if it exists
 (define (intersection-lines l1 l2)
   (match-define (cons (line a1 b1 c1) (line a2 b2 c2)) (cons l1 l2))
   (cond
+    [(equal? l1 l2) l1]
     [(zero? b1)
-     (define c1/a1 (/ c1 a1))
-     (posn c1/a1 (line-y-at-x l2 c1/a1))]
+     (if (zero? b2)
+         #f
+         (let ([c1/a1 (/ c1 a1)])
+           (posn c1/a1 (line-y-at-x l2 c1/a1))))]
     [else
      (define b2c1/b1 (/ (* b2 c1) b1))
      (define a1b2/b1 (/ (* a1 b2) b1))
@@ -283,7 +286,13 @@
   (check-false (intersection-lines x=0 x=-12))
   (check-false (intersection-lines y=x y=x-3))
   (check-equal? (intersection-lines y=x y=2x-2)
-                (posn 2 2)))
+                (posn 2 2))
+  (check-equal? (intersection-lines y=x y=x)
+                y=x)
+  (check-equal? (intersection-lines x=0 x=0)
+                x=0)
+  (check-equal? (intersection-lines y=0 y=0)
+                y=0))
 
 ;; line-segment line-segment -> (U posn line-segment #f)
 ;; find the intersection of two line-segments, if it exists
@@ -315,13 +324,13 @@
   #f)
 
 #;(module+ test
-  (check-false (overlapping-rects? (rect (posn 0 0) 1 1)
-                                   (rect (posn 1 0) 1 1)))
-  (check-false (overlapping-rects? (rect (posn 1 1) 2 3)
-                                   (rect (posn 5 4) 9 10)))
-  (check-true (overlapping-rects? (rect (posn 0 -1) 2 4)
-                                  (rect (posn 1 0) 3 5)))
-  (check-true (overlapping-rects? (rect (posn 0 0) 2 2)
-                                  (rect (posn 3 3) 2 2))))
+    (check-false (overlapping-rects? (rect (posn 0 0) 1 1)
+                                     (rect (posn 1 0) 1 1)))
+    (check-false (overlapping-rects? (rect (posn 1 1) 2 3)
+                                     (rect (posn 5 4) 9 10)))
+    (check-true (overlapping-rects? (rect (posn 0 -1) 2 4)
+                                    (rect (posn 1 0) 3 5)))
+    (check-true (overlapping-rects? (rect (posn 0 0) 2 2)
+                                    (rect (posn 3 3) 2 2))))
 
 
