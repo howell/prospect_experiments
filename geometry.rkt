@@ -17,7 +17,7 @@
 ;; ax + by = c
 (struct line (a b c) #:transparent)
 
-;; posn * int * int
+;; posn * pos-int * pos-int
 (struct rect (top-left width height) #:transparent)
 
 ;; solve a quadratic formula of the form Ax^2 + Bx + C = 0
@@ -226,5 +226,19 @@
   (check-true (point-between? (posn -1 -1) (posn 1 1) (posn 0 0)))
   (check-true (point-between? (posn -1 -1) (posn 1 1) (posn 0 1)))
   (check-false (point-between? (posn -1 -1) (posn 1 1) (posn 2 0))))
+
+;; test if two rectangles are overlapping
+(define (overlapping-rects? r1 r2)
+  #f)
+
+(module+ test
+  (check-false (overlapping-rects? (rect (posn 0 0) 1 1)
+                                   (rect (posn 1 0) 1 1)))
+  (check-false (overlapping-rects? (rect (posn 1 1) 2 3)
+                                   (rect (posn 5 4) 9 10)))
+  (check-true (overlapping-rects? (rect (posn 0 -1) 2 4)
+                                  (rect (posn 1 0) 3 5)))
+  (check-true (overlapping-rects? (rect (posn 0 0) 2 2)
+                                  (rect (posn 3 3) 2 2))))
 
 
