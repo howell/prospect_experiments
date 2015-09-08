@@ -350,9 +350,41 @@
   (check-false (intersection-line-segments seg7 seg1))
   (check-false (intersection-line-segments seg6 seg4)))
 
+;; num -> line
+;; create a vertical line at the given x
+(define (line-x= x)
+  (line 1 0 x))
+
+;; num -> line
+;; create a horizontal line at the given y
+(define (line-y= y)
+  (line 0 1 y))
+
+;; rect -> (listof posn)
+;; extract the four corners of a rectangle
+;; ordered as (top-left top-right bottom-left bottom-right
+(define (rect-corners r)
+  (match-define (rect (posn x0 y0) w h) r)
+  (list (posn x0 y0)
+                                         (posn (+ x0 w) y0)
+                                         (posn x0 (+ y0 h))
+                                         (posn (+ x0 w) (+ y0 h))))
+
+;; rect -> (listof line-segment)
+;; extract the four line segments forming a rectangle
+(define (rect-line-segments r)
+  (match-define (rect (posn x0 y0) w h) r)
+  (match-define (list tl tr bl br) (rect-corners r))
+  (list (line-segment (line-x= x0) tl bl)
+        (line-segment (line-x= (+ x0 w)) tr br)
+        (line-segment (line-y= y0) tl tr)
+        (line-segment (line-y= (+ y0 h) bl br))))
+
 ;; test if two rectangles are overlapping
 (define (overlapping-rects? r1 r2)
-  #f)
+  (define r1-segs (rect-line-segments r1))
+  (define r2-segs (rect-line-segments r2))
+  (not (not (ormap (ormap intersecting-line-segments r2-segs) r1-segs))))
 
 #;(module+ test
     (check-false (overlapping-rects? (rect (posn 0 0) 1 1)
