@@ -53,8 +53,9 @@
    (sub (key-press ?) #:meta-level 1)))
 
 ;; the vertical motion behavior tries to move the player downward by sending (move-y dy)
+;; this happens periodically when the timer sends a (timer-tick) message
 ;; when a (jump) message is received, temporarily move the player upward
-;; when a y-collision is detected reset velocity to 0
+;; when a (y-collision) is detected reset velocity to 0
 ;; state is a motion struct
 (define (vertical-motion-behavior e s)
   (define JUMP-V 10)
@@ -66,6 +67,8 @@
     [(message (timer-tick))
      (define motion-n (motion (+ (motion-v s) (motion-a s)) (motion-a s)))
      (transition motion-n (list (message (move-y (motion-v s)))))]
+    [(message (y-collision))
+     (transition (motion 0 (motion-a s)) '())]
     [_ #f]))
 
 ;; the game logic process keeps track of the location of the player and the environment
