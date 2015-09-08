@@ -4,6 +4,8 @@
  (struct-out posn)
  (struct-out circle)
  (struct-out line)
+ (struct-out line-segment)
+ (struct-out rect)
  intersection-circle-line
  line-through-points
  point-distance

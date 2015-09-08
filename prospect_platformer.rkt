@@ -27,11 +27,23 @@
 ;; rect
 (struct static (rect))
 
+;; key
+(struct key-press (key))
+
 ;; translate key presses into commands (messages)
 ;; left and right arrow keys become (move-x dx)
 ;; space becomes (jump)
 (define (player-behavior e s)
-  #f)
+  (define DX 1)
+  (match e
+    [(message (at-meta (key-press key)))
+     (match key
+       ["left" (transition s (message (move-x (- DX))))]
+       ["right" (transition s (message (move-x DX)))]
+       ["space" (transition s (message (jump)))]
+       [_ #f])]
+    [_ #f]))
+
 
 ;; the vertical motion behavior tries to move the player downward by sending (move-y dy)
 ;; when a (jump) message is received, temporarily move the player upward
