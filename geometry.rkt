@@ -61,10 +61,13 @@
   (check-equal? (solve-quadratic 1 -2 1)
                 1))
 
-;; calculate the y value from an x value on a line
+;; line int -> (U int #f)
+;; calculate the y value from an x value on a line, if it exists
 (define (line-y-at-x l x)
   (match-define (line a b c) l)
-  (/ (- c (* a x)) b))
+  (if (zero? b)
+      #f
+      (/ (- c (* a x)) b)))
 
 (module+ test
   ;; y = 6/5x + 14 => -6/5x + y = 14
