@@ -233,7 +233,7 @@
   (check-true (point-between? (posn -1 -1) (posn 1 1) (posn 0 0)))
   (check-true (point-between? (posn -1 -1) (posn 1 1) (posn 0 1)))
   (check-false (point-between? (posn -1 -1) (posn 1 1) (posn 2 0)))
-  (check-true (point-between? (posn 0 0) (posn 0 -3) (posn 0 4))))
+  (check-true (point-between? (posn 0 -3) (posn 0 4) (posn 0 0))))
 
 ;; line  line -> (U posn #f)
 ;; find the intersection of two lines, if it exists
@@ -298,8 +298,8 @@
         (line-segment l1 p1 p2))
       (match (intersection-lines l1 l2)
         [#f #f]
-        [p (if (and (point-between? p p11 p21)
-                    (point-between? p p12 p22))
+        [p (if (and (point-between? p11 p21 p)
+                    (point-between? p12 p22 p))
                p
                #f)])))
 
