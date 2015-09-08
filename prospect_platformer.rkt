@@ -9,26 +9,28 @@
          rackunit)
 
 ;; velocity and acceleration
-(struct motion (v a))
+(struct motion (v a) #:transparent)
 
 ;; int
-(struct move-x (dx))
+(struct move-x (dx) #:transparent)
 
 ;; int
-(struct move-y (dy))
+(struct move-y (dy) #:transparent)
 
-(struct jump ())
+(struct jump () #:transparent)
 
-(struct y-collision ())
-
-;; rect
-(struct player (rect))
+(struct y-collision () #:transparent)
 
 ;; rect
-(struct static (rect))
+(struct player (rect) #:transparent)
+
+;; rect
+(struct static (rect) #:transparent)
 
 ;; key
-(struct key-press (key))
+(struct key-press (key) #:transparent)
+
+(struct timer-tick () #:transparent)
 
 ;; translate key presses into commands (messages)
 ;; left and right arrow keys become (move-x dx)
@@ -53,8 +55,18 @@
 ;; the vertical motion behavior tries to move the player downward by sending (move-y dy)
 ;; when a (jump) message is received, temporarily move the player upward
 ;; when a y-collision is detected reset velocity to 0
+;; state is a motion struct
 (define (vertical-motion-behavior e s)
-  #f)
+  (define JUMP-V 10)
+  (match e
+    [(message (jump))
+     (if (zero? (motion-v s)) ;; TODO: better way to detect if this is a legal time to jump
+         (transition (motion JUMP-V (motion-a s)) '())
+         #f)]
+    [(message (timer-tick))
+     (define motion-n (motion (+ (motion-v s) (motion-a s)) (motion-a s)))
+     (transition motion-n (list (message (move-y (motion-v s)))))]
+    [_ #f]))
 
 ;; the game logic process keeps track of the location of the player and the environment
 ;; it process move-x and move-y commands. When a collision along the y-axis occurs it
