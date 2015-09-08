@@ -113,3 +113,4 @@ be tested against the patterns that process is interested in. But, once the
 patch is delivered, the process has to run each pattern against the patch to
 recover the shape of each assertion.
 ** How to create a tiered network?
+** Can a message be included as an initial action in a process? should it?
