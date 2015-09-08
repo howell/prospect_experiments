@@ -348,7 +348,7 @@
   (check-equal? (intersection-line-segments seg6 seg1)
                 (posn 0 0))
   (check-false (intersection-line-segments seg7 seg1))
-  (check-false (intersection-line-segments seg6 seg5)))
+  (check-false (intersection-line-segments seg6 seg4)))
 
 ;; test if two rectangles are overlapping
 (define (overlapping-rects? r1 r2)
