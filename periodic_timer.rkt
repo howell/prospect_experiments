@@ -18,4 +18,13 @@
 
 (spawn-timer-driver)
 
-(periodically 2000 (lambda () (printf "~v\n" (current-seconds))))
+(periodically 2000 (lambda () (list (message 0) (message 0))))
+
+(spawn/stateless
+ (lambda (e)
+   (match e
+     [(message n)
+      (printf "~v\n" n)
+      #f]
+     [_ #f]))
+ (sub 0))
