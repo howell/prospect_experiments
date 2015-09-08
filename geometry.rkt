@@ -19,7 +19,7 @@
 
 ;; line * posn * posn
 ;; where p1 and p2 are both on line and p1-x <= p2-x
-(struct line-segment (line p1 p2))
+(struct line-segment (line p1 p2) #:transparent)
 
 ;; posn * pos-int * pos-int
 (struct rect (top-left width height) #:transparent)
@@ -316,6 +316,8 @@
   (define seg0 (line-segment y=x (posn -1 -1) (posn 1 1)))
   (define seg1 (line-segment x=0 (posn 0 -3) (posn 0 4)))
   (define seg2 (line-segment x=0 (posn 0 1) (posn 0 8)))
+  (check-equal? (intersection-line-segments seg0 seg0)
+                seg0)
   (check-equal? (intersection-line-segments seg0 seg1)
                 (posn 0 0))
   (check-equal? (intersection-line-segments seg0 seg2)
