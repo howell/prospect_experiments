@@ -380,13 +380,15 @@
         (line-segment (line-y= y0) tl tr)
         (line-segment (line-y= (+ y0 h)) bl br)))
 
+;; rect rect -> bool
 ;; test if two rectangles are overlapping
 (define (overlapping-rects? r1 r2)
   (match-define (list (posn tl-x1 tl-y1) _ _ (posn br-x1 br-y1)) (rect-corners r1))
   (match-define (list (posn tl-x2 tl-y2) _ _ (posn br-x2 br-y2)) (rect-corners r2))
-  (define r1-segs (rect-line-segments r1))
-  (define r2-segs (rect-line-segments r2))
-  (not (not (ormap (lambda (s1) (ormap (lambda (s2) (intersection-line-segments s1 s2)) r2-segs)) r1-segs))))
+  (and (< tl-x1 br-x2)
+       (> br-x1 tl-x2)
+       (< tl-y1 br-y2)
+       (> br-y1 tl-y2)))
 
 
 (module+ test
