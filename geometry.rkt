@@ -17,6 +17,9 @@
 ;; ax + by = c
 (struct line (a b c) #:transparent)
 
+;; posn * int * int
+(struct rect (top-left width height) #:transparent)
+
 ;; solve a quadratic formula of the form Ax^2 + Bx + C = 0
 ;; evaluates to #f if there is no solution
 ;; evalutes to n if n is the only solution

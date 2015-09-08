@@ -8,9 +8,48 @@
 (require "./geometry.rkt"
          rackunit)
 
-(struct rect (top-left width height) #:transparent)
+;; velocity and acceleration
+(struct motion (v a))
 
-(struct motion (x y dx dy ddx ddy))
+;; int
+(struct move-x (dx))
+
+;; int
+(struct move-y (dy))
+
+(struct jump ())
+
+(struct y-collision ())
+
+;; rect
+(struct player (rect))
+
+;; rect
+(struct static (rect))
+
+;; translate key presses into commands (messages)
+;; left and right arrow keys become (move-x dx)
+;; space becomes (jump)
+(define (player-behavior e s)
+  #f)
+
+;; the vertical motion behavior tries to move the player downward by sending (move-y dy)
+;; when a (jump) message is received, temporarily move the player upward
+;; when a y-collision is detected reset velocity to 0
+(define (vertical-motion-behavior e s)
+  #f)
+
+;; the game logic process keeps track of the location of the player and the environment
+;; it process move-x and move-y commands. When a collision along the y-axis occurs it
+;; sends a (y-collision) message
+;; sends a message with the location of the player every time it moves, (player rect)
+(define (game-logic-behavior e s)
+  #f)
+
+;; draw the static objects defined by (static rect) assertions and update the screen
+;; each time the player moves - (player rect) messages
+(define (render-behavior e s)
+  #f)
 
 ;; rect motion [listof rect] -> rect
 ;;
