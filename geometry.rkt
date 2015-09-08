@@ -18,7 +18,7 @@
 (struct line (a b c) #:transparent)
 
 ;; line * posn * posn
-;; where p1 and p2 are both on line
+;; where p1 and p2 are both on line and p1-x <= p2-x
 (struct line-segment (line p1 p2))
 
 ;; posn * pos-int * pos-int
@@ -284,20 +284,28 @@
   (check-equal? (intersection-lines y=x y=2x-2)
                 (posn 2 2)))
 
-;; line-segment line-segment -> (U posn #f)
+;; line-segment line-segment -> (U posn line-segment #f)
 ;; find the intersection of two line-segments, if it exists
 (define (intersection-line-segments s1 s2)
   (match-define (cons (line-segment l1 p11 p21) (line-segment l2 p12 p22)) (cons s1 s2))
-  (match (intersection-lines l1 l2)
-    [#f #f]
-    [p (if (and (point-between? p p11 p21)
-                (point-between? p p12 p22))
-           p
-           #f)]))
+  (if (equal? l1 l2)
+      (match-let [(list _ p1 p2 _) (sort (list p11 p21 p12 p22)
+                                           (lambda (p1 p2)
+                                             (if (equal? (posn-x p1) (posn-x p2))
+                                                 (< (posn-y p1) (posn-y p2))
+                                                 (< (posn-x p1) (posn-x p2)))))]
+      (line-segment l1 p1 p2))
+      (match (intersection-lines l1 l2)
+        [#f #f]
+        [p (if (and (point-between? p p11 p21)
+                    (point-between? p p12 p22))
+               p
+               #f)])))
 
 (module+ test
-  (define seg0 (line-segment y=x -1 1))
-  (sefine seg1 (line-segment x=0 
+  (define seg0 (line-segment y=x (posn -1 -1) (posn 1 1)))
+  (define seg1 (line-segment x=0 (posn 0 -3) (posn 0 4)))
+  (define seg2 (line-segment x=0 (posn 
 
 ;; test if two rectangles are overlapping
 (define (overlapping-rects? r1 r2)
