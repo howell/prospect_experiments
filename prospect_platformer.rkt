@@ -6,7 +6,8 @@
 ;; a rendering process listens for the actual locations and draws the map accordingly
 
 (require "./geometry.rkt"
-         rackunit)
+         rackunit
+         prospect/drivers/timer)
 
 ;; velocity and acceleration
 (struct motion (v a) #:transparent)
