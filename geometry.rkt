@@ -235,8 +235,7 @@
 (define (intersection-lines l1 l2)
   (match-define (cons (line a1 b1 c1) (line a2 b2 c2)) (cons l1 l2))
   (cond
-    [(zero? b1)
-     #f]
+    [(zero? b1) (line-y-at-x l2 (/ c1 a1))]
     [else
      (define b2c1/b1 (/ (* b2 c1) b1))
      (define a1b2/b1 (/ (* a1 b2) b1))
@@ -260,6 +259,8 @@
   (check-equal? (intersection-lines y=x y=3)
                 (posn 3 3))
   (check-equal? (intersection-lines y=x x=0)
+                (posn 0 0))
+  (check-equal? (intersection-lines x=0 y=x)
                 (posn 0 0))
   (check-equal? (intersection-lines y=x x=-12)
                 (posn -12 -12))
