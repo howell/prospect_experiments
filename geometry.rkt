@@ -381,7 +381,8 @@
         (line-segment (line-y= (+ y0 h)) bl br)))
 
 ;; rect rect -> bool
-;; test if two rectangles are overlapping
+;; test if two rectangles are overlapping, where the area of overlap is greater than 0,
+;; so two rectangles that meet at a corner are not considered to overlap
 (define (overlapping-rects? r1 r2)
   (match-define (list (posn tl-x1 tl-y1) _ _ (posn br-x1 br-y1)) (rect-corners r1))
   (match-define (list (posn tl-x2 tl-y2) _ _ (posn br-x2 br-y2)) (rect-corners r2))
