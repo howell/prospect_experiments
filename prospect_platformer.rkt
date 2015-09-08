@@ -44,6 +44,11 @@
        [_ #f])]
     [_ #f]))
 
+(define (spawn-player)
+  (spawn
+   player-behavior
+   (void)
+   (sub (key-press ?) #:meta-level 1)))
 
 ;; the vertical motion behavior tries to move the player downward by sending (move-y dy)
 ;; when a (jump) message is received, temporarily move the player upward
