@@ -18,4 +18,4 @@
 
 (spawn-timer-driver)
 
-(periodically 1000 (lambda () (printf "hi\n")))
+(periodically 2000 (lambda () (printf "~v\n" (current-seconds))))
