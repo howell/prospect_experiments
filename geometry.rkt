@@ -366,9 +366,9 @@
 (define (rect-corners r)
   (match-define (rect (posn x0 y0) w h) r)
   (list (posn x0 y0)
-                                         (posn (+ x0 w) y0)
-                                         (posn x0 (+ y0 h))
-                                         (posn (+ x0 w) (+ y0 h))))
+        (posn (+ x0 w) y0)
+        (posn x0 (+ y0 h))
+        (posn (+ x0 w) (+ y0 h))))
 
 ;; rect -> (listof line-segment)
 ;; extract the four line segments forming a rectangle
@@ -378,22 +378,23 @@
   (list (line-segment (line-x= x0) tl bl)
         (line-segment (line-x= (+ x0 w)) tr br)
         (line-segment (line-y= y0) tl tr)
-        (line-segment (line-y= (+ y0 h) bl br))))
+        (line-segment (line-y= (+ y0 h)) bl br)))
 
 ;; test if two rectangles are overlapping
 (define (overlapping-rects? r1 r2)
   (define r1-segs (rect-line-segments r1))
   (define r2-segs (rect-line-segments r2))
-  (not (not (ormap (ormap intersecting-line-segments r2-segs) r1-segs))))
+  (not (not (ormap (lambda (s1) (ormap (lambda (s2) (intersection-line-segments s1 s2)) r2-segs)) r1-segs))))
 
-#;(module+ test
-    (check-false (overlapping-rects? (rect (posn 0 0) 1 1)
-                                     (rect (posn 1 0) 1 1)))
-    (check-false (overlapping-rects? (rect (posn 1 1) 2 3)
-                                     (rect (posn 5 4) 9 10)))
-    (check-true (overlapping-rects? (rect (posn 0 -1) 2 4)
-                                    (rect (posn 1 0) 3 5)))
-    (check-true (overlapping-rects? (rect (posn 0 0) 2 2)
-                                    (rect (posn 3 3) 2 2))))
+
+(module+ test
+  (check-false (overlapping-rects? (rect (posn 0 0) 1 1)
+                                   (rect (posn 1 0) 1 1)))
+  (check-false (overlapping-rects? (rect (posn 1 1) 2 3)
+                                   (rect (posn 5 4) 9 10)))
+  (check-true (overlapping-rects? (rect (posn 0 -1) 2 4)
+                                  (rect (posn 1 0) 3 5)))
+  (check-true (overlapping-rects? (rect (posn 0 0) 2 2)
+                                  (rect (posn 3 3) 2 2))))
 
 
