@@ -114,3 +114,6 @@ patch is delivered, the process has to run each pattern against the patch to
 recover the shape of each assertion.
 ** How to create a tiered network?
 ** Can a message be included as an initial action in a process? should it?
+** should patch events be fed in to behaviors one at a time the way messages are?
+- using a processes interests, the vm could do the compilation of patterns
+and projections so that the logic of the behavior could be simplified
