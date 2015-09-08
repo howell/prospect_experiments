@@ -17,6 +17,9 @@
 ;; ax + by = c
 (struct line (a b c) #:transparent)
 
+;; line * n = int * int >= n
+(struct line-segment (line x-min x-max))
+
 ;; posn * pos-int * pos-int
 (struct rect (top-left width height) #:transparent)
 
@@ -226,6 +229,53 @@
   (check-true (point-between? (posn -1 -1) (posn 1 1) (posn 0 0)))
   (check-true (point-between? (posn -1 -1) (posn 1 1) (posn 0 1)))
   (check-false (point-between? (posn -1 -1) (posn 1 1) (posn 2 0))))
+
+;; line  line -> (U posn #f)
+;; find the intersection of two lines, if it exists
+(define (intersection-lines l1 l2)
+  (match-define (cons (line a1 b1 c1) (line a2 b2 c2)) (cons l1 l2))
+  (cond
+    [(zero? b1)
+     #f]
+    [else
+     (define b2c1/b1 (/ (* b2 c1) b1))
+     (define a1b2/b1 (/ (* a1 b2) b1))
+     (define a2-a1b2/b1 (- a2 a1b2/b1))
+     (if (zero? a2-a1b2/b1)
+         #f
+         (let [(x-int (/ (- c2 b2c1/b1) a2-a1b2/b1))]
+           (posn x-int (line-y-at-x l1 x-int))))]))
+
+(module+ test
+  #;(define y=x (line -1 1 0))
+  #;(define y=0 (line 0 1 0))
+  (define y=3 (line 0 1 3))
+  #;(define x=0 (line 1 0 0))
+  (define x=-12 (line 1 0 -12))
+  #;(define y=-x (line 1 1 0))
+  (define y=2x-2 (line -2 1 -2))
+  (define y=x-3 (line -1 1 -3))
+  (check-equal? (intersection-lines y=x y=0)
+                (posn 0 0))
+  (check-equal? (intersection-lines y=x y=3)
+                (posn 3 3))
+  (check-equal? (intersection-lines y=x x=0)
+                (posn 0 0))
+  (check-equal? (intersection-lines y=x x=-12)
+                (posn -12 -12))
+  (check-equal? (intersection-lines y=0 x=0)
+                (posn 0 0))
+  (check-equal? (intersection-lines y=0 x=-12)
+                (posn -12 0))
+  (check-equal? (intersection-lines y=3 x=0)
+                (posn 0 3))
+  (check-equal? (intersection-lines y=3 x=-12)
+                (posn -12 3))
+  (check-false (intersection-lines y=0 y=3))
+  (check-false (intersection-lines x=0 x=-12))
+  (check-false (intersection-lines y=x y=x-3))
+  (check-equal? (intersection-lines y=x y=2x-2)
+                (posn 2 2)))
 
 ;; test if two rectangles are overlapping
 (define (overlapping-rects? r1 r2)
