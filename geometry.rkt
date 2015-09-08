@@ -398,7 +398,11 @@
                                    (rect (posn 5 4) 9 10)))
   (check-true (overlapping-rects? (rect (posn 0 -1) 2 4)
                                   (rect (posn 1 0) 3 5)))
+  (check-false (overlapping-rects? (rect (posn 0 0) 2 2)
+                                   (rect (posn 3 3) 2 2)))
   (check-true (overlapping-rects? (rect (posn 0 0) 2 2)
-                                  (rect (posn 3 3) 2 2))))
+                                  (rect (posn 1 1) 2 2)))
+  (check-true (overlapping-rects? (rect (posn 0 0) 10 2)
+                                  (rect (posn 5 -5) 2 10))))
 
 
