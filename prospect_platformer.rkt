@@ -161,5 +161,5 @@
                              (list (rect (posn 3 0) 2 30)))
               (cons (rect (posn 2 1) 1 1) #t))
 
-(spawn-timer-driver)
-(spawn-clock 1000/24)
+#;(spawn-timer-driver)
+#;(spawn-clock 1000/24)
