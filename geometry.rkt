@@ -9,7 +9,8 @@
  intersection-circle-line
  line-through-points
  point-distance
- point-between?)
+ point-between?
+ move-rect)
 
 
 (struct posn (x y) #:transparent)
@@ -411,12 +412,13 @@
 ;; rect num num -> rect
 ;; move a rectangle a given distance in the x and y directions
 (define (move-rect r dx dy)
-  r)
+  (match-define (rect (posn x y) w h) r)
+  (rect (posn (+ x dx) (+ y dy)) w h))
 
 (module+ test
   (check-equal? (move-rect (rect (posn 3 4) 5 6) 4 0)
                 (rect (posn 7 4) 5 6))
   (check-equal? (move-rect (rect (posn -2 6) 1 9) 0 -6)
-                (rect (posn -2 0)))
+                (rect (posn -2 0) 1 9))
   (check-equal? (move-rect (rect (posn 8 1) 2 5) -3 8)
                 (rect (posn 5 9) 2 5)))
