@@ -8,7 +8,6 @@
 (require "./geometry.rkt"
          "./periodic_timer.rkt"
          racket/base
-         racket/local
          rackunit
          prospect/drivers/timer
          racket/set)
@@ -134,12 +133,10 @@
   (define first-colliding (ormap (lambda (r) (and (overlapping-rects? r p-n) r))
                                  env))
   (if first-colliding
-      (local
-        
-        (match-define (rect (posn p-x0 p-y0) p-w p-h) p)
-        (match-define (rect (posn col-x0 _) col-w _) first-colliding)
-        (define dist (/ (+ col-w p-w) 2))
-        (define new-x0 (+ col-x0 (* dist (- (sgn dx)))))
+      (match-let* ([(rect (posn col-x0 _) col-w _) first-colliding]
+                   [(rect (posn p-x0 p-y0) p-w p-h) p]
+                   [dist (/ (+ col-w p-w) 2)]
+                   [new-x0 (+ col-x0 (* dist (- (sgn dx))))])
         (cons (rect (posn new-x0 p-y0) p-w p-h) #t))
       (cons p-n #f)))
 
