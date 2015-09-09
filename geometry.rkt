@@ -408,4 +408,15 @@
   (check-true (overlapping-rects? (rect (posn 0 0) 10 2)
                                   (rect (posn 5 -5) 2 10))))
 
+;; rect num num -> rect
+;; move a rectangle a given distance in the x and y directions
+(define (move-rect r dx dy)
+  r)
 
+(module+ test
+  (check-equal? (move-rect (rect (posn 3 4) 5 6) 4 0)
+                (rect (posn 7 4) 5 6))
+  (check-equal? (move-rect (rect (posn -2 6) 1 9) 0 -6)
+                (rect (posn -2 0)))
+  (check-equal? (move-rect (rect (posn 8 1) 2 5) -3 8)
+                (rect (posn 5 9) 2 5)))
