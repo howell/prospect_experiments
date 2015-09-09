@@ -120,3 +120,11 @@ and projections so that the logic of the behavior could be simplified
 - won't work with patch-seq :(
 ** how to pull in bits of racket?
 e.g. `sgn`
+A: `(require racket)`
+** split prospect program across modules/files
+link: bad variable linkage;
+ reference to a variable that is not a procedure or structure-type constant across all instantiations
+  reference phase level: 0
+  variable module: "/Users/scaldwell/git/prospect/prospect/drivers/timer.rkt"
+  variable phase: 0
+  reference in module: "/Users/scaldwell/git/prospect_experiments/periodic_timer.rkt" in: set-timer2.2
