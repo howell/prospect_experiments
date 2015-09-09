@@ -125,10 +125,16 @@
 
 ;; rect num [listof rect] -> (pair rect bool)
 ;; attempt to move the player given by the first argument along the x-axis
-;; when a 
+;; when a collision occurs move as far as possible without colliding
 ;; returns the new rect for the player as well as if a collision occured
 (define (move-player-x p dx env)
-  (cons p #f))
+  (define p-n (move-rect p dx 0))
+  (define first-colliding (ormap (lambda (r) (and (overlapping-rects? r p-n) r))
+                                 env))
+  (if first-colliding
+      (local
+        (match-define (rect (posn col-x0 col-y0) col-w col-h) first-colliding)
+      (cons p-n #f))
 
 (check-equal? (move-player-x (rect (posn 0 0) 1 1)
                              1
