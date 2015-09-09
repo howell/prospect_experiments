@@ -92,15 +92,20 @@
 ;; sends a (y-collision) message
 ;; sends a message with the location of the player every time it moves, (player rect)
 (define game-logic-behavior
-  (let ([static-detector (compile-projection (static (?!)))])
+  (let ([static-detector (compile-projection (static (?!)))]
+        [matcher-static-rects (lambda (m)
+                                (set-map (matcher/project/set m static-detector) first))])
     (lambda (e s)
       (match e
         [(message (move-x dx))
          #f]
         [(message (move-y dy))
          #f]
-        [(patch added removed)
-         #f]
+        [(patch p-added p-removed)
+         (define removed (matcher-static-rects p-removed))
+         (define added (matcher-static-rects p-added))
+         (define new-env (append added (remove* removed game-state-env s)))
+         (transition (game-state (game-state-player s) new-env) '())]
         [_ #f]))))
 
 ;; rect -> spawn
@@ -117,20 +122,27 @@
 (define (render-behavior e s)
   #f)
 
-;; rect motion [listof rect] -> rect
-;;
-(define (move r m lor)
+;; rect num [listof rect] -> (pair rect bool)
+;; attempt to move the player given by the first argument along the x-axis
+;; when a 
+;; returns the new rect for the player as well as if a collision occured
+(define (move-x p dx env)
   r)
 
-(check-equal? (move (rect (posn 0 0) 1 1)
-                    (motion 1 1 0 0 0 0)
-                    '())
-              (rect (posn 1 1) 1 1))
+(check-equal? (move-x (rect (posn 0 0) 1 1)
+                      1
+                      '())
+              (cons (rect (posn 1 0) 1 1) #f))
 
 (check-equal? (move (rect (posn 0 0) 1 1)
-                    (motion 1 0 0 0 0 0)
+                    1
                     (list (rect (posn 1 0) 1 1)))
-              (rect (posn 0 0) 1 1))
+              (cons (rect (posn 0 0) 1 1) #t))
+
+(check-equal? (move (rect (posn 1 1) 1 1)
+                    2
+                    (list (rect (posn 3 0) 2 30)))
+              (cons (rect (posn 2 1) 1 1) #t))
 
 (spawn-timer-driver)
 (spawn-clock 1000/24)
