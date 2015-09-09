@@ -2,6 +2,8 @@
 
 (require prospect/drivers/timer)
 
+(provide periodically)
+
 (define (periodically period-ms thunk)
   (define id (gensym 'after))
   (define set-timer-message (message (set-timer id period-ms 'relative)))
@@ -16,11 +18,11 @@
                          (sub (timer-expired id ?)))
         set-timer-message))
 
-(spawn-timer-driver)
+#;(spawn-timer-driver)
 
-(periodically 2000 (lambda () (list (message 0) (message 0))))
+#;(periodically 2000 (lambda () (list (message 0) (message 0))))
 
-(spawn/stateless
+#;(spawn/stateless
  (lambda (e)
    (match e
      [(message n)

@@ -6,6 +6,7 @@
 ;; a rendering process listens for the actual locations and draws the map accordingly
 
 (require "./geometry.rkt"
+         "./periodic_timer.rkt"
          rackunit
          prospect/drivers/timer)
 
@@ -72,6 +73,17 @@
      (transition (motion 0 (motion-a s)) '())]
     [_ #f]))
 
+(define (spawn-vertical-motion gravity)
+  (spawn vertical-motion-behavior
+         (motion 0 gravity)
+         (sub (jump))
+         (sub (timer-tick))
+         (sub (y-collision))))
+
+;; create a clock that sends (timer-tick) every period-ms
+(define (spawn-clock period-ms)
+  (periodically period-ms (lambda () (message (timer-tick)))))
+
 ;; the game logic process keeps track of the location of the player and the environment
 ;; it process move-x and move-y commands. When a collision along the y-axis occurs it
 ;; sends a (y-collision) message
@@ -98,3 +110,6 @@
                     (motion 1 0 0 0 0 0)
                     (list (rect (posn 1 0) 1 1)))
               (rect (posn 0 0) 1 1))
+
+(spawn-timer-driver)
+(spawn-clock 1000/24)
