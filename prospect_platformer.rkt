@@ -84,12 +84,33 @@
 (define (spawn-clock period-ms)
   (periodically period-ms (lambda () (message (timer-tick)))))
 
+;; rect * (listof rect)
+(struct game-state (player env) #:transparent)
+
 ;; the game logic process keeps track of the location of the player and the environment
 ;; it process move-x and move-y commands. When a collision along the y-axis occurs it
 ;; sends a (y-collision) message
 ;; sends a message with the location of the player every time it moves, (player rect)
-(define (game-logic-behavior e s)
-  #f)
+(define game-logic-behavior
+  (let ([static-detector (compile-projection (static (?!)))])
+    (lambda (e s)
+      (match e
+        [(message (move-x dx))
+         #f]
+        [(message (move-y dy))
+         #f]
+        [(patch added removed)
+         #f]
+        [_ #f]))))
+
+;; rect -> spawn
+(define (spawn-game-logic player0)
+  (spawn game-logic-behavior
+         (game-state player0 '())
+         (sub (move-x ?))
+         (sub (move-y ?))
+         (sub (static ?))
+         (assert (player player0))))
 
 ;; draw the static objects defined by (static rect) assertions and update the screen
 ;; each time the player moves - (player rect) messages
