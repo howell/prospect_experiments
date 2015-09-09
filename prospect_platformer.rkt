@@ -7,7 +7,6 @@
 
 (require "./geometry.rkt"
          "./periodic_timer.rkt"
-         racket/base
          rackunit
          prospect/drivers/timer
          racket/set)
@@ -125,7 +124,7 @@
   #f)
 
 ;; num -> (U -1 0 1)
-(define (sgn n)
+(define (my-sgn n)
   (cond
     [(zero? n) 0]
     [(negative? n) -1]
@@ -143,7 +142,7 @@
       (match-let* ([(rect (posn col-x0 _) col-w _) first-colliding]
                    [(rect (posn p-x0 p-y0) p-w p-h) p]
                    [dist (/ (+ col-w p-w) 2)]
-                   [new-x0 (+ col-x0 (* dist (- (sgn dx))))])
+                   [new-x0 (+ col-x0 (* dist (- (my-sgn dx))))])
         (cons (rect (posn new-x0 p-y0) p-w p-h) #t))
       (cons p-n #f)))
 
