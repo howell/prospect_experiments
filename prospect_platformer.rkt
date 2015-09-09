@@ -8,7 +8,8 @@
 (require "./geometry.rkt"
          "./periodic_timer.rkt"
          rackunit
-         prospect/drivers/timer)
+         prospect/drivers/timer
+         racket/set)
 
 ;; velocity and acceleration
 (struct motion (v a) #:transparent)
@@ -92,9 +93,9 @@
 ;; sends a (y-collision) message
 ;; sends a message with the location of the player every time it moves, (player rect)
 (define game-logic-behavior
-  (let ([static-detector (compile-projection (static (?!)))]
-        [matcher-static-rects (lambda (m)
-                                (set-map (matcher/project/set m static-detector) first))])
+  (let* ([static-detector (compile-projection (static (?!)))]
+         [matcher-static-rects (lambda (m)
+                                 (set-map (matcher-project/set m static-detector) car))])
     (lambda (e s)
       (match e
         [(message (move-x dx))
