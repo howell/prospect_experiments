@@ -118,3 +118,5 @@ recover the shape of each assertion.
 - using a processes interests, the vm could do the compilation of patterns
 and projections so that the logic of the behavior could be simplified
 - won't work with patch-seq :(
+** how to pull in bits of racket?
+e.g. `sgn`
