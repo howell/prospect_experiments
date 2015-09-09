@@ -126,22 +126,22 @@
 ;; attempt to move the player given by the first argument along the x-axis
 ;; when a 
 ;; returns the new rect for the player as well as if a collision occured
-(define (move-x p dx env)
-  r)
+(define (move-player-x p dx env)
+  (cons p #f))
 
-(check-equal? (move-x (rect (posn 0 0) 1 1)
-                      1
-                      '())
+(check-equal? (move-player-x (rect (posn 0 0) 1 1)
+                             1
+                             '())
               (cons (rect (posn 1 0) 1 1) #f))
 
-(check-equal? (move (rect (posn 0 0) 1 1)
-                    1
-                    (list (rect (posn 1 0) 1 1)))
+(check-equal? (move-player-x (rect (posn 0 0) 1 1)
+                             1
+                             (list (rect (posn 1 0) 1 1)))
               (cons (rect (posn 0 0) 1 1) #t))
 
-(check-equal? (move (rect (posn 1 1) 1 1)
-                    2
-                    (list (rect (posn 3 0) 2 30)))
+(check-equal? (move-player-x (rect (posn 1 1) 1 1)
+                             2
+                             (list (rect (posn 3 0) 2 30)))
               (cons (rect (posn 2 1) 1 1) #t))
 
 (spawn-timer-driver)
