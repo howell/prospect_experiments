@@ -124,6 +124,13 @@
 (define (render-behavior e s)
   #f)
 
+;; num -> (U -1 0 1)
+(define (sgn n)
+  (cond
+    [(zero? n) 0]
+    [(negative? n) -1]
+    [else 1]))
+
 ;; rect num [listof rect] -> (pair rect bool)
 ;; attempt to move the player given by the first argument along the x-axis
 ;; when a collision occurs move as far as possible without colliding
