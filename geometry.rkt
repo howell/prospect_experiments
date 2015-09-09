@@ -10,6 +10,7 @@
  line-through-points
  point-distance
  point-between?
+ overlapping-rects?
  move-rect)
 
 
