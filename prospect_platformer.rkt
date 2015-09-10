@@ -248,48 +248,60 @@
         (cons (rect (posn new-x0 p-y0) p-w p-h) #t))
       (cons p-n #f)))
 
+;; drawing-context rect (listof rect) -> void
+;; draws the game
+(define (draw-game dc player env)
+  (void))
+
 ;; draw the static objects defined by (static rect) assertions and update the screen
 ;; each time the player moves - (player rect) messages
+;; state is the environment of static rects
 (define ((render-behavior dc) e s)
-  ()
-  
-  (define (spawn-renderer dc)
-    #f)
-  
-  ;; gui stuff
-  (define game-canvas%
-    (class canvas%
-      (init-field key-handler)
-      (define/override (on-char event)
-        (define key-code (send event get-key-code))
-        (cond
-          [(char? key-code) (key-handler (string key-code))]
-          [(arrow? key-code) (key-handler (symbol->string key-code))]
-          [else (void)]))
-      (super-new)))
-  
-  (define (arrow? key)
-    (match key
-      [(or 'left 'right 'up 'down) #t]
-      [_ #f]))
-  
-  (define (make-frame width height)
-    (parameterize ((current-eventspace (make-eventspace)))
-      (define frame (new frame%
-                         [label "My Frame"]
-                         [width width]
-                         [height height]))
-      (define canvas
-        (new game-canvas%
-             [parent frame]
-             [key-handler (lambda (key) (send-ground-message (key-press key)))]))
-      (send frame show #t)
-      #;(define-values (x-max y-max) (send canvas get-client-size))
-      #;(set-box! bot-right (posn x-max y-max))
-      (define dc (send canvas get-dc))
-      (spawn-renderer dc)))
-  
-  
-  #;(spawn-timer-driver)
-  #;(spawn-clock 1000/24)
-  
+  (match e
+    [(patch p-added p-removed)
+     (define added (static-rects-matcher p-added))
+     (define removed (static-rects-matcher removed))
+     (define player (matcher-project/set p-added (compile-projection (player (?!)))))
+     (transition (append added (remove* removed s))
+                 '())]
+    [(
+
+(define (spawn-renderer dc)
+  #f)
+
+;; gui stuff
+(define game-canvas%
+  (class canvas%
+    (init-field key-handler)
+    (define/override (on-char event)
+      (define key-code (send event get-key-code))
+      (cond
+        [(char? key-code) (key-handler (string key-code))]
+        [(arrow? key-code) (key-handler (symbol->string key-code))]
+        [else (void)]))
+    (super-new)))
+
+(define (arrow? key)
+  (match key
+    [(or 'left 'right 'up 'down) #t]
+    [_ #f]))
+
+(define (make-frame width height)
+  (parameterize ((current-eventspace (make-eventspace)))
+    (define frame (new frame%
+                       [label "My Frame"]
+                       [width width]
+                       [height height]))
+    (define canvas
+      (new game-canvas%
+           [parent frame]
+           [key-handler (lambda (key) (send-ground-message (key-press key)))]))
+    (send frame show #t)
+    #;(define-values (x-max y-max) (send canvas get-client-size))
+    #;(set-box! bot-right (posn x-max y-max))
+    (define dc (send canvas get-dc))
+    (spawn-renderer dc)))
+
+
+#;(spawn-timer-driver)
+#;(spawn-clock 1000/24)
