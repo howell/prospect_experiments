@@ -99,9 +99,16 @@
     (lambda (e s)
       (match e
         [(message (move-x dx))
-         #f]
+         (define player-n (car (move-player-x (game-state-player s) dx (game-state-env s))))
+         (transition (game-state player-n (game-state-env s))
+                     (list (message (player player-n))))]
         [(message (move-y dy))
-         #f]
+         (match-define (cons player-n col?) (move-player-y (game-state-player s) dy (game-state-env s)))
+         (transition (game-state player-n (game-state-env s))
+                     (cons (message (player player-n))
+                           (if (col?)
+                               (list (message (y-collision)))
+                               '())))]
         [(patch p-added p-removed)
          (define removed (matcher-static-rects p-removed))
          (define added (matcher-static-rects p-added))
