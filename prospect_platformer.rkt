@@ -109,7 +109,7 @@
      (match-define (cons player-n col?) (move-player-y (game-state-player s) dy (game-state-env s)))
      (transition (game-state player-n (game-state-env s))
                  (cons (message (player player-n))
-                       (if (col?)
+                       (if col?
                            (list (message (y-collision)))
                            '())))]
     [(patch p-added p-removed)
@@ -330,7 +330,7 @@
 (make-frame 400 400)
 (spawn-timer-driver)
 (spawn-player)
-(spawn-vertical-motion -1)
+(spawn-vertical-motion 1)
 (spawn-clock 1000)
 (spawn-game-logic PLAYER0)
 
