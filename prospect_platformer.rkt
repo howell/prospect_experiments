@@ -143,6 +143,21 @@
     [empty #f]
     [(cons closest _) closest]))
 
+(check-equal? (closest-colliding (rect (posn 0 0) 1 1)
+                                 (posn 0 0)
+                                 '())
+              #f)
+
+(check-equal? (closest-colliding (rect (posn 0 0) 2 1)
+                                 (posn 0 0)
+                                 (list (rect (posn 1 0) 1 1)))
+              (rect (posn 1 0) 1 1))
+
+(check-equal? (closest-colliding (rect (posn 1 1) 1 1)
+                                 2
+                                 (list (rect (posn 3 0) 2 30)))
+              #f)
+
 ;; rect num [listof rect] -> (pair rect bool)
 ;; attempt to move the player given by the first argument along the x-axis
 ;; when a collision occurs move as far as possible without colliding
@@ -166,6 +181,7 @@
         (cons (rect (posn new-x0 p-y0) p-w p-h) #t))
       (cons p-n #f)))
 
+#|
 (check-equal? (move-player-x (rect (posn 0 0) 1 1)
                              1
                              '())
@@ -202,6 +218,7 @@
                              (list (rect (posn 2 0) 1 1)
                                    (rect (posn 1 0) 1 1)))
               (cons (rect (posn 0 0) 1 1) #t))
+|#
 
 
 #;(spawn-timer-driver)
