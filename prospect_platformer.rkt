@@ -333,7 +333,7 @@
 (spawn-vertical-motion 1)
 (spawn-clock 1000)
 (spawn-game-logic PLAYER0)
-(spawn
+#;(spawn
  (lambda (e s) (quit))
  (void)
  (assert (static (rect (posn 100 0) 400 10))))
