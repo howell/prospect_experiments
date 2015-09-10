@@ -175,6 +175,11 @@
                              (list (rect (posn 6 -8) 30 40)))
               (cons (rect (posn 5 0) 1 1) #t))
 
+(check-equal? (move-player-x (rect (posn 0 0) 1 1)
+                             10
+                             (list (rect (posn 3 -4) 1 20)))
+              (cons (rect (posn 2 0) 1 1) #t))
+
 
 #;(spawn-timer-driver)
 #;(spawn-clock 1000/24)
