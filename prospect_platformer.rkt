@@ -179,12 +179,9 @@
   (define closest-col (closest-colliding motion-rect (rect-top-left p) env))
   (if closest-col
       (match-let* ([(rect (posn col-x0 _) col-w _) closest-col]
-                   
                    [new-x0 (if (< p-x0 col-x0)
                                (- col-x0 p-w)
-                               (+ col-x0 (+ col-w p-w)))]
-                   #;[dist (/ (+ col-w p-w) 2)]
-                   #;[new-x0 (+ col-x0 (* dist (- (my-sgn dx))))])
+                               (+ col-x0 (+ col-w p-w)))])
         (cons (rect (posn new-x0 p-y0) p-w p-h) #t))
       (cons p-n #f)))
 
@@ -239,13 +236,10 @@
         (rect (posn pn-x0 pn-y0) p-w (+ (abs dy) p-h))))
   (define closest-col (closest-colliding motion-rect (rect-top-left p) env))
   (if closest-col
-      (match-let* ([(rect (posn col-x0 _) col-w _) closest-col]
-                   
-                   [new-x0 (if (< p-x0 col-x0)
-                               (- col-x0 p-w)
-                               (+ col-x0 (+ col-w p-w)))]
-                   #;[dist (/ (+ col-w p-w) 2)]
-                   #;[new-x0 (+ col-x0 (* dist (- (my-sgn dx))))])
+      (match-let* ([(rect (posn _ col-y0) _ col-h) closest-col]
+                   [new-x0 (if (< p-y0 col-y0)
+                               (- col-y0 col-h p-h)
+                               (+ col-y0 p-h))])
         (cons (rect (posn new-x0 p-y0) p-w p-h) #t))
       (cons p-n #f)))
 
