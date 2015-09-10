@@ -154,11 +154,9 @@
     (if (negative? dx)
         (rect (posn pn-x0 pn-y0) (+ (- p-x0 pn-x0) p-w) p-h)
         (rect (posn p-x0 p-y0) (+ (- pn-x0 p-x0) p-w) p-h)))
-  ;; really want *nearest* colliding
-  (define first-colliding (ormap (lambda (r) (and (overlapping-rects? r motion-rect) r))
-                                 env))
-  (if first-colliding
-      (match-let* ([(rect (posn col-x0 _) col-w _) first-colliding]
+  (define closest-col (closest-colliding motion-rect (rect-top-left p) env))
+  (if closest-col
+      (match-let* ([(rect (posn col-x0 _) col-w _) closest-col]
                    
                    [new-x0 (if (< p-x0 col-x0)
                                (- col-x0 p-w)
