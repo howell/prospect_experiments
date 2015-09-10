@@ -272,7 +272,7 @@
   (match e
     [(patch p-added p-removed)
      (define added (static-rects-matcher p-added))
-     (define removed (static-rects-matcher removed))
+     (define removed (static-rects-matcher p-removed))
      (define new-env (append added (remove* removed old-env)))
      (define player-s (matcher-project/set p-added (compile-projection (player (?!)))))
      (define new-player (if (set-empty? player-s) old-player (car (set-first player-s))))
