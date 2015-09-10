@@ -90,33 +90,34 @@
 ;; rect * (listof rect)
 (struct game-state (player env) #:transparent)
 
+(define static-detector (compile-projection (static (?!))))
+(define static-rects-matcher
+  (lambda (m)
+    (set-map (matcher-project/set m static-detector) car)))
+
 ;; the game logic process keeps track of the location of the player and the environment
 ;; it process move-x and move-y commands. When a collision along the y-axis occurs it
 ;; sends a (y-collision) message
 ;; sends a message with the location of the player every time it moves, (player rect)
-(define game-logic-behavior
-  (let* ([static-detector (compile-projection (static (?!)))]
-         [matcher-static-rects (lambda (m)
-                                 (set-map (matcher-project/set m static-detector) car))])
-    (lambda (e s)
-      (match e
-        [(message (move-x dx))
-         (define player-n (car (move-player-x (game-state-player s) dx (game-state-env s))))
-         (transition (game-state player-n (game-state-env s))
-                     (list (message (player player-n))))]
-        [(message (move-y dy))
-         (match-define (cons player-n col?) (move-player-y (game-state-player s) dy (game-state-env s)))
-         (transition (game-state player-n (game-state-env s))
-                     (cons (message (player player-n))
-                           (if (col?)
-                               (list (message (y-collision)))
-                               '())))]
-        [(patch p-added p-removed)
-         (define removed (matcher-static-rects p-removed))
-         (define added (matcher-static-rects p-added))
-         (define new-env (append added (remove* removed game-state-env s)))
-         (transition (game-state (game-state-player s) new-env) '())]
-        [_ #f]))))
+(define (game-logic-behavior e s)
+  (match e
+    [(message (move-x dx))
+     (define player-n (car (move-player-x (game-state-player s) dx (game-state-env s))))
+     (transition (game-state player-n (game-state-env s))
+                 (list (message (player player-n))))]
+    [(message (move-y dy))
+     (match-define (cons player-n col?) (move-player-y (game-state-player s) dy (game-state-env s)))
+     (transition (game-state player-n (game-state-env s))
+                 (cons (message (player player-n))
+                       (if (col?)
+                           (list (message (y-collision)))
+                           '())))]
+    [(patch p-added p-removed)
+     (define removed (static-rects-matcher p-removed))
+     (define added (static-rects-matcher p-added))
+     (define new-env (append added (remove* removed game-state-env s)))
+     (transition (game-state (game-state-player s) new-env) '())]
+    [_ #f]))
 
 ;; rect -> spawn
 (define (spawn-game-logic player0)
@@ -249,45 +250,46 @@
 
 ;; draw the static objects defined by (static rect) assertions and update the screen
 ;; each time the player moves - (player rect) messages
-(define (render-behavior e s)
-  #f)
-
-(define (spawn-renderer dc)
-  #f)
-
-;; gui stuff
-(define game-canvas%
-  (class canvas%
-    (init-field key-handler)
-    (define/override (on-char event)
-      (define key-code (send event get-key-code))
-      (cond
-        [(char? key-code) (key-handler (string key-code))]
-        [(arrow? key-code) (key-handler (symbol->string key-code))]
-        [else (void)]))
-    (super-new)))
-
-(define (arrow? key)
-  (match key
-    [(or 'left 'right 'up 'down) #t]
-    [_ #f]))
-
-(define (make-frame width height)
-  (parameterize ((current-eventspace (make-eventspace)))
-    (define frame (new frame%
-                       [label "My Frame"]
-                       [width width]
-                       [height height]))
-    (define canvas
-      (new game-canvas%
-           [parent frame]
-           [key-handler (lambda (key) (send-ground-message (key-press key)))]))
-    (send frame show #t)
-    #;(define-values (x-max y-max) (send canvas get-client-size))
-    #;(set-box! bot-right (posn x-max y-max))
-    (define dc (send canvas get-dc))
-    (spawn-renderer dc)))
-
-
-#;(spawn-timer-driver)
-#;(spawn-clock 1000/24)
+(define ((render-behavior dc) e s)
+  ()
+  
+  (define (spawn-renderer dc)
+    #f)
+  
+  ;; gui stuff
+  (define game-canvas%
+    (class canvas%
+      (init-field key-handler)
+      (define/override (on-char event)
+        (define key-code (send event get-key-code))
+        (cond
+          [(char? key-code) (key-handler (string key-code))]
+          [(arrow? key-code) (key-handler (symbol->string key-code))]
+          [else (void)]))
+      (super-new)))
+  
+  (define (arrow? key)
+    (match key
+      [(or 'left 'right 'up 'down) #t]
+      [_ #f]))
+  
+  (define (make-frame width height)
+    (parameterize ((current-eventspace (make-eventspace)))
+      (define frame (new frame%
+                         [label "My Frame"]
+                         [width width]
+                         [height height]))
+      (define canvas
+        (new game-canvas%
+             [parent frame]
+             [key-handler (lambda (key) (send-ground-message (key-press key)))]))
+      (send frame show #t)
+      #;(define-values (x-max y-max) (send canvas get-client-size))
+      #;(set-box! bot-right (posn x-max y-max))
+      (define dc (send canvas get-dc))
+      (spawn-renderer dc)))
+  
+  
+  #;(spawn-timer-driver)
+  #;(spawn-clock 1000/24)
+  
