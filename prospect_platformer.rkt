@@ -103,6 +103,7 @@
   (match e
     [(message (move-x dx))
      (define player-n (car (move-player-x (game-state-player s) dx (game-state-env s))))
+     (printf "\n\n~v --> ~v\n\n" (game-state-player s) player-n)
      (transition (game-state player-n (game-state-env s))
                  (list (message (player player-n))))]
     [(message (move-y dy))
