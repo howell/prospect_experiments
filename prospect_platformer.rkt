@@ -188,7 +188,7 @@
         (cons (rect (posn new-x0 p-y0) p-w p-h) #t))
       (cons p-n #f)))
 
-#|
+
 (check-equal? (move-player-x (rect (posn 0 0) 1 1)
                              1
                              '())
@@ -225,7 +225,6 @@
                              (list (rect (posn 2 0) 1 1)
                                    (rect (posn 1 0) 1 1)))
               (cons (rect (posn 0 0) 1 1) #t))
-|#
 
 
 #;(spawn-timer-driver)
