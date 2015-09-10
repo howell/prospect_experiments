@@ -127,4 +127,4 @@ link: bad variable linkage;
   reference phase level: 0
   variable module: "/Users/scaldwell/git/prospect/prospect/drivers/timer.rkt"
   variable phase: 0
-  reference in module: "/Users/scaldwell/git/prospect_experiments/periodic_timer.rkt" in: set-timer2.2
+  reference in module: "/Users/scaldwell/git/prospect_experiments/periodic_timer.rkt" in: set-timer2.2a

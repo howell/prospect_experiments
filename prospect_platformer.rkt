@@ -252,6 +252,9 @@
 (define (render-behavior e s)
   #f)
 
+(define (spawn-renderer dc)
+  #f)
+
 ;; gui stuff
 (define game-canvas%
   (class canvas%
@@ -282,8 +285,8 @@
     (send frame show #t)
     #;(define-values (x-max y-max) (send canvas get-client-size))
     #;(set-box! bot-right (posn x-max y-max))
-    #;(define dc (send canvas get-dc))
-    #;(spawn-drawer dc)))
+    (define dc (send canvas get-dc))
+    (spawn-renderer dc)))
 
 
 #;(spawn-timer-driver)
