@@ -140,7 +140,7 @@
                          (< (point-distance p p1)
                             (point-distance p p2)))))
   (match sorted
-    [empty #f]
+    ['() #f]
     [(cons closest _) closest]))
 
 (check-equal? (closest-colliding (rect (posn 0 0) 1 1)
@@ -157,6 +157,13 @@
                                  2
                                  (list (rect (posn 3 0) 2 30)))
               #f)
+
+(check-equal? (closest-colliding (rect (posn 0 0) 10 1)
+                                 (posn 0 0)
+                                 (list (rect (posn 4 0) 1 1)
+                                       (rect (posn 3 0) 1 1)
+                                       (rect (posn 5 0) 1 1)))
+              (rect (posn 3 0) 1 1))
 
 ;; rect num [listof rect] -> (pair rect bool)
 ;; attempt to move the player given by the first argument along the x-axis
