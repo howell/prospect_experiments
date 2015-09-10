@@ -63,7 +63,7 @@
 ;; when a (y-collision) is detected reset velocity to 0
 ;; state is a motion struct
 (define (vertical-motion-behavior e s)
-  (define JUMP-V 10)
+  (define JUMP-V -10)
   (match e
     [(message (jump))
      (if (zero? (motion-v s)) ;; TODO: better way to detect if this is a legal time to jump
@@ -333,4 +333,8 @@
 (spawn-vertical-motion 1)
 (spawn-clock 1000)
 (spawn-game-logic PLAYER0)
+(spawn
+ (lambda (e s) (quit))
+ (void)
+ (assert (static (rect (posn 100 0) 400 10))))
 
