@@ -130,6 +130,19 @@
     [(negative? n) -1]
     [else 1]))
 
+;; rect posn (listof rect) -> (U rect #f)
+;; find the colliding rectange that is closest to the given position, if any exist
+(define (closest-colliding r p rs)
+  (define collisions (filter (lambda (x) (overlapping-rects? r x))
+                             rs))
+  (define sorted (sort collisions
+                       (lambda (r1 r2)
+                         (< (point-distance p (rect-top-left r1))
+                            (point-distance p (rect-top-left r2))))))
+  (match sorted
+    [empty #f]
+    [(cons closest _) closest]))
+
 ;; rect num [listof rect] -> (pair rect bool)
 ;; attempt to move the player given by the first argument along the x-axis
 ;; when a collision occurs move as far as possible without colliding
