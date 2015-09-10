@@ -135,13 +135,18 @@
 ;; when a collision occurs move as far as possible without colliding
 ;; returns the new rect for the player as well as if a collision occured
 (define (move-player-x p dx env)
+  (match-define (rect (posn p-x0 p-y0) p-w p-h) p)
   (match-define (and p-n (rect (posn pn-x0 pn-y0) pn-w pn-h)) (move-rect p dx 0))
-  #;(define p-n (move-rect p dx 0))
-  (define first-colliding (ormap (lambda (r) (and (overlapping-rects? r p-n) r))
+  (match-define motion-rect
+    (if (negative? dx)
+        (rect (posn pn-x0 pn-y0) (+ (- p-x0 pn-x0) p-w) p-h)
+        (rect (posn p-x0 p-y0) (+ (- pn-x0 p-x0) p-w) p-h)))
+  ;; really want *nearest* colliding
+  (define first-colliding (ormap (lambda (r) (and (overlapping-rects? r motion-rect) r))
                                  env))
   (if first-colliding
       (match-let* ([(rect (posn col-x0 _) col-w _) first-colliding]
-                   [(rect (posn p-x0 p-y0) p-w p-h) p]
+                   
                    [new-x0 (if (< p-x0 col-x0)
                                (- col-x0 p-w)
                                (+ col-x0 (+ col-w p-w)))]
