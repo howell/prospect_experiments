@@ -135,7 +135,8 @@
 ;; when a collision occurs move as far as possible without colliding
 ;; returns the new rect for the player as well as if a collision occured
 (define (move-player-x p dx env)
-  (define p-n (move-rect p dx 0))
+  (match-define (and p-n (rect (posn pn-x0 pn-y0) pn-w pn-h)) (move-rect p dx 0))
+  #;(define p-n (move-rect p dx 0))
   (define first-colliding (ormap (lambda (r) (and (overlapping-rects? r p-n) r))
                                  env))
   (if first-colliding
