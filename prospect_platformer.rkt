@@ -248,10 +248,21 @@
         (cons (rect (posn new-x0 p-y0) p-w p-h) #t))
       (cons p-n #f)))
 
+;; drawing-context rect -> void
+;; draws a black rectangle
+(define (draw-rect dc r)
+  (match-define (rect (posn x0 y0) w h) r)
+  (send dc draw-rectangle x0 y0 w h))
+
 ;; drawing-context rect (listof rect) -> void
 ;; draws the game
 (define (draw-game dc player env)
-  (void))
+  (send dc suspend-flush)
+  (send dc clear)
+  (for ([r env])
+    (draw-rect dc r))
+  (draw-rect dc player)
+  (send dc resume-flush))
 
 ;; draw the static objects defined by (static rect) assertions and update the screen
 ;; each time the player moves - (player rect) messages
