@@ -341,7 +341,7 @@
 (spawn-clock (/ 1000 FRAMES-PER-SEC))
 (spawn-game-logic PLAYER0)
 (spawn
- (lambda (e s) (quit '()))
+ (lambda (e s) #f)
  (void)
- (assert (static (rect (posn 100 0) 400 10))))
+ (assert (static (rect (posn 0 100) 400 10))))
 
