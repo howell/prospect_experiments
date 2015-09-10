@@ -340,8 +340,8 @@
 (spawn-vertical-motion (/ (* 1.0 GRAVITY-PER-SEC) FRAMES-PER-SEC) MAX-V)
 (spawn-clock (/ 1000 FRAMES-PER-SEC))
 (spawn-game-logic PLAYER0)
-#;(spawn
- (lambda (e s) (quit))
+(spawn
+ (lambda (e s) (quit '()))
  (void)
  (assert (static (rect (posn 100 0) 400 10))))
 
