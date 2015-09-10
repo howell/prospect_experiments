@@ -325,13 +325,18 @@
     (define dc (send canvas get-dc))
     (spawn-renderer dc)))
 
-(define PLAYER0 (rect (posn 0 0) 4 16))
+(define PLAYER0 (rect (posn 0 0) 8 32))
+
+(define FRAMES-PER-SEC 24)
+
+(define GRAVITY-PER-SEC 10)
+
 
 (make-frame 400 400)
 (spawn-timer-driver)
 (spawn-player)
-(spawn-vertical-motion 1)
-(spawn-clock 1000)
+(spawn-vertical-motion (/ (* 1.0 GRAVITY-PER-SEC) FRAMES-PER-SEC))
+(spawn-clock (/ 1000 FRAMES-PER-SEC))
 (spawn-game-logic PLAYER0)
 #;(spawn
  (lambda (e s) (quit))
