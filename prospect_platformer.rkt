@@ -141,8 +141,11 @@
   (if first-colliding
       (match-let* ([(rect (posn col-x0 _) col-w _) first-colliding]
                    [(rect (posn p-x0 p-y0) p-w p-h) p]
-                   [dist (/ (+ col-w p-w) 2)]
-                   [new-x0 (+ col-x0 (* dist (- (my-sgn dx))))])
+                   [new-x0 (if (< p-x0 col-x0)
+                               (- col-x0 p-w)
+                               (+ col-x0 (+ col-w p-w)))]
+                   #;[dist (/ (+ col-w p-w) 2)]
+                   #;[new-x0 (+ col-x0 (* dist (- (my-sgn dx))))])
         (cons (rect (posn new-x0 p-y0) p-w p-h) #t))
       (cons p-n #f)))
 
@@ -160,6 +163,9 @@
                              2
                              (list (rect (posn 3 0) 2 30)))
               (cons (rect (posn 2 1) 1 1) #t))
+
+(module+ test
+  #t)
 
 #;(spawn-timer-driver)
 #;(spawn-clock 1000/24)
