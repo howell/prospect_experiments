@@ -255,19 +255,31 @@
 
 ;; draw the static objects defined by (static rect) assertions and update the screen
 ;; each time the player moves - (player rect) messages
-;; state is the environment of static rects
+;; state is a game-state struct
 (define ((render-behavior dc) e s)
+  (match-define (game-state old-player old-env) s)
   (match e
     [(patch p-added p-removed)
      (define added (static-rects-matcher p-added))
      (define removed (static-rects-matcher removed))
-     (define player (matcher-project/set p-added (compile-projection (player (?!)))))
-     (transition (append added (remove* removed s))
+     (define new-env (append added (remove* removed old-env)))
+     (define player-s (matcher-project/set p-added (compile-projection (player (?!)))))
+     (define new-player (if (set-empty? player-s) old-player (car (set-first player-s))))
+     (draw-game dc new-player new-env)
+     (transition (game-state new-player new-env)
                  '())]
-    [(
+    [(message (player new-player))
+     (draw-game dc new-player old-env)
+     (transition (game-state new-player old-env)
+                 '())]
+    [_ #f]))
 
 (define (spawn-renderer dc)
-  #f)
+  (spawn
+   (render-behavior dc)
+   (game-state (rect (posn 0 0) 0 0) '())
+   (sub (static ?))
+   (sub (player ?))))
 
 ;; gui stuff
 (define game-canvas%
