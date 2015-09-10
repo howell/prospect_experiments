@@ -174,8 +174,8 @@
   (match-define (and p-n (rect (posn pn-x0 pn-y0) pn-w pn-h)) (move-rect p dx 0))
   (match-define motion-rect
     (if (negative? dx)
-        (rect (posn pn-x0 pn-y0) (+ (- p-x0 pn-x0) p-w) p-h)
-        (rect (posn p-x0 p-y0) (+ (- pn-x0 p-x0) p-w) p-h)))
+        (rect (posn pn-x0 pn-y0) (+ (abs dx) p-w) p-h)
+        (rect (posn p-x0 p-y0) (+ dx p-w) p-h)))
   (define closest-col (closest-colliding motion-rect (rect-top-left p) env))
   (if closest-col
       (match-let* ([(rect (posn col-x0 _) col-w _) closest-col]
@@ -225,6 +225,29 @@
                              (list (rect (posn 2 0) 1 1)
                                    (rect (posn 1 0) 1 1)))
               (cons (rect (posn 0 0) 1 1) #t))
+
+;; rect num [listof rect] -> (pair rect bool)
+;; attempt to move the player given by the first argument along the y-axis
+;; when a collision occurs move as far as possible without colliding
+;; returns the new rect for the player as well as if a collision occured
+(define (move-player-y p dy env)
+  (match-define (rect (posn p-x0 p-y0) p-w p-h) p)
+  (match-define (and p-n (rect (posn pn-x0 pn-y0) pn-w pn-h)) (move-rect p 0 dy))
+  (match-define motion-rect
+    (if (negative? dy)
+        (rect (posn p-x0 p-y0) p-w (+ (abs dy) p-h))
+        (rect (posn pn-x0 pn-y0) p-w (+ (abs dy) p-h))))
+  (define closest-col (closest-colliding motion-rect (rect-top-left p) env))
+  (if closest-col
+      (match-let* ([(rect (posn col-x0 _) col-w _) closest-col]
+                   
+                   [new-x0 (if (< p-x0 col-x0)
+                               (- col-x0 p-w)
+                               (+ col-x0 (+ col-w p-w)))]
+                   #;[dist (/ (+ col-w p-w) 2)]
+                   #;[new-x0 (+ col-x0 (* dist (- (my-sgn dx))))])
+        (cons (rect (posn new-x0 p-y0) p-w p-h) #t))
+      (cons p-n #f)))
 
 
 #;(spawn-timer-driver)
