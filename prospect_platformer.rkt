@@ -62,7 +62,7 @@
 ;; when a (jump) message is received, temporarily move the player upward
 ;; when a (y-collision) is detected reset velocity to 0
 ;; state is a motion struct
-(define (vertical-motion-behavior e s)
+(define ((vertical-motion-behavior v-max) e s)
   (define JUMP-V -10)
   (match e
     [(message (jump))
@@ -70,14 +70,14 @@
          (transition (motion JUMP-V (motion-a s)) '())
          #f)]
     [(message (timer-tick))
-     (define motion-n (motion (+ (motion-v s) (motion-a s)) (motion-a s)))
+     (define motion-n (motion (min v-max (+ (motion-v s) (motion-a s))) (motion-a s)))
      (transition motion-n (list (message (move-y (motion-v s)))))]
     [(message (y-collision))
      (transition (motion 0 (motion-a s)) '())]
     [_ #f]))
 
-(define (spawn-vertical-motion gravity)
-  (spawn vertical-motion-behavior
+(define (spawn-vertical-motion gravity max-v)
+  (spawn (vertical-motion-behavior max-v)
          (motion 0 gravity)
          (sub (jump))
          (sub (timer-tick))
@@ -329,13 +329,15 @@
 
 (define FRAMES-PER-SEC 24)
 
-(define GRAVITY-PER-SEC 10)
+(define GRAVITY-PER-SEC 2)
+
+(define MAX-V 6)
 
 
 (make-frame 400 400)
 (spawn-timer-driver)
 (spawn-player)
-(spawn-vertical-motion (/ (* 1.0 GRAVITY-PER-SEC) FRAMES-PER-SEC))
+(spawn-vertical-motion (/ (* 1.0 GRAVITY-PER-SEC) FRAMES-PER-SEC) MAX-V)
 (spawn-clock (/ 1000 FRAMES-PER-SEC))
 (spawn-game-logic PLAYER0)
 #;(spawn
