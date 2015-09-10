@@ -252,6 +252,39 @@
 (define (render-behavior e s)
   #f)
 
+;; gui stuff
+(define game-canvas%
+  (class canvas%
+    (init-field key-handler)
+    (define/override (on-char event)
+      (define key-code (send event get-key-code))
+      (cond
+        [(char? key-code) (key-handler (string key-code))]
+        [(arrow? key-code) (key-handler (symbol->string key-code))]
+        [else (void)]))
+    (super-new)))
+
+(define (arrow? key)
+  (match key
+    [(or 'left 'right 'up 'down) #t]
+    [_ #f]))
+
+(define (make-frame width height)
+  (parameterize ((current-eventspace (make-eventspace)))
+    (define frame (new frame%
+                       [label "My Frame"]
+                       [width width]
+                       [height height]))
+    (define canvas
+      (new game-canvas%
+           [parent frame]
+           [key-handler (lambda (key) (send-ground-message (key-press key)))]))
+    (send frame show #t)
+    #;(define-values (x-max y-max) (send canvas get-client-size))
+    #;(set-box! bot-right (posn x-max y-max))
+    #;(define dc (send canvas get-dc))
+    #;(spawn-drawer dc)))
+
 
 #;(spawn-timer-driver)
 #;(spawn-clock 1000/24)
