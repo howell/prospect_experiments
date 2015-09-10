@@ -1,6 +1,7 @@
-#lang prospect
+#lang racket
 
-(require prospect/drivers/timer)
+(require prospect
+         prospect/drivers/timer)
 
 (provide periodically)
 
@@ -17,16 +18,3 @@
                                #f))
                          (sub (timer-expired id ?)))
         set-timer-message))
-
-#;(spawn-timer-driver)
-
-#;(periodically 2000 (lambda () (list (message 0) (message 0))))
-
-#;(spawn/stateless
- (lambda (e)
-   (match e
-     [(message n)
-      (printf "~v\n" n)
-      #f]
-     [_ #f]))
- (sub 0))
