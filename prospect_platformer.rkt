@@ -9,7 +9,9 @@
          "./periodic_timer.rkt"
          rackunit
          prospect/drivers/timer
-         racket/set)
+         racket/set
+         racket/gui
+         racket/draw)
 
 ;; velocity and acceleration
 (struct motion (v a) #:transparent)
@@ -124,11 +126,6 @@
          (sub (move-y ?))
          (sub (static ?))
          (assert (player player0))))
-
-;; draw the static objects defined by (static rect) assertions and update the screen
-;; each time the player moves - (player rect) messages
-(define (render-behavior e s)
-  #f)
 
 ;; num -> (U -1 0 1)
 (define (my-sgn n)
@@ -249,6 +246,11 @@
                                (+ col-y0 p-h))])
         (cons (rect (posn new-x0 p-y0) p-w p-h) #t))
       (cons p-n #f)))
+
+;; draw the static objects defined by (static rect) assertions and update the screen
+;; each time the player moves - (player rect) messages
+(define (render-behavior e s)
+  #f)
 
 
 #;(spawn-timer-driver)
