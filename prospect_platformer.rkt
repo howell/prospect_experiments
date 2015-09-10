@@ -325,6 +325,12 @@
     (define dc (send canvas get-dc))
     (spawn-renderer dc)))
 
+(define PLAYER0 (rect (posn 0 0) 4 16))
 
-#;(spawn-timer-driver)
-#;(spawn-clock 1000/24)
+(make-frame 400 400)
+(spawn-timer-driver)
+(spawn-player)
+(spawn-vertical-motion -1)
+(spawn-clock 1000)
+(spawn-game-logic PLAYER0)
+
