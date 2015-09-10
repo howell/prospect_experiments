@@ -5,6 +5,7 @@
 
 (provide periodically)
 
+;; nat (thunk (U action (listof action)) -> (listof action)
 (define (periodically period-ms thunk)
   (define id (gensym 'after))
   (define set-timer-message (message (set-timer id period-ms 'relative)))
