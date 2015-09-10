@@ -115,7 +115,7 @@
     [(patch p-added p-removed)
      (define removed (static-rects-matcher p-removed))
      (define added (static-rects-matcher p-added))
-     (define new-env (append added (remove* removed game-state-env s)))
+     (define new-env (append added (remove* removed (game-state-env s))))
      (transition (game-state (game-state-player s) new-env) '())]
     [_ #f]))
 
