@@ -135,10 +135,10 @@
 (define (closest-colliding r p rs)
   (define collisions (filter (lambda (x) (overlapping-rects? r x))
                              rs))
-  (define sorted (sort collisions
-                       (lambda (r1 r2)
-                         (< (point-distance p (rect-top-left r1))
-                            (point-distance p (rect-top-left r2))))))
+  (define sorted (sort collisions #:key rect-top-left
+                       (lambda (p1 p2)
+                         (< (point-distance p p1)
+                            (point-distance p p2)))))
   (match sorted
     [empty #f]
     [(cons closest _) closest]))
