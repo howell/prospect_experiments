@@ -34,6 +34,7 @@
 
 ;; key
 (struct key-press (key) #:transparent)
+(struct key-release (key) #:transparent)
 
 (struct timer-tick () #:transparent)
 
@@ -48,6 +49,7 @@
      (match key
        ["left" (transition s (message (move-x (- DX))))]
        ["right" (transition s (message (move-x DX)))]
+       ["release"
        [" " (transition s (message (jump)))]
        [_ #f])]
     [_ #f]))
@@ -340,11 +342,11 @@
     (init-field key-handler)
     (define/override (on-char event)
       (define key-code (send event get-key-code))
+      (define release-code (send event get-key-release-code))
       (printf "~v\n" key-code)
       (cond
-        [(space? key-code) (key-handler (string key-code))]
-        [(or (arrow? key-code) (release? key-code)) (key-handler (symbol->string key-code))]
-        [else (void)]))
+        [(release? key-code) (key-handler (key-release release-code))]
+        [else (key-handler (key-press key-coede))]))
     (super-new)))
 
 (define (space? key)
