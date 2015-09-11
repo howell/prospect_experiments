@@ -28,6 +28,9 @@
 (struct player (rect) #:transparent)
 
 ;; rect
+(struct goal (rect) #:transparent)
+
+;; rect
 (struct static (rect) #:transparent)
 
 ;; key
@@ -160,14 +163,15 @@
      (transition (game-state (game-state-player s) new-env (game-state-goal s)) '())]
     [_ #f]))
 
-;; rect rect -> spawn
-(define (spawn-game-logic player0 goal)
+;; rect goal -> spawn
+(define (spawn-game-logic player0 goal0)
   (spawn game-logic-behavior
-         (game-state player0 '())
+         (game-state player0 '() goal0)
          (sub (move-x ?))
          (sub (move-y ?))
          (sub (static ?))
-         (assert (player player0))))
+         (assert (player player0))
+         (assert goal0)))
 
 ;; num -> (U -1 0 1)
 (define (my-sgn n)
