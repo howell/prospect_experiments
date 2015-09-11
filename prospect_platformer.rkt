@@ -385,7 +385,7 @@
      (define player-s (matcher-project/set p-added (compile-projection (player (?!)))))
      (define new-player (if (set-empty? player-s) old-player (car (set-first player-s))))
      (define goal-s (matcher-project/set p-added (compile-projection (goal (?!)))))
-     (define new-goal (if (set-empty? goal-s) old-goal (car (set-first goal-s))))
+     (define new-goal (if (set-empty? goal-s) old-goal (goal (car (set-first goal-s)))))
      (draw-game dc new-player new-env new-goal)
      (transition (game-state new-player new-env new-goal)
                  '())]
@@ -444,7 +444,7 @@
     (spawn-renderer dc)))
 
 (define PLAYER0 (rect (posn 0 0) 8 32))
-(define GOAL0 (goal (rect (posn 0 0) 10 10)))
+(define GOAL0 (goal (rect (posn 300 200) 10 10)))
 
 (define FRAMES-PER-SEC 24)
 
