@@ -337,6 +337,7 @@
               (cons (rect (posn 0 0) 1 1) #t))
 
 (define (star-points scl)
+  (map (lambda (pr) (cons (* scl (car pr)) (* scl (cdr pr))))
   `((0 . 10)
     (2 . 6)
     (0 . 4)
@@ -346,7 +347,7 @@
     (10 . 4)
     (8 . 6)
     (10 . 10)
-    (5 . 7)))
+    (5 . 7))))
 
 ;; drawing-context goal -> void
 ;; draws the goal as a 3x3 yellow star
@@ -355,7 +356,7 @@
   (send dc set-brush "yellow" 'solid)
   (send dc set-pen "yellow" 1 'solid)
   (send dc set-smoothing 'aligned)
-  (send dc draw-polygon (star-points 30) x0 y0))
+  (send dc draw-polygon (star-points 5) x0 y0))
 
 ;; drawing-context rect color -> void
 ;; draws a black rectangle
