@@ -337,12 +337,16 @@
               (cons (rect (posn 0 0) 1 1) #t))
 
 (define (star-points scl)
-  (define mid (/ scl 2))
-  `((,mid . 0)
-    (0 . ,mid)
-    (,scl . ,mid)
-    (0 . ,scl)
-    (,scl . ,scl)))
+  `((0 . 10)
+    (2 . 6)
+    (0 . 4)
+    (3 . 4)
+    (5 . 0)
+    (7 . 4)
+    (10 . 4)
+    (8 . 6)
+    (10 . 10)
+    (5 . 7)))
 
 ;; drawing-context goal -> void
 ;; draws the goal as a 3x3 yellow star
