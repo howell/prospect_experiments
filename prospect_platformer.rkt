@@ -44,7 +44,6 @@
   (define DX 4)
   (match e
     [(message (at-meta (key-press key)))
-     (printf "key ~v\n" key)
      (match key
        ["left" (transition s (message (move-x (- DX))))]
        ["right" (transition s (message (move-x DX)))]
@@ -63,12 +62,11 @@
 ;; when a (jump) message is received, temporarily move the player upward
 ;; when a (y-collision) is detected reset velocity to 0
 ;; state is a motion struct
-(define ((vertical-motion-behavior v-max) e s)
-  (define JUMP-V -3)
+(define ((vertical-motion-behavior jump-v v-max) e s)
   (match e
     [(message (jump))
-     (if (zero? (motion-v s)) ;; TODO: better way to detect if this is a legal time to jump
-         (transition (motion JUMP-V (motion-a s)) '())
+     (if (< (motion-v s) .2) ;; TODO: better way to detect if this is a legal time to jump
+         (transition (motion jump-v (motion-a s)) '())
          #f)]
     [(message (timer-tick))
      (define motion-n (motion (min v-max (+ (motion-v s) (motion-a s))) (motion-a s)))
@@ -368,6 +366,7 @@
 (define FRAMES-PER-SEC 24)
 
 (define GRAVITY-PER-SEC 2)
+(define JUMP-V -3)
 
 (define MAX-V 6)
 
@@ -375,7 +374,7 @@
 (make-frame 400 400)
 (spawn-timer-driver)
 (spawn-player)
-(spawn-vertical-motion (/ (* 1.0 GRAVITY-PER-SEC) FRAMES-PER-SEC) MAX-V)
+(spawn-vertical-motion (/ (* 1.0 GRAVITY-PER-SEC) FRAMES-PER-SEC) JUMP-V MAX-V)
 (spawn-clock (/ 1000 FRAMES-PER-SEC))
 (spawn-game-logic PLAYER0)
 (spawn
