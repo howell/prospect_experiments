@@ -249,6 +249,43 @@
         (cons (rect (posn p-x0 new-y0) p-w p-h) #t))
       (cons p-n #f)))
 
+(check-equal? (move-player-y (rect (posn 0 0) 1 1)
+                             1
+                             '())
+              (cons (rect (posn 0 1) 1 1) #f))
+
+(check-equal? (move-player-y (rect (posn 0 0) 1 1)
+                             1
+                             (list (rect (posn 0 1) 1 1)))
+              (cons (rect (posn 0 0) 1 1) #t))
+
+(check-equal? (move-player-y (rect (posn 1 1) 1 1)
+                             2
+                             (list (rect (posn 0 3) 30 2)))
+              (cons (rect (posn 1 2) 1 1) #t))
+
+(check-equal? (move-player-y (rect (posn 1 1) 1 1)
+                             2
+                             (list (rect (posn 0 3) 30 2)
+                                   (rect (posn 40 40) 1 1)))
+              (cons (rect (posn 1 2) 1 1) #t))
+
+(check-equal? (move-player-y (rect (posn 0 0) 1 1)
+                             10
+                             (list (rect (posn -8 6) 40 30)))
+              (cons (rect (posn 0 5) 1 1) #t))
+
+(check-equal? (move-player-y (rect (posn 0 0) 1 1)
+                             10
+                             (list (rect (posn -4 3) 20 1)))
+              (cons (rect (posn 0 2) 1 1) #t))
+
+(check-equal? (move-player-y (rect (posn 0 0) 1 1)
+                             4
+                             (list (rect (posn 0 2) 1 1)
+                                   (rect (posn 0 1) 1 1)))
+              (cons (rect (posn 0 0) 1 1) #t))
+
 ;; drawing-context rect -> void
 ;; draws a black rectangle
 (define (draw-rect dc r)
@@ -334,7 +371,7 @@
 
 (define MAX-V 6)
 
-
+#|
 (make-frame 400 400)
 (spawn-timer-driver)
 (spawn-player)
@@ -345,4 +382,4 @@
  (lambda (e s) #f)
  (void)
  (assert (static (rect (posn 0 100) 400 10))))
-
+|#
