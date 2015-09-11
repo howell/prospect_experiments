@@ -341,9 +341,9 @@
   (match-define (rect (posn x0 y0) w h) r)
   (send dc draw-rectangle x0 y0 w h))
 
-;; drawing-context rect (listof rect) -> void
+;; drawing-context rect (listof rect) goal -> void
 ;; draws the game
-(define (draw-game dc player env)
+(define (draw-game dc player env gl)
   (send dc suspend-flush)
   (send dc clear)
   (for ([r env])
@@ -422,6 +422,7 @@
     (spawn-renderer dc)))
 
 (define PLAYER0 (rect (posn 0 0) 8 32))
+(define GOAL0 (goal (rect (posn 300 300) 10 10)))
 
 (define FRAMES-PER-SEC 24)
 
@@ -438,7 +439,7 @@
 (spawn-horizontal-motion (/ (* 1.0 DX-PER-SEC) FRAMES-PER-SEC))
 (spawn-vertical-motion (/ (* 1.0 GRAVITY-PER-SEC) FRAMES-PER-SEC) JUMP-V MAX-V)
 (spawn-clock (/ 1000 FRAMES-PER-SEC))
-(spawn-game-logic PLAYER0)
+(spawn-game-logic PLAYER0 GOAL0)
 (spawn
  (lambda (e s) #f)
  (void)
