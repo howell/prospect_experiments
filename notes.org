@@ -129,3 +129,4 @@ link: bad variable linkage;
   variable phase: 0
   reference in module: "/Users/scaldwell/git/prospect_experiments/periodic_timer.rkt" in: set-timer2.2a
 ** it would be nice to not see the timer driver internals in the trace
+** does `(retract ?)` also rectract subscriptions?

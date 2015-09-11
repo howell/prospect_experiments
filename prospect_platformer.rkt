@@ -48,7 +48,6 @@
   ;; state is (U 'left 'right #f)
   (match e
     [(message (at-meta (key-press key)))
-     (printf "key\n")
      (match key
        ['left (if s
                   #f
@@ -59,11 +58,10 @@
        [#\space (transition s (message (jump)))]
        [_ #f])]
     [(message (at-meta (key-release (== s))))
-     (printf "key release\n")
      (transition #f
                  (list (retract (move-left))
                        (retract (move-right))))]
-    [_ (printf "~v\n" e) #f]))
+    [_ #f]))
 
 (define (spawn-player)
   (spawn
@@ -87,7 +85,6 @@
      (define left-removed? (not-set-empty? (matcher-project/set p-removed left-matcher)))
      (define right-added? (not-set-empty? (matcher-project/set p-added right-matcher)))
      (define right-removed? (not-set-empty? (matcher-project/set p-removed right-matcher)))
-     (printf "l-a? ~v;l-r? ~v;r-a? ~v;r-r? ~v\n" left-added? left-removed? right-added? right-removed?)
      (cond
        [left-added? (transition 'left '())]
        [right-added? (transition 'right '())]
@@ -432,7 +429,7 @@
 
 (define MAX-V 8)
 
-(define DX-PER-SEC 20)
+(define DX-PER-SEC 50)
 
 (make-frame 400 400)
 (spawn-timer-driver)
