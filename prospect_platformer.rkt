@@ -355,7 +355,7 @@
 ;; each time the player moves - (player rect) messages
 ;; state is a game-state struct
 (define ((render-behavior dc) e s)
-  (match-define (game-state old-player old-env) s)
+  (match-define (game-state old-player old-env old-goal) s)
   (match e
     [(patch p-added p-removed)
      (define added (static-rects-matcher p-added))
@@ -363,19 +363,21 @@
      (define new-env (append added (remove* removed old-env)))
      (define player-s (matcher-project/set p-added (compile-projection (player (?!)))))
      (define new-player (if (set-empty? player-s) old-player (car (set-first player-s))))
-     (draw-game dc new-player new-env)
-     (transition (game-state new-player new-env)
+     (define goal-s (matcher-project/set p-added (compile-projection (goal (?!)))))
+     (define new-goal (if (set-empty? goal-s) old-goal (car (set-first goal-s))))
+     (draw-game dc new-player new-env new-goal)
+     (transition (game-state new-player new-env new-goal)
                  '())]
     [(message (player new-player))
-     (draw-game dc new-player old-env)
-     (transition (game-state new-player old-env)
+     (draw-game dc new-player old-env old-goal)
+     (transition (game-state new-player old-env old-goal)
                  '())]
     [_ #f]))
 
 (define (spawn-renderer dc)
   (spawn
    (render-behavior dc)
-   (game-state (rect (posn 0 0) 0 0) '())
+   (game-state (rect (posn 0 0) 0 0) '() (goal (rect (posn -100 -100) 0 0)) )
    (sub (static ?))
    (sub (player ?))))
 
