@@ -185,7 +185,7 @@
       (match-let* ([(rect (posn col-x0 _) col-w _) closest-col]
                    [new-x0 (if (< p-x0 col-x0)
                                (- col-x0 p-w)
-                               (+ col-x0 (+ col-w p-w)))])
+                               (+ col-x0 col-w))])
         (cons (rect (posn new-x0 p-y0) p-w p-h) #t))
       (cons p-n #f)))
 
@@ -388,5 +388,6 @@
  (void)
  (assert (static (rect (posn 0 100) 175 10)))
  (assert (static (rect (posn 200 100) 200 10)))
- (assert (static (rect (posn 100 50) 10 50))))
+ (assert (static (rect (posn 100 50) 10 50)))
+ (assert (static (rect (posn 150 50) 50 10))))
 
