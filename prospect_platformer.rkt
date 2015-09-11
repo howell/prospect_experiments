@@ -44,6 +44,7 @@
   (define DX 4)
   (match e
     [(message (at-meta (key-press key)))
+     (printf "key ~v\n" key)
      (match key
        ["left" (transition s (message (move-x (- DX))))]
        ["right" (transition s (message (move-x DX)))]
