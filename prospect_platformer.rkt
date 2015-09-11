@@ -1,10 +1,5 @@
 #lang prospect
 
-;; every shape process registers with the world by asserting ('register label shape)
-;; a shape can move by sending the message ('move label dx dy)
-;; the game logic process listens for movements and asserts the actual locations
-;; a rendering process listens for the actual locations and draws the map accordingly
-
 (require "./geometry.rkt"
          "./periodic_timer.rkt"
          rackunit
@@ -42,7 +37,7 @@
 (struct timer-tick () #:transparent)
 
 ;; translate key presses into commands
-;; asserts (move-left)/(move-right) while the left/right arrow key is held down (SHAKEY)
+;; asserts (move-left)/(move-right) while the left/right arrow key is held down
 ;; space becomes a (jump) message
 (define (player-behavior e s)
   ;; state is (U 'left 'right #f)
