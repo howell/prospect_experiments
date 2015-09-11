@@ -48,6 +48,7 @@
   ;; state is (U 'left 'right #f)
   (match e
     [(message (at-meta (key-press key)))
+     (printf "~~key~~\n")
      (match key
        ['left (if s
                   #f
@@ -59,7 +60,8 @@
        [_ #f])]
     [(message (at-meta (key-release (== s))))
      (transition #f
-                 (retract ?))]
+                 (retract (move-left))
+                 (retract (move-right)))]
     [_ #f]))
 
 (define (spawn-player)
