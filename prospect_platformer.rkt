@@ -243,10 +243,10 @@
   (define closest-col (closest-colliding motion-rect (rect-top-left p) env))
   (if closest-col
       (match-let* ([(rect (posn _ col-y0) _ col-h) closest-col]
-                   [new-x0 (if (< p-y0 col-y0)
+                   [new-y0 (if (< p-y0 col-y0)
                                (- col-y0 col-h p-h)
                                (+ col-y0 p-h))])
-        (cons (rect (posn new-x0 p-y0) p-w p-h) #t))
+        (cons (rect (posn p-x0 new-y0) p-w p-h) #t))
       (cons p-n #f)))
 
 ;; drawing-context rect -> void
