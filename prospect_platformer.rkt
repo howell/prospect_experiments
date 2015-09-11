@@ -39,6 +39,9 @@
 
 (struct timer-tick () #:transparent)
 
+(struct victory () #:transparent)
+(struct defeat () #:transparent)
+
 ;; translate key presses into commands
 ;; asserts (move-left)/(move-right) while the left/right arrow key is held down
 ;; space becomes a (jump) message
