@@ -41,13 +41,13 @@
 ;; left and right arrow keys become (move-x dx)
 ;; space becomes (jump)
 (define (player-behavior e s)
-  (define DX 1)
+  (define DX 4)
   (match e
     [(message (at-meta (key-press key)))
      (match key
        ["left" (transition s (message (move-x (- DX))))]
        ["right" (transition s (message (move-x DX)))]
-       ["space" (transition s (message (jump)))]
+       [" " (transition s (message (jump)))]
        [_ #f])]
     [_ #f]))
 
