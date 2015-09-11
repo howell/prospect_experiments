@@ -334,6 +334,7 @@
     (init-field key-handler)
     (define/override (on-char event)
       (define key-code (send event get-key-code))
+      (printf "~v\n" key-code)
       (cond
         [(char? key-code) (key-handler (string key-code))]
         [(arrow? key-code) (key-handler (symbol->string key-code))]
