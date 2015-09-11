@@ -84,10 +84,12 @@
      (define left-removed? (not-set-empty? (matcher-project/set p-removed left-matcher)))
      (define right-added? (not-set-empty? (matcher-project/set p-added right-matcher)))
      (define right-removed? (not-set-empty? (matcher-project/set p-removed right-matcher)))
+     (printf "l-a? ~v;l-r? ~v;r-a? ~v;r-r? ~v\n" left-added? left-removed? right-added? right-removed?)
      (cond
        [left-added? (transition 'left '())]
        [right-added? (transition 'right '())]
-       [(or left-removed? right-removed?) (transition #f '())])]
+       [(or left-removed? right-removed?) (transition #f '())]
+       [else #f])]
     [(message (timer-tick))
      (match s
        ['left (transition s (message (move-x (- dx))))]
