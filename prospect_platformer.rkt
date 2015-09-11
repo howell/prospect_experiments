@@ -54,8 +54,8 @@
                   #f
                   (transition key (assert (move-left))))]
        ['right (if s
-                  #f
-                  (transition key (assert (move-right))))]
+                   #f
+                   (transition key (assert (move-right))))]
        [#\space (transition s (message (jump)))]
        [_ #f])]
     [(message (at-meta (key-release (== s))))
@@ -155,23 +155,23 @@
      (define player-n (car (move-player-x (game-state-player s) dx (game-state-env s))))
      (cond
        [(overlapping-rects? player-n (game-state-goal s))
-         (quit (list (assert (victory))))]
+        (quit (list (assert (victory))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
         (quit (list (assert (defeat))))]
        [else (transition (game-state player-n (game-state-env s) (game-state-goal s))
-                 (list (message (player player-n))))])]
+                         (list (message (player player-n))))])]
     [(message (move-y dy))
      (match-define (cons player-n col?) (move-player-y (game-state-player s) dy (game-state-env s)))
      (cond
        [(overlapping-rects? player-n (game-state-goal s))
-         (quit (list (assert (victory))))]
+        (quit (list (assert (victory))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
         (quit (list (assert (defeat))))]
        [else (transition (game-state player-n (game-state-env s) (game-state-goal s))
-                 (cons (message (player player-n))
-                       (if col?
-                           (list (message (y-collision)))
-                           '())))])]
+                         (cons (message (player player-n))
+                               (if col?
+                                   (list (message (y-collision)))
+                                   '())))])]
     [(patch p-added p-removed)
      (define removed (static-rects-matcher p-removed))
      (define added (static-rects-matcher p-added))
@@ -353,16 +353,16 @@
 
 (define (star-points scl)
   (map (lambda (pr) (cons (* scl (car pr)) (* scl (cdr pr))))
-  `((0 . 10)
-    (2 . 6)
-    (0 . 4)
-    (3 . 4)
-    (5 . 0)
-    (7 . 4)
-    (10 . 4)
-    (8 . 6)
-    (10 . 10)
-    (5 . 7))))
+       `((0 . 10)
+         (2 . 6)
+         (0 . 4)
+         (3 . 4)
+         (5 . 0)
+         (7 . 4)
+         (10 . 4)
+         (8 . 6)
+         (10 . 10)
+         (5 . 7))))
 
 ;; drawing-context goal -> void
 ;; draws the goal as a 3x3 yellow star
@@ -407,9 +407,19 @@
      (define new-player (if (set-empty? player-s) old-player (car (set-first player-s))))
      (define goal-s (matcher-project/set p-added (compile-projection (goal (?!)))))
      (define new-goal (if (set-empty? goal-s) old-goal (goal (car (set-first goal-s)))))
-     (draw-game dc new-player new-env new-goal)
-     (transition (game-state new-player new-env new-goal)
-                 '())]
+     (define victory? (not-set-empty? (matcher-project/set (compile-projection (victory)))))
+     (define defeat? (not-set-empty? (matcher-project/set (compile-projection (defeat)))))
+     (cond
+       [victory?
+        ;; draw
+        (quit '())]
+       [defeat?
+         ;; draw
+         (quit '())]
+       [else
+        (draw-game dc new-player new-env new-goal)
+        (transition (game-state new-player new-env new-goal)
+                    '())])]
     [(message (player new-player))
      (draw-game dc new-player old-env old-goal)
      (transition (game-state new-player old-env old-goal)
