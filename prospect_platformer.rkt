@@ -63,7 +63,7 @@
 ;; when a (y-collision) is detected reset velocity to 0
 ;; state is a motion struct
 (define ((vertical-motion-behavior v-max) e s)
-  (define JUMP-V -10)
+  (define JUMP-V -3)
   (match e
     [(message (jump))
      (if (zero? (motion-v s)) ;; TODO: better way to detect if this is a legal time to jump
