@@ -495,7 +495,7 @@
     (spawn-renderer dc)))
 
 (define PLAYER0 (rect (posn 0 0) 8 32))
-(define GOAL0 (goal (rect (posn 350 50) 50 50)))
+(define GOAL0 (goal (rect (posn 500 150) 50 50)))
 
 (define FRAMES-PER-SEC 24)
 
