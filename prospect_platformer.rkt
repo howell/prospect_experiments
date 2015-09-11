@@ -397,8 +397,7 @@
   (send dc clear)
   (send dc set-text-mode 'solid)
   (send dc set-text-foreground color)
-  (send dc set-text-background color)
-  (send dc draw-text text 100 500)
+  (send dc draw-text text (/ (posn-x bot-right) 4) (/ (posn-y bot-right) 2))
   (send dc resume-flush))
 
 (define (draw-victory dc)
