@@ -154,7 +154,7 @@
     [(message (move-x dx))
      (define player-n (car (move-player-x (game-state-player s) dx (game-state-env s))))
      (cond
-       [(overlapping-rects? player-n (game-state-goal s))
+       [(overlapping-rects? player-n (goal-rect (game-state-goal s)))
         (quit (list (assert (victory))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
         (quit (list (assert (defeat))))]
@@ -163,7 +163,7 @@
     [(message (move-y dy))
      (match-define (cons player-n col?) (move-player-y (game-state-player s) dy (game-state-env s)))
      (cond
-       [(overlapping-rects? player-n (game-state-goal s))
+       [(overlapping-rects? player-n (goal-rect (game-state-goal s)))
         (quit (list (assert (victory))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
         (quit (list (assert (defeat))))]
@@ -422,8 +422,8 @@
      (define new-player (if (set-empty? player-s) old-player (car (set-first player-s))))
      (define goal-s (matcher-project/set p-added (compile-projection (goal (?!)))))
      (define new-goal (if (set-empty? goal-s) old-goal (goal (car (set-first goal-s)))))
-     (define victory? (not-set-empty? (matcher-project/set (compile-projection (victory)))))
-     (define defeat? (not-set-empty? (matcher-project/set (compile-projection (defeat)))))
+     (define victory? (not-set-empty? (matcher-project/set p-added (compile-projection (victory)))))
+     (define defeat? (not-set-empty? (matcher-project/set p-added (compile-projection (defeat)))))
      (cond
        [victory?
         (draw-victory dc)
@@ -447,7 +447,9 @@
    (game-state (rect (posn 0 0) 0 0) '() (goal (rect (posn -100 -100) 0 0)) )
    (sub (static ?))
    (sub (player ?))
-   (sub (goal ?))))
+   (sub (goal ?))
+   (sub (defeat))
+   (sub (victory))))
 
 ;; gui stuff
 (define game-canvas%
