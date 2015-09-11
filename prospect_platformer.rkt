@@ -103,7 +103,6 @@
   (match e
     [(message (move-x dx))
      (define player-n (car (move-player-x (game-state-player s) dx (game-state-env s))))
-     (printf "\n\n~v --> ~v\n\n" (game-state-player s) player-n)
      (transition (game-state player-n (game-state-env s))
                  (list (message (player player-n))))]
     [(message (move-y dy))
@@ -238,8 +237,8 @@
   (match-define (and p-n (rect (posn pn-x0 pn-y0) pn-w pn-h)) (move-rect p 0 dy))
   (match-define motion-rect
     (if (negative? dy)
-        (rect (posn p-x0 p-y0) p-w (+ (abs dy) p-h))
-        (rect (posn pn-x0 pn-y0) p-w (+ (abs dy) p-h))))
+        (rect (posn pn-x0 pn-y0) p-w (+ (abs dy) p-h))
+        (rect (posn p-x0 p-y0) p-w (+ (abs dy) p-h))))
   (define closest-col (closest-colliding motion-rect (rect-top-left p) env))
   (if closest-col
       (match-let* ([(rect (posn _ col-y0) _ col-h) closest-col]
@@ -371,7 +370,7 @@
 
 (define MAX-V 6)
 
-#|
+
 (make-frame 400 400)
 (spawn-timer-driver)
 (spawn-player)
@@ -382,4 +381,4 @@
  (lambda (e s) #f)
  (void)
  (assert (static (rect (posn 0 100) 400 10))))
-|#
+
