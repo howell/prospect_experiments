@@ -113,7 +113,7 @@
 (define ((vertical-motion-behavior jump-v v-max) e s)
   (match e
     [(message (jump))
-     (if (< (motion-v s) .2) ;; TODO: better way to detect if this is a legal time to jump
+     (if (< (abs (motion-v s)) .4) ;; TODO: better way to detect if this is a legal time to jump
          (transition (motion jump-v (motion-a s)) '())
          #f)]
     [(message (timer-tick))
@@ -506,7 +506,7 @@
 
 (define DX-PER-SEC 75)
 
-(make-frame 1000 1000)
+(make-frame 600 400)
 (spawn-timer-driver)
 (spawn-player)
 (spawn-horizontal-motion (/ (* 1.0 DX-PER-SEC) FRAMES-PER-SEC))
