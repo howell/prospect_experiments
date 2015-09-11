@@ -75,8 +75,8 @@
      (transition (motion 0 (motion-a s)) '())]
     [_ #f]))
 
-(define (spawn-vertical-motion gravity max-v)
-  (spawn (vertical-motion-behavior max-v)
+(define (spawn-vertical-motion gravity jump-v max-v)
+  (spawn (vertical-motion-behavior jump-v max-v)
          (motion 0 gravity)
          (sub (jump))
          (sub (timer-tick))
@@ -365,10 +365,10 @@
 
 (define FRAMES-PER-SEC 24)
 
-(define GRAVITY-PER-SEC 2)
+(define GRAVITY-PER-SEC 3)
 (define JUMP-V -3)
 
-(define MAX-V 6)
+(define MAX-V 8)
 
 
 (make-frame 400 400)
