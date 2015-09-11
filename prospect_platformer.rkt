@@ -341,10 +341,16 @@
       (define key-code (send event get-key-code))
       (printf "~v\n" key-code)
       (cond
-        [(char? key-code) (key-handler (string key-code))]
-        [(arrow? key-code) (key-handler (symbol->string key-code))]
+        [(space? key-code) (key-handler (string key-code))]
+        [(or (arrow? key-code) (release? key-code)) (key-handler (symbol->string key-code))]
         [else (void)]))
     (super-new)))
+
+(define (space? key)
+  (equal? key #\space))
+
+(define (release? key)
+  (equal? key 'release))
 
 (define (arrow? key)
   (match key
