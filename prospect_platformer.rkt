@@ -96,7 +96,7 @@
        [_ #f])]
     [_ #f]))
 
-(define (spawn-horizontal-motion-behavior dx)
+(define (spawn-horizontal-motion dx)
   (spawn (horizontal-motion-behavior dx)
          #f
          (sub (move-left))
@@ -428,10 +428,12 @@
 
 (define MAX-V 8)
 
+(define DX-PER-SEC 5)
 
 (make-frame 400 400)
 (spawn-timer-driver)
 (spawn-player)
+(spawn-horizontal-motion (/ (* 1.0 DX-PER-SEC) FRAMES-PER-SEC))
 (spawn-vertical-motion (/ (* 1.0 GRAVITY-PER-SEC) FRAMES-PER-SEC) JUMP-V MAX-V)
 (spawn-clock (/ 1000 FRAMES-PER-SEC))
 (spawn-game-logic PLAYER0)
