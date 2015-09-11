@@ -516,8 +516,8 @@
 (spawn
  (lambda (e s) #f)
  (void)
- (assert (static (rect (posn 0 100) 175 10)))
- (assert (static (rect (posn 200 100) 200 10)))
+ (assert (static (rect (posn 0 200) 150 10)))
+ (assert (static (rect (posn 400 200) 1000 10)))
  (assert (static (rect (posn 100 50) 10 50)))
  (assert (static (rect (posn 150 50) 50 10))))
 
