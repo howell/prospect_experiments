@@ -385,7 +385,7 @@
     (define/override (on-char event)
       (define key-code (send event get-key-code))
       (define release-code (send event get-key-release-code))
-      (printf "~v\n" key-code)
+      #;(printf "~v\n" key-code)
       (cond
         [(release? key-code) (key-handler (key-release release-code))]
         [else (key-handler (key-press key-code))]))
@@ -427,7 +427,7 @@
 
 (define MAX-V 8)
 
-(define DX-PER-SEC 5)
+(define DX-PER-SEC 20)
 
 (make-frame 400 400)
 (spawn-timer-driver)
