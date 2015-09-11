@@ -149,7 +149,7 @@
 ;; asserts the location of the goal as (goal g)
 ;; quits and asserts (victory) if the player reaches the goal
 ;; quits and asserts (defeat) if the player leaves the map
-(define ((game-logic-behavior bot-right) e s)
+(define (game-logic-behavior e s)
   (match e
     [(message (move-x dx))
      (define player-n (car (move-player-x (game-state-player s) dx (game-state-env s))))
@@ -392,6 +392,21 @@
   (draw-rect dc player "blue")
   (send dc resume-flush))
 
+(define (big-text dc text color)
+  (send dc suspend-flush)
+  (send dc clear)
+  (send dc set-text-mode 'solid)
+  (send dc set-text-foreground color)
+  (send dc set-text-background color)
+  (send dc draw-text text 100 500)
+  (send dc resume-flush))
+
+(define (draw-victory dc)
+  (big-text dc "Victory!" "green"))
+
+(define (draw-defeat dc)
+  (big-text dc "Defeat." "red"))
+
 ;; draw the static objects defined by (static rect) and (goal rect) assertions and update the screen
 ;; each time the player moves - (player rect) messages
 ;; if (victory) or (defeat) is detected then quit and draw something special
@@ -411,10 +426,10 @@
      (define defeat? (not-set-empty? (matcher-project/set (compile-projection (defeat)))))
      (cond
        [victory?
-        ;; draw
+        (draw-victory dc)
         (quit '())]
        [defeat?
-         ;; draw
+         (draw-defeat dc)
          (quit '())]
        [else
         (draw-game dc new-player new-env new-goal)
@@ -458,6 +473,8 @@
     [(or 'left 'right 'up 'down) #t]
     [_ #f]))
 
+(define bot-right #f)
+
 (define (make-frame width height)
   (parameterize ((current-eventspace (make-eventspace)))
     (define frame (new frame%
@@ -469,8 +486,8 @@
            [parent frame]
            [key-handler send-ground-message]))
     (send frame show #t)
-    #;(define-values (x-max y-max) (send canvas get-client-size))
-    #;(set-box! bot-right (posn x-max y-max))
+    (define-values (x-max y-max) (send canvas get-client-size))
+    (set! bot-right (posn x-max y-max))
     (define dc (send canvas get-dc))
     (spawn-renderer dc)))
 
