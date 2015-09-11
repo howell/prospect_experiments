@@ -244,8 +244,8 @@
   (if closest-col
       (match-let* ([(rect (posn _ col-y0) _ col-h) closest-col]
                    [new-y0 (if (< p-y0 col-y0)
-                               (- col-y0 col-h p-h)
-                               (+ col-y0 p-h))])
+                               (- col-y0 p-h)
+                               (+ col-y0 col-h))])
         (cons (rect (posn p-x0 new-y0) p-w p-h) #t))
       (cons p-n #f)))
 
