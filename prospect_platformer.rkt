@@ -143,6 +143,7 @@
 ;; it process move-x and move-y commands. When a collision along the y-axis occurs it
 ;; sends a (y-collision) message
 ;; sends a message with the location of the player every time it moves, (player rect)
+;; asserts the location of the goal as (goal g)
 (define (game-logic-behavior e s)
   (match e
     [(message (move-x dx))
@@ -352,12 +353,12 @@
   (send dc set-smoothing 'aligned)
   (send dc draw-polygon (star-points 30) x0 y0))
 
-;; drawing-context rect -> void
+;; drawing-context rect color -> void
 ;; draws a black rectangle
-(define (draw-rect dc r)
+(define (draw-rect dc r color)
   (match-define (rect (posn x0 y0) w h) r)
-  (send dc set-brush "black" 'solid)
-  (send dc set-pen "black" 1 'solid)
+  (send dc set-brush color 'solid)
+  (send dc set-pen color 1 'solid)
   (send dc draw-rectangle x0 y0 w h))
 
 ;; drawing-context rect (listof rect) goal -> void
@@ -366,12 +367,12 @@
   (send dc suspend-flush)
   (send dc clear)
   (for ([r env])
-    (draw-rect dc r))
+    (draw-rect dc r "black"))
   (draw-goal dc gl)
-  (draw-rect dc player)
+  (draw-rect dc player "blue")
   (send dc resume-flush))
 
-;; draw the static objects defined by (static rect) assertions and update the screen
+;; draw the static objects defined by (static rect) and (goal rect) assertions and update the screen
 ;; each time the player moves - (player rect) messages
 ;; state is a game-state struct
 (define ((render-behavior dc) e s)
@@ -399,7 +400,8 @@
    (render-behavior dc)
    (game-state (rect (posn 0 0) 0 0) '() (goal (rect (posn -100 -100) 0 0)) )
    (sub (static ?))
-   (sub (player ?))))
+   (sub (player ?))
+   (sub (goal ?))))
 
 ;; gui stuff
 (define game-canvas%
@@ -442,7 +444,7 @@
     (spawn-renderer dc)))
 
 (define PLAYER0 (rect (posn 0 0) 8 32))
-(define GOAL0 (goal (rect (posn 300 300) 10 10)))
+(define GOAL0 (goal (rect (posn 0 0) 10 10)))
 
 (define FRAMES-PER-SEC 24)
 
