@@ -147,6 +147,8 @@
 ;; sends a (y-collision) message
 ;; sends a message with the location of the player every time it moves, (player rect)
 ;; asserts the location of the goal as (goal g)
+;; quits and asserts (victory) if the player reaches the goal
+;; quits and asserts (defeat) if the player leaves the map
 (define ((game-logic-behavior bot-right) e s)
   (match e
     [(message (move-x dx))
@@ -392,8 +394,9 @@
 
 ;; draw the static objects defined by (static rect) and (goal rect) assertions and update the screen
 ;; each time the player moves - (player rect) messages
-;; state is a game-state struct
+;; if (victory) or (defeat) is detected then quit and draw something special
 (define ((render-behavior dc) e s)
+  ;; state is a game-state struct
   (match-define (game-state old-player old-env old-goal) s)
   (match e
     [(patch p-added p-removed)
