@@ -431,7 +431,7 @@
 
 (define DX-PER-SEC 50)
 
-(make-frame 400 400)
+(make-frame 1000 1000)
 (spawn-timer-driver)
 (spawn-player)
 (spawn-horizontal-motion (/ (* 1.0 DX-PER-SEC) FRAMES-PER-SEC))
