@@ -61,8 +61,8 @@
     [(message (at-meta (key-release (== s))))
      (printf "key release\n")
      (transition #f
-                 (retract (move-left))
-                 (retract (move-right)))]
+                 (list (retract (move-left))
+                       (retract (move-right))))]
     [_ (printf "~v\n" e) #f]))
 
 (define (spawn-player)
