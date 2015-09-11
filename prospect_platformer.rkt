@@ -335,12 +335,13 @@
                                    (rect (posn 0 1) 1 1)))
               (cons (rect (posn 0 0) 1 1) #t))
 
-(define star-points
-  '((1 . 0)
-    (0 . 1)
-    (2 . 1)
-    (0 . 2)
-    (2 . 2)))
+(define (star-points scl)
+  (define mid (/ scl 2))
+  `((,mid . 0)
+    (0 . ,mid)
+    (,scl . ,mid)
+    (0 . ,scl)
+    (,scl . ,scl)))
 
 ;; drawing-context goal -> void
 ;; draws the goal as a 3x3 yellow star
@@ -349,7 +350,7 @@
   (send dc set-brush "yellow" 'solid)
   (send dc set-pen "yellow" 1 'solid)
   (send dc set-smoothing 'aligned)
-  (send dc draw-polygon star-points x0 y0))
+  (send dc draw-polygon (star-points 30) x0 y0))
 
 ;; drawing-context rect -> void
 ;; draws a black rectangle
