@@ -37,10 +37,11 @@
 
 (struct timer-tick () #:transparent)
 
-;; translate key presses into commands (messages)
-;; left and right arrow keys become (move-x dx)
-;; space becomes (jump)
+;; translate key presses into commands
+;; asserts (move-x dx) while the left/right arrow key is held down (SHAKEY)
+;; space becomes a (jump) message
 (define (player-behavior e s)
+  ;; state is the number of keys currently held down
   (define DX 4)
   (match e
     [(message (at-meta (key-press key)))
@@ -54,7 +55,7 @@
 (define (spawn-player)
   (spawn
    player-behavior
-   (void)
+   0
    (sub (key-press ?) #:meta-level 1)))
 
 ;; the vertical motion behavior tries to move the player downward by sending (move-y dy)
