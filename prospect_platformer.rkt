@@ -147,7 +147,7 @@
   (match e
     [(message (move-x dx))
      (define player-n (car (move-player-x (game-state-player s) dx (game-state-env s))))
-     (transition (game-state player-n (game-state-env s))
+     (transition (game-state player-n (game-state-env s) (game-state-goal s))
                  (list (message (player player-n))))]
     [(message (move-y dy))
      (match-define (cons player-n col?) (move-player-y (game-state-player s) dy (game-state-env s)))
