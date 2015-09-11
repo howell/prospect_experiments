@@ -28,6 +28,9 @@
 (struct player (rect) #:transparent)
 
 ;; rect
+(struct goal (rect) #:transparent)
+
+;; rect
 (struct static (rect) #:transparent)
 
 ;; key
