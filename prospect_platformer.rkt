@@ -397,7 +397,8 @@
   (send dc clear)
   (send dc set-text-mode 'solid)
   (send dc set-text-foreground color)
-  (send dc set-scale 100 100)
+  (define fnt (make-object font% 100 'default))
+  (send dc set-font fnt)
   (send dc draw-text text (/ (posn-x bot-right) 4) (/ (posn-y bot-right) 2))
   (send dc resume-flush))
 
