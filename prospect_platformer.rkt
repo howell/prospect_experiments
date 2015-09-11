@@ -335,10 +335,28 @@
                                    (rect (posn 0 1) 1 1)))
               (cons (rect (posn 0 0) 1 1) #t))
 
+(define star-points
+  '((1 . 0)
+    (0 . 1)
+    (2 . 1)
+    (0 . 2)
+    (2 . 2)))
+
+;; drawing-context goal -> void
+;; draws the goal as a 3x3 yellow star
+(define (draw-goal dc g)
+  (match-define (goal (rect (posn x0 y0) _ _)) g)
+  (send dc set-brush "yellow" 'solid)
+  (send dc set-pen "yellow" 1 'solid)
+  (send dc set-smoothing 'aligned)
+  (send dc draw-polygon star-points x0 y0))
+
 ;; drawing-context rect -> void
 ;; draws a black rectangle
 (define (draw-rect dc r)
   (match-define (rect (posn x0 y0) w h) r)
+  (send dc set-brush "black" 'solid)
+  (send dc set-pen "black" 1 'solid)
   (send dc draw-rectangle x0 y0 w h))
 
 ;; drawing-context rect (listof rect) goal -> void
@@ -348,6 +366,7 @@
   (send dc clear)
   (for ([r env])
     (draw-rect dc r))
+  (draw-goal dc gl)
   (draw-rect dc player)
   (send dc resume-flush))
 
