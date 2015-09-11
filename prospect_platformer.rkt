@@ -42,23 +42,30 @@
 ;; asserts (move-x dx) while the left/right arrow key is held down (SHAKEY)
 ;; space becomes a (jump) message
 (define (player-behavior e s)
-  ;; state is the number of keys currently held down
+  ;; state is (U 'left 'right #f)
   (define DX 4)
   (match e
     [(message (at-meta (key-press key)))
      (match key
-       ["left" (transition s (message (move-x (- DX))))]
-       ["right" (transition s (message (move-x DX)))]
-       ["release"
-       [" " (transition s (message (jump)))]
+       ['left (if s
+                  #f
+                  (transition key (assert (move-x (- DX)))))]
+       ['right (if s
+                  #f
+                  (transition key (assert (move-x DX))))]
+       [#\space (transition s (message (jump)))]
        [_ #f])]
+    [(message (at-meta (key-release (== s))))
+     (transition #f
+                 (retract ?))]
     [_ #f]))
 
 (define (spawn-player)
   (spawn
    player-behavior
    0
-   (sub (key-press ?) #:meta-level 1)))
+   (sub (key-press ?) #:meta-level 1)
+   (sub (key-release ?) #:meta-level 1)))
 
 ;; the vertical motion behavior tries to move the player downward by sending (move-y dy)
 ;; this happens periodically when the timer sends a (timer-tick) message
@@ -346,7 +353,7 @@
       (printf "~v\n" key-code)
       (cond
         [(release? key-code) (key-handler (key-release release-code))]
-        [else (key-handler (key-press key-coede))]))
+        [else (key-handler (key-press key-code))]))
     (super-new)))
 
 (define (space? key)
@@ -369,7 +376,7 @@
     (define canvas
       (new game-canvas%
            [parent frame]
-           [key-handler (lambda (key) (send-ground-message (key-press key)))]))
+           [key-handler send-ground-message]))
     (send frame show #t)
     #;(define-values (x-max y-max) (send canvas get-client-size))
     #;(set-box! bot-right (posn x-max y-max))
