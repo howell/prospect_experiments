@@ -147,19 +147,29 @@
 ;; sends a (y-collision) message
 ;; sends a message with the location of the player every time it moves, (player rect)
 ;; asserts the location of the goal as (goal g)
-(define (game-logic-behavior e s)
+(define ((game-logic-behavior bot-right) e s)
   (match e
     [(message (move-x dx))
      (define player-n (car (move-player-x (game-state-player s) dx (game-state-env s))))
-     (transition (game-state player-n (game-state-env s) (game-state-goal s))
-                 (list (message (player player-n))))]
+     (cond
+       [(overlapping-rects? player-n (game-state-goal s))
+         (quit (list (assert (victory))))]
+       [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
+        (quit (list (assert (defeat))))]
+       [else (transition (game-state player-n (game-state-env s) (game-state-goal s))
+                 (list (message (player player-n))))])]
     [(message (move-y dy))
      (match-define (cons player-n col?) (move-player-y (game-state-player s) dy (game-state-env s)))
-     (transition (game-state player-n (game-state-env s) (game-state-goal s))
+     (cond
+       [(overlapping-rects? player-n (game-state-goal s))
+         (quit (list (assert (victory))))]
+       [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
+        (quit (list (assert (defeat))))]
+       [else (transition (game-state player-n (game-state-env s) (game-state-goal s))
                  (cons (message (player player-n))
                        (if col?
                            (list (message (y-collision)))
-                           '())))]
+                           '())))])]
     [(patch p-added p-removed)
      (define removed (static-rects-matcher p-removed))
      (define added (static-rects-matcher p-added))
