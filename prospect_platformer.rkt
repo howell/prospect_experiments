@@ -227,6 +227,11 @@
                                    (rect (posn 1 0) 1 1)))
               (cons (rect (posn 0 0) 1 1) #t))
 
+(check-equal? (move-player-x (rect (posn 1 0) 1 1)
+                             -1
+                             (list (rect (posn 0 0) 1 1)))
+              (cons (rect (posn 1 0) 1 1) #t))
+
 ;; rect num [listof rect] -> (pair rect bool)
 ;; attempt to move the player given by the first argument along the y-axis
 ;; when a collision occurs move as far as possible without colliding
