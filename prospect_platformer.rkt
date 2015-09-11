@@ -499,12 +499,12 @@
 
 (define FRAMES-PER-SEC 24)
 
-(define GRAVITY-PER-SEC 4)
+(define GRAVITY-PER-SEC 5)
 (define JUMP-V -3)
 
 (define MAX-V 8)
 
-(define DX-PER-SEC 50)
+(define DX-PER-SEC 75)
 
 (make-frame 1000 1000)
 (spawn-timer-driver)
