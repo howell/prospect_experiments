@@ -46,7 +46,6 @@
 ;; space becomes a (jump) message
 (define (player-behavior e s)
   ;; state is (U 'left 'right #f)
-  (define DX 4)
   (match e
     [(message (at-meta (key-press key)))
      (match key
@@ -66,7 +65,7 @@
 (define (spawn-player)
   (spawn
    player-behavior
-   0
+   #f
    (sub (key-press ?) #:meta-level 1)
    (sub (key-release ?) #:meta-level 1)))
 
