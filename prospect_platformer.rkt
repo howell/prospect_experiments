@@ -22,6 +22,9 @@
 ;; int
 (struct move-y (dy) #:transparent)
 
+(struct move-left () #:transparent)
+(struct move-right () #:transparent)
+
 (struct jump () #:transparent)
 
 (struct y-collision () #:transparent)
@@ -39,7 +42,7 @@
 (struct timer-tick () #:transparent)
 
 ;; translate key presses into commands
-;; asserts (move-x dx) while the left/right arrow key is held down (SHAKEY)
+;; asserts (move-left)/(move-right) while the left/right arrow key is held down (SHAKEY)
 ;; space becomes a (jump) message
 (define (player-behavior e s)
   ;; state is (U 'left 'right #f)
@@ -49,10 +52,10 @@
      (match key
        ['left (if s
                   #f
-                  (transition key (assert (move-x (- DX)))))]
+                  (transition key (assert (move-left))))]
        ['right (if s
                   #f
-                  (transition key (assert (move-x DX))))]
+                  (transition key (assert (move-right))))]
        [#\space (transition s (message (jump)))]
        [_ #f])]
     [(message (at-meta (key-release (== s))))
@@ -66,6 +69,32 @@
    0
    (sub (key-press ?) #:meta-level 1)
    (sub (key-release ?) #:meta-level 1)))
+
+(define left-matcher (compile-projection (move-left)))
+(define right-matcher (compile-projection (move-right)))
+(define (not-set-empty? s) (not (set-empty? s)))
+
+;; the horizontal motion behavior tries to move the player along the x-axis
+;; each timer tick while (move-left) or (move-right) is being asserted
+(define ((horizontal-motion-behavior dx) e s)
+  ;; state is (U #f 'left 'right)
+  (match e
+    [(patch p-added p-removed)
+     (define left-added? (not-set-empty? (matcher-project/set p-added left-matcher)))
+     (define left-removed? (not-set-empty? (matcher-project/set p-removed left-matcher)))
+     (define right-added? (not-set-empty? (matcher-project/set p-added right-matcher)))
+     (define right-removed? (not-set-empty? (matcher-project/set p-removed right-matcher)))
+     (cond
+       [left-added? (transition 'left '())]
+       [right-added? (transition 'right '())]
+       [(or left-removed? right-removed?) (transition #f '())])]
+    [(message (timer-tick))
+     (match s
+       ['left (transition s (message (move-x (- dx))))]
+       ['right (transition s (message (move-x dx)))]
+       [_ #f])]
+    [_ #f]))
+    
 
 ;; the vertical motion behavior tries to move the player downward by sending (move-y dy)
 ;; this happens periodically when the timer sends a (timer-tick) message
