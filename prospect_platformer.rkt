@@ -75,7 +75,8 @@
 (define (not-set-empty? s) (not (set-empty? s)))
 
 ;; the horizontal motion behavior tries to move the player along the x-axis
-;; each timer tick while (move-left) or (move-right) is being asserted
+;; by sending the messsage (move-x +-dx) each timer tick while (move-left) or
+;; (move-right) is being asserted
 (define ((horizontal-motion-behavior dx) e s)
   ;; state is (U #f 'left 'right)
   (match e
@@ -94,7 +95,13 @@
        ['right (transition s (message (move-x dx)))]
        [_ #f])]
     [_ #f]))
-    
+
+(define (spawn-horizontal-motion-behavior dx)
+  (spawn (horizontal-motion-behavior dx)
+         #f
+         (sub (move-left))
+         (sub (move-right))
+         (sub (timer-tick))))
 
 ;; the vertical motion behavior tries to move the player downward by sending (move-y dy)
 ;; this happens periodically when the timer sends a (timer-tick) message
