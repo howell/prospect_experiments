@@ -28,9 +28,6 @@
 (struct player (rect) #:transparent)
 
 ;; rect
-(struct goal (rect) #:transparent)
-
-;; rect
 (struct static (rect) #:transparent)
 
 ;; key
@@ -131,8 +128,8 @@
 (define (spawn-clock period-ms)
   (periodically period-ms (lambda () (message (timer-tick)))))
 
-;; rect * (listof rect)
-(struct game-state (player env) #:transparent)
+;; rect * (listof rect) * rect
+(struct game-state (player env goal) #:transparent)
 
 (define static-detector (compile-projection (static (?!))))
 (define static-rects-matcher
@@ -151,7 +148,7 @@
                  (list (message (player player-n))))]
     [(message (move-y dy))
      (match-define (cons player-n col?) (move-player-y (game-state-player s) dy (game-state-env s)))
-     (transition (game-state player-n (game-state-env s))
+     (transition (game-state player-n (game-state-env s) (game-state-goal s))
                  (cons (message (player player-n))
                        (if col?
                            (list (message (y-collision)))
@@ -160,11 +157,11 @@
      (define removed (static-rects-matcher p-removed))
      (define added (static-rects-matcher p-added))
      (define new-env (append added (remove* removed (game-state-env s))))
-     (transition (game-state (game-state-player s) new-env) '())]
+     (transition (game-state (game-state-player s) new-env (game-state-goal s)) '())]
     [_ #f]))
 
-;; rect -> spawn
-(define (spawn-game-logic player0)
+;; rect rect -> spawn
+(define (spawn-game-logic player0 goal)
   (spawn game-logic-behavior
          (game-state player0 '())
          (sub (move-x ?))
