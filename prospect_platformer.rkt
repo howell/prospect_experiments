@@ -519,6 +519,6 @@
  (void)
  (assert (static (rect (posn 0 200) 150 10)))
  (assert (static (rect (posn 400 200) 1000 10)))
- (assert (static (rect (posn 200 150) 50 10)))
+ (assert (static (rect (posn 200 178) 50 10)))
  (assert (static (rect (posn 300 150) 50 10))))
 
