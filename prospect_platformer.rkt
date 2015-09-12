@@ -109,23 +109,24 @@
 ;; this happens periodically when the timer sends a (timer-tick) message
 ;; when a (jump) message is received, temporarily move the player upward
 ;; when a (y-collision) is detected reset velocity to 0
-;; state is a motion struct
+;; state is a (cons bool motion)
 (define ((vertical-motion-behavior jump-v v-max) e s)
+  (match-define (cons jumping? motion-old) s)
   (match e
     [(message (jump))
-     (if (< (abs (motion-v s)) .4) ;; TODO: better way to detect if this is a legal time to jump
-         (transition (motion jump-v (motion-a s)) '())
+     (if (and (not jumping?) (< (abs (motion-v motion-old)) .4)) ;; TODO: better way to detect if this is a legal time to jump
+         (transition (cons #t (motion jump-v (motion-a motion-old))) '())
          #f)]
     [(message (timer-tick))
-     (define motion-n (motion (min v-max (+ (motion-v s) (motion-a s))) (motion-a s)))
-     (transition motion-n (list (message (move-y (motion-v s)))))]
+     (define motion-n (motion (min v-max (+ (motion-v motion-old) (motion-a motion-old))) (motion-a motion-old)))
+     (transition (cons jumping? motion-n) (list (message (move-y (motion-v motion-old)))))]
     [(message (y-collision))
-     (transition (motion 0 (motion-a s)) '())]
+     (transition (cons #f (motion 0 (motion-a motion-old))) '())]
     [_ #f]))
 
 (define (spawn-vertical-motion gravity jump-v max-v)
   (spawn (vertical-motion-behavior jump-v max-v)
-         (motion 0 gravity)
+         (cons #f (motion 0 gravity))
          (sub (jump))
          (sub (timer-tick))
          (sub (y-collision))))
