@@ -501,7 +501,7 @@
 (define FRAMES-PER-SEC 24)
 
 (define GRAVITY-PER-SEC 5)
-(define JUMP-V -3)
+(define JUMP-V -4)
 
 (define MAX-V 8)
 
