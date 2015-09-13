@@ -523,3 +523,22 @@
  (assert (static (rect (posn 200 178) 50 10)))
  (assert (static (rect (posn 300 150) 50 10))))
 
+(spawn
+ (local
+   (define x0 275)
+   (define y0 50)
+   (define my-w 10)
+   (define my-h 50)
+   (lambda (e s)
+     (match-define (cons n (posn old-x old-y)) s)
+     (match e
+       [(message (timer-tick))
+        (define new-y (+ y0 (abs (sin  (/ n 50.0)))))
+        (transition (cons (add1 n) (posn old-x new-y))
+                    (patch-seq (retract (static ?))
+                               (assert (static (rect (posn old-x new-y) my-w my-h)))))]
+       [_ #f])))
+ (cons 0 (posn x0 y0))
+ (sub (timer-tick))
+ (assert (static (rect (posn 0 0) my-w my-h))))
+
