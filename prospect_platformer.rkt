@@ -489,6 +489,7 @@
       (new game-canvas%
            [parent frame]
            [key-handler send-ground-message]))
+    (send canvas focus)
     (send frame show #t)
     (define-values (x-max y-max) (send canvas get-client-size))
     (set! bot-right (posn x-max y-max))
