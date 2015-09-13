@@ -532,8 +532,7 @@
      (match-define (cons n (posn old-x old-y)) s)
      (match e
        [(message (timer-tick))
-        (define new-y (+ y0 (+ 100 (abs (- (modulo n 100) 50)))))
-        #;(define new-y (+ y0 (* 100 (abs (sin  (/ n 50.0))))))
+        (define new-y (+ y0 (+ 50 (abs (- (modulo n 100) 50)))))
         (transition (cons (add1 n) (posn old-x new-y))
                     (patch-seq (retract (static ?))
                                (assert (static (rect (posn old-x new-y) my-w my-h)))))]
