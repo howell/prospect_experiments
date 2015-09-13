@@ -190,13 +190,6 @@
          (assert (player player0))
          (assert goal0)))
 
-;; num -> (U -1 0 1)
-(define (my-sgn n)
-  (cond
-    [(zero? n) 0]
-    [(negative? n) -1]
-    [else 1]))
-
 ;; rect posn (listof rect) -> (U rect #f)
 ;; find the colliding rectange that is closest to the given position, if any exist
 (define (closest-colliding r p rs)
