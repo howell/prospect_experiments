@@ -23,7 +23,7 @@
 ;; Horizontal Motion Process:
 ;;   Interprets the output of the Player Process into commands for the Game Logic Process.
 ;;   Sends the messsage (move-x +-dx) on every (timer-tick) while (move-left) or (move-right) is being asserted.
-;; Vertical Motion Process: TODO Design a better state machine
+;; Vertical Motion Process:
 ;;   Represents gravity and the player's attempts to fight gravity by jumping.
 ;;   Sends (move-y dy) every (timer-tick).
 ;;   Interprets (jump) messages into upward motion when the player is grounded.
