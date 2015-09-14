@@ -115,14 +115,15 @@
 ;; state is a v-motion-state
 (define ((vertical-motion-behavior jump-v v-max) e s)
   (match-define (v-motion-state jumping? motion-old clk) s)
+  (define clk-n (add1 clk))
   (match e
     [(message (jump))
      (if (and (not jumping?) (< (abs (motion-v motion-old)) .4)) ;; TODO: better way to detect if this is a legal time to jump
-         (transition (v-motion-state #t (motion jump-v (motion-a motion-old)) (add1 clk)) '())
+         (transition (v-motion-state #t (motion jump-v (motion-a motion-old)) clk-n) '())
          #f)]
     [(message (timer-tick))
      (define motion-n (motion (min v-max (+ (motion-v motion-old) (motion-a motion-old))) (motion-a motion-old)))
-     (transition (v-motion-state jumping? motion-n clk) (list (message (move-y (motion-v motion-old) clk))))]
+     (transition (v-motion-state jumping? motion-n clk-n) (list (message (move-y (motion-v motion-old) clk-n))))]
     [(message (y-collision (== clk)))
      (transition (v-motion-state #f (motion 0 (motion-a motion-old)) clk) '())]
     [_ #f]))
