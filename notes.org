@@ -130,3 +130,20 @@ link: bad variable linkage;
   reference in module: "/Users/scaldwell/git/prospect_experiments/periodic_timer.rkt" in: set-timer2.2a
 ** it would be nice to not see the timer driver internals in the trace
 ** does `(retract ?)` also rectract subscriptions?
+
+* Platformer Notes
+** Adding enemies
+*** Use same (move-x dx) (move-y dy) messages to game-logic process approach as used for player
+*** add a unique label for each entity to the messages (move-x dx lbl)
+*** game-logic process can use the label as a key
+*** a horizontal collision results in the enemy killing the player
+*** a vertical collision, where the player is moving downward (positive dy) results in the player killing the enemy
+** Multiple worlds
+*** The game logic, rendering, and timer processes could live at the top level
+*** each entity (player, enemies) could be in their own sub-world
+*** advantage: no dependency between logic of each entity, so might as well keep them separate
+*** any concrete advantages?
+** Level management
+*** When the game logic process detects that the player "dies", simply respawn at the top left corner
+*** When the goal is reached, a level management process can spawn the next level
+**** needs a way to "kill" all the enemy processes/worlds
