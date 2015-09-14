@@ -34,7 +34,7 @@
 ;;   - (player rect) messages
 ;;   - (goal rect) messages
 ;;   - (victory)/(defeat) assertions
-;;   Redraws when the player moves.
+;;   Redraws when the player moves (should be every timer tick).
 
 (require "./geometry.rkt"
          "./periodic_timer.rkt"
