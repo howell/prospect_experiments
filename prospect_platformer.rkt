@@ -1,5 +1,41 @@
 #lang prospect
 
+;; Events
+;; keyboard events are injected into the system at the ground level as either
+;; (key-press key) or (key-release key) messages
+;; 
+;; processes in the system:
+;; Game Logic Process:
+;;   Decides where the player is on the map and when the game is over.
+;;   Listens for (move-x dx) and (move-y dy) messages and attempts to move the player accordingly.
+;;   When a (move-y _) command results in a collision with the environment a (y-collision) message is sent.
+;;   The new location of the player is sent as a (player rect) message.
+;;   The environment is determined by assertions of the shape (static rect).
+;;   Asserts the location of the goal as (goal rect).
+;;   When the player reaches the goal, quits and asserts (victory)
+;;   When the player loses (leaves the map), quits and asserts (defeat)
+;; Timer Process:
+;;   Sends a (timer-tick) message at a fixed rate
+;; Player Process:
+;;   Translates keyboard event messages into movement commands.
+;;   asserts (move-left) or (move-right) while the left or right arrow key is held down
+;;   sends a (jump) message when space is pressed
+;; Horizontal Motion Process:
+;;   Interprets the output of the Player Process into commands for the Game Logic Process.
+;;   Sends the messsage (move-x +-dx) on every (timer-tick) while (move-left) or (move-right) is being asserted.
+;; Vertical Motion Process: TODO Design a better state machine
+;;   Represents gravity and the player's attempts to fight gravity by jumping.
+;;   Sends (move-y dy) every (timer-tick).
+;;   Interprets (jump) messages into upward motion when the player is grounded.
+;;   When a (y-collision) is detected reset velocity to 0
+;; Rendering Process:
+;;  Tracks and draws the state of the game:
+;;  - (static rect) assertions
+;;  - (player rect) messages
+;;  - (goal rect) messages
+;;  - (victory)/(defeat) assertions
+;;  Redraws when the player moves.
+
 (require "./geometry.rkt"
          "./periodic_timer.rkt"
          rackunit
