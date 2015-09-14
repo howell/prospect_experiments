@@ -130,6 +130,8 @@ link: bad variable linkage;
   reference in module: "/Users/scaldwell/git/prospect_experiments/periodic_timer.rkt" in: set-timer2.2a
 ** it would be nice to not see the timer driver internals in the trace
 ** does `(retract ?)` also rectract subscriptions?
+** what is the nature of `(quit (assert X))`?
+*** presumably X can never be retracted?
 
 * Platformer Notes
 ** Adding enemies
