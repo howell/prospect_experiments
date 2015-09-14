@@ -122,7 +122,7 @@
          #f)]
     [(message (timer-tick))
      (define motion-n (motion (min v-max (+ (motion-v motion-old) (motion-a motion-old))) (motion-a motion-old)))
-     (transition (v-motion-state jumping? motion-n clk) (list (message (move-y (motion-v motion-old)))))]
+     (transition (v-motion-state jumping? motion-n clk) (list (message (move-y (motion-v motion-old) clk))))]
     [(message (y-collision (== clk)))
      (transition (v-motion-state #f (motion 0 (motion-a motion-old)) clk) '())]
     [_ #f]))
@@ -132,7 +132,7 @@
          (v-motion-state #f (motion 0 gravity) 0)
          (sub (jump))
          (sub (timer-tick))
-         (sub (y-collision))))
+         (sub (y-collision ?))))
 
 ;; create a clock that sends (timer-tick) every period-ms
 (define (spawn-clock period-ms)
@@ -148,7 +148,7 @@
 
 ;; the game logic process keeps track of the location of the player and the environment
 ;; it process move-x and move-y commands. When a collision along the y-axis occurs it
-;; sends a (y-collision) message
+;; sends a (y-collision clock) message with clock received in the move-y command
 ;; sends a message with the location of the player every time it moves, (player rect)
 ;; asserts the location of the goal as (goal g)
 ;; quits and asserts (victory) if the player reaches the goal
@@ -164,7 +164,7 @@
         (quit (list (assert (defeat))))]
        [else (transition (game-state player-n (game-state-env s) (game-state-goal s))
                          (list (message (player player-n))))])]
-    [(message (move-y dy))
+    [(message (move-y dy clk))
      (match-define (cons player-n col?) (move-player-y (game-state-player s) dy (game-state-env s)))
      (cond
        [(overlapping-rects? player-n (goal-rect (game-state-goal s)))
@@ -174,7 +174,7 @@
        [else (transition (game-state player-n (game-state-env s) (game-state-goal s))
                          (cons (message (player player-n))
                                (if col?
-                                   (list (message (y-collision)))
+                                   (list (message (y-collision clk)))
                                    '())))])]
     [(patch p-added p-removed)
      (define removed (static-rects-matcher p-removed))
@@ -188,7 +188,7 @@
   (spawn game-logic-behavior
          (game-state player0 '() goal0)
          (sub (move-x ?))
-         (sub (move-y ?))
+         (sub (move-y ? ?))
          (sub (static ?))
          (assert (player player0))
          (assert goal0)))
