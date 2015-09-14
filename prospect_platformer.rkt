@@ -489,7 +489,6 @@
     (define/override (on-char event)
       (define key-code (send event get-key-code))
       (define release-code (send event get-key-release-code))
-      #;(printf "~v\n" key-code)
       (cond
         [(release? key-code) (key-handler (key-release release-code))]
         [else (key-handler (key-press key-code))]))
@@ -506,6 +505,7 @@
     [(or 'left 'right 'up 'down) #t]
     [_ #f]))
 
+;; global (mutable) variable with the canvas's bottom-right posn 
 (define bot-right #f)
 
 (define (make-frame width height)
