@@ -132,8 +132,14 @@ link: bad variable linkage;
 ** does `(retract ?)` also rectract subscriptions?
 ** what is the nature of `(quit (assert X))`?
 *** presumably X can never be retracted?
+** "Shared Data"
+*** When I want to interpret the shared data as a set, I have to do a fair amount of manual plumbing in each process that is interested in said data
+*** Could I create one process that is responsible for maintaining said set, asserts the set, and other interested processes ignore the elements and listen for the set?
 
 * Platformer Notes
+** Should the game logic process be handling (jump) commands?
+*** it could check if their is a piece of the environment directly below the player
+*** then send a (actually-jump) message to the vertical motion process?
 ** Adding enemies
 *** Use same (move-x dx) (move-y dy) messages to game-logic process approach as used for player
 *** add a unique label for each entity to the messages (move-x dx lbl)
