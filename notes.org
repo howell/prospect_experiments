@@ -147,3 +147,7 @@ link: bad variable linkage;
 *** When the game logic process detects that the player "dies", simply respawn at the top left corner
 *** When the goal is reached, a level management process can spawn the next level
 **** needs a way to "kill" all the enemy processes/worlds
+** Quitting
+*** Have each process listen for a (game-over) message and (quit) on reception
+**** compose every behavior with a behavior that implements this
+**** sounds a lot like inheritance...
