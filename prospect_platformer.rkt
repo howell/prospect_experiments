@@ -14,15 +14,16 @@
 ;; int
 (struct move-x (dx) #:transparent)
 
-;; int
-(struct move-y (dy) #:transparent)
+;; int * nat
+(struct move-y (dy clock) #:transparent)
 
 (struct move-left () #:transparent)
 (struct move-right () #:transparent)
 
 (struct jump () #:transparent)
 
-(struct y-collision () #:transparent)
+;; nat
+(struct y-collision (clock) #:transparent)
 
 ;; rect
 (struct player (rect) #:transparent)
@@ -105,28 +106,30 @@
          (sub (move-right))
          (sub (timer-tick))))
 
-;; the vertical motion behavior tries to move the player downward by sending (move-y dy)
+(struct v-motion-state (jumping? motion clock) #:transparent)
+
+;; the vertical motion behavior tries to move the player downward by sending (move-y dy clock)
 ;; this happens periodically when the timer sends a (timer-tick) message
 ;; when a (jump) message is received, temporarily move the player upward
-;; when a (y-collision) is detected reset velocity to 0
-;; state is a (cons bool motion)
+;; when a (y-collision clock) is detected reset velocity to 0 if the received clock matches the last sent clock.
+;; state is a v-motion-state
 (define ((vertical-motion-behavior jump-v v-max) e s)
-  (match-define (cons jumping? motion-old) s)
+  (match-define (v-motion-state jumping? motion-old clk) s)
   (match e
     [(message (jump))
      (if (and (not jumping?) (< (abs (motion-v motion-old)) .4)) ;; TODO: better way to detect if this is a legal time to jump
-         (transition (cons #t (motion jump-v (motion-a motion-old))) '())
+         (transition (v-motion-state #t (motion jump-v (motion-a motion-old)) (add1 clk)) '())
          #f)]
     [(message (timer-tick))
      (define motion-n (motion (min v-max (+ (motion-v motion-old) (motion-a motion-old))) (motion-a motion-old)))
-     (transition (cons jumping? motion-n) (list (message (move-y (motion-v motion-old)))))]
-    [(message (y-collision))
-     (transition (cons #f (motion 0 (motion-a motion-old))) '())]
+     (transition (v-motion-state jumping? motion-n clk) (list (message (move-y (motion-v motion-old)))))]
+    [(message (y-collision (== clk)))
+     (transition (v-motion-state #f (motion 0 (motion-a motion-old)) clk) '())]
     [_ #f]))
 
 (define (spawn-vertical-motion gravity jump-v max-v)
   (spawn (vertical-motion-behavior jump-v max-v)
-         (cons #f (motion 0 gravity))
+         (v-motion-state #f (motion 0 gravity) 0)
          (sub (jump))
          (sub (timer-tick))
          (sub (y-collision))))
