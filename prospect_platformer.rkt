@@ -29,12 +29,12 @@
 ;;   Interprets (jump) messages into upward motion when the player is grounded.
 ;;   When a (y-collision) is detected reset velocity to 0
 ;; Rendering Process:
-;;  Tracks and draws the state of the game:
-;;  - (static rect) assertions
-;;  - (player rect) messages
-;;  - (goal rect) messages
-;;  - (victory)/(defeat) assertions
-;;  Redraws when the player moves.
+;;   Tracks and draws the state of the game:
+;;   - (static rect) assertions
+;;   - (player rect) messages
+;;   - (goal rect) messages
+;;   - (victory)/(defeat) assertions
+;;   Redraws when the player moves.
 
 (require "./geometry.rkt"
          "./periodic_timer.rkt"
