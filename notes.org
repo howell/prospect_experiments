@@ -139,7 +139,7 @@ link: bad variable linkage;
 
 * Platformer Notes
 ** Should the game logic process be handling (jump) commands?
-*** it could check if their is a piece of the environment directly below the player
+*** it could check if there is a piece of the environment directly below the player
 *** then send a (actually-jump) message to the vertical motion process?
 ** Adding enemies
 *** Use same (move-x dx) (move-y dy) messages to game-logic process approach as used for player
