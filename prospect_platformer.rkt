@@ -7,6 +7,7 @@
 ;; processes in the system:
 ;; Game Logic Process:
 ;;   Decides where the player is on the map and when the game is over.
+;;   Processes (jump-request) messages. If the player is allowed to jump sends a (jump) message.
 ;;   Listens for (move-x dx) and (move-y dy) messages and attempts to move the player accordingly.
 ;;   When a (move-y _) command results in a collision with the environment a (y-collision) message is sent.
 ;;   The new location of the player is sent as a (player rect) message.
@@ -19,14 +20,14 @@
 ;; Player Process:
 ;;   Translates keyboard event messages into movement commands.
 ;;   asserts (move-left) or (move-right) while the left or right arrow key is held down
-;;   sends a (jump) message when space is pressed
+;;   sends a (jump-request) message when space is pressed
 ;; Horizontal Motion Process:
 ;;   Interprets the output of the Player Process into commands for the Game Logic Process.
 ;;   Sends the messsage (move-x +-dx) on every (timer-tick) while (move-left) or (move-right) is being asserted.
 ;; Vertical Motion Process:
 ;;   Represents gravity and the player's attempts to fight gravity by jumping.
 ;;   Sends (move-y dy) every (timer-tick).
-;;   Interprets (jump) messages into upward motion when the player is grounded.
+;;   Interprets (jump) messages into upward motion.
 ;;   When a (y-collision) is detected reset velocity to 0
 ;; Rendering Process:
 ;;   Tracks and draws the state of the game:
@@ -56,6 +57,7 @@
 (struct move-left () #:transparent)
 (struct move-right () #:transparent)
 
+(struct jump-request () #:transparent)
 (struct jump () #:transparent)
 
 (struct y-collision () #:transparent)
@@ -80,7 +82,7 @@
 
 ;; translate key presses into commands
 ;; asserts (move-left)/(move-right) while the left/right arrow key is held down
-;; space becomes a (jump) message
+;; space becomes a (jump-request) message
 (define (player-behavior e s)
   ;; state is (U 'left 'right #f)
   (match e
@@ -92,7 +94,7 @@
        ['right (if s
                    #f
                    (transition key (assert (move-right))))]
-       [#\space (transition s (message (jump)))]
+       [#\space (transition s (message (jump-request)))]
        [_ #f])]
     [(message (at-meta (key-release (== s))))
      (transition #f
