@@ -152,9 +152,7 @@
   (match-define (cons jumping? motion-old) s)
   (match e
     [(message (jump))
-     (if (and (not jumping?) (< (abs (motion-v motion-old)) .4)) ;; TODO: better way to detect if this is a legal time to jump
-         (transition (cons #t (motion jump-v (motion-a motion-old))) '())
-         #f)]
+     (transition (cons #t (motion jump-v (motion-a motion-old))) '())]
     [(message (timer-tick))
      (define motion-n (motion (min v-max (+ (motion-v motion-old) (motion-a motion-old))) (motion-a motion-old)))
      (transition (cons jumping? motion-n) (list (message (move-y (motion-v motion-old)))))]
@@ -211,6 +209,11 @@
                                (if col?
                                    (list (message (y-collision)))
                                    '())))])]
+    [(message (jump-request))
+     ;; check if there is something right beneath the player
+     (if (cdr (move-player-y (game-state-player s) 1 (game-state-env s)))
+         (transition s (message (jump)))
+         #f)]
     [(patch p-added p-removed)
      (define removed (static-rects-matcher p-removed))
      (define added (static-rects-matcher p-added))
@@ -225,6 +228,7 @@
          (sub (move-x ?))
          (sub (move-y ?))
          (sub (static ?))
+         (sub (jump-request))
          (assert (player player0))
          (assert goal0)))
 
