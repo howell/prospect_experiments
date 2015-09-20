@@ -540,7 +540,7 @@
      (transition (game-state new-player old-env old-goal old-enemies)
                  '())]
     [(message (timer-tick))
-     (draw-game dc old-player old-env old-goal)
+     (draw-game dc old-player old-env old-goal (hash-values old-enemies))
      #f]
     [_ #f]))
 
