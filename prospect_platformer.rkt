@@ -614,9 +614,18 @@
    (sub (kill-enemy ?))
    (sub (level-complete))))
 
+;; level -> (constreeof action)
+(define (level->actions l)
+  (match-define (level player0 env0 goal0 enemies) l)
+  (list (assert (player player0))
+        (map (lambda (r) (assert (static r))) env0)
+        (assert (goal goal0))
+        enemies))
+
 ;; state is a (non-empty-listof level)
+;; need a way to kill all enemies
 (define (level-manager-behavior e s)
-  )
+  #f)
 
 ;; gui stuff
 (define game-canvas%
