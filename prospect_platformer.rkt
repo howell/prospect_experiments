@@ -715,3 +715,15 @@
 (make-enemy 200 158 20 20
             (lambda (n id)
               (list (message (move-x id ((if (< (modulo n 60) 30) + -) 1))))))
+
+;; spawn an enemy that travels from (x0, y0) to (x0 + x-dist, y0) then back to
+;; (x0, y0) at a rate of dx per clock tick
+(define (make-horiz-enemy x0 y0 w h x-dist dx)
+  (define THRESHOLD (/ x-dist dx))
+  (make-enemy x0 y0 w h
+              (lambda (n id)
+                (list (message (move-x id (if (< (modulo n (* 2 THRESHOLD)) THRESHOLD)
+                                              dx
+                                              (- dx))))))))
+
+(make-horiz-enemy 300 130 20 20 30 1)
