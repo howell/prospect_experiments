@@ -25,12 +25,12 @@
 ;;   sends a (jump-request) message when space is pressed
 ;; Horizontal Motion Process:
 ;;   Interprets the output of the Player Process into commands for the Game Logic Process.
-;;   Sends the messsage (move-x +-dx) on every (timer-tick) while (move-left) or (move-right) is being asserted.
+;;   Sends the messsage (move-x 'player +-dx) on every (timer-tick) while (move-left) or (move-right) is being asserted.
 ;; Vertical Motion Process:
 ;;   Represents gravity and the player's attempts to fight gravity by jumping.
-;;   Sends (move-y dy) every (timer-tick).
+;;   Sends (move-y 'player dy) every (timer-tick).
 ;;   Interprets (jump) messages into upward motion.
-;;   When a (y-collision) is detected reset velocity to 0
+;;   When a (y-collision 'player) is detected reset velocity to 0
 ;; Rendering Process:
 ;;   Tracks and draws the state of the game:
 ;;   - (static rect) assertions
@@ -63,13 +63,14 @@
 (struct jump-request () #:transparent)
 (struct jump () #:transparent)
 
-(struct y-collision () #:transparent)
+;; any
+(struct y-collision (id) #:transparent)
 
 ;; rect
 (struct player (rect) #:transparent)
 
 ;; any * rect
-(struct enemy (id rect) #:tranpsarent)
+(struct enemy (id rect) #:transparent)
 
 ;; rect
 (struct goal (rect) #:transparent)
@@ -137,8 +138,8 @@
        [else #f])]
     [(message (timer-tick))
      (match s
-       ['left (transition s (message (move-x (- dx))))]
-       ['right (transition s (message (move-x dx)))]
+       ['left (transition s (message (move-x 'player (- dx))))]
+       ['right (transition s (message (move-x 'player dx)))]
        [_ #f])]
     [_ #f]))
 
@@ -161,8 +162,8 @@
      (transition (cons #t (motion jump-v (motion-a motion-old))) '())]
     [(message (timer-tick))
      (define motion-n (motion (min v-max (+ (motion-v motion-old) (motion-a motion-old))) (motion-a motion-old)))
-     (transition (cons jumping? motion-n) (list (message (move-y (motion-v motion-old)))))]
-    [(message (y-collision))
+     (transition (cons jumping? motion-n) (list (message (move-y 'player (motion-v motion-old)))))]
+    [(message (y-collision 'player))
      (transition (cons #f (motion 0 (motion-a motion-old))) '())]
     [_ #f]))
 
@@ -171,46 +172,52 @@
          (cons #f (motion 0 gravity))
          (sub (jump))
          (sub (timer-tick))
-         (sub (y-collision))))
+         (sub (y-collision 'player))))
 
 ;; create a clock that sends (timer-tick) every period-ms
 (define (spawn-clock period-ms)
   (periodically period-ms (lambda () (message (timer-tick)))))
 
-;; rect * (listof rect) * rect
-(struct game-state (player env goal) #:transparent)
+;; rect * (listof rect) * rect * (hashof symbol -> enemy)
+(struct game-state (player env goal enemies) #:transparent)
 
 (define static-detector (compile-projection (static (?!))))
 (define static-rects-matcher
   (lambda (m)
     (set-map (matcher-project/set m static-detector) car)))
 
-;; the game logic process keeps track of the location of the player and the environment
-;; it process move-x and move-y commands. When a collision along the y-axis occurs it
-;; sends a (y-collision) message
+;; the game logic process keeps track of the location of the player and the environment.
+;; processes move-x and move-y commands from the player and enemies. When a collision
+;; along the y-axis occurs it sends a (y-collision id) message with the id of the moving
+;; object.
 ;; sends a message with the location of the player every time it moves, (player rect)
+;; sends a message with the location of an enemy each time it moves, (enemy id rect)
+;;
+;; TODO >>>>>>>>> If the player and an enemy collide __________ <<<<<<<<<<<<<<<< TODO
+;;
 ;; asserts the location of the goal as (goal g)
 ;; quits and asserts (victory) if the player reaches the goal
 ;; quits and asserts (defeat) if the player leaves the map
 (define (game-logic-behavior e s)
+  (match-define (game-state player-old env-old cur-goal enemies-old) s)
   (match e
-    [(message (move-x dx))
-     (define player-n (car (move-player-x (game-state-player s) dx (game-state-env s))))
+    [(message (move-x 'player dx))
+     (define player-n (car (move-player-x player-old dx env-old)))
      (cond
-       [(overlapping-rects? player-n (goal-rect (game-state-goal s)))
+       [(overlapping-rects? player-n (goal-rect cur-goal))
         (quit (list (assert (victory))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
         (quit (list (assert (defeat))))]
-       [else (transition (game-state player-n (game-state-env s) (game-state-goal s))
+       [else (transition (game-state player-n env-old cur-goal)
                          (list (message (player player-n))))])]
-    [(message (move-y dy))
-     (match-define (cons player-n col?) (move-player-y (game-state-player s) dy (game-state-env s)))
+    [(message (move-y 'player dy))
+     (match-define (cons player-n col?) (move-player-y player-old dy env-old))
      (cond
-       [(overlapping-rects? player-n (goal-rect (game-state-goal s)))
+       [(overlapping-rects? player-n (goal-rect cur-goal))
         (quit (list (assert (victory))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
         (quit (list (assert (defeat))))]
-       [else (transition (game-state player-n (game-state-env s) (game-state-goal s))
+       [else (transition (game-state player-n env-old cur-goal)
                          (cons (message (player player-n))
                                (if col?
                                    (list (message (y-collision)))
@@ -230,9 +237,9 @@
 ;; rect goal -> spawn
 (define (spawn-game-logic player0 goal0)
   (spawn game-logic-behavior
-         (game-state player0 '() goal0)
-         (sub (move-x ?))
-         (sub (move-y ?))
+         (game-state player0 '() goal0 (hash))
+         (sub (move-x ? ?))
+         (sub (move-y ? ?))
          (sub (static ?))
          (sub (jump-request))
          (assert (player player0))
@@ -455,7 +462,7 @@
 ;; if (victory) or (defeat) is detected then quit and draw something special
 (define ((render-behavior dc) e s)
   ;; state is a game-state struct
-  (match-define (game-state old-player old-env old-goal) s)
+  (match-define (game-state old-player old-env old-goal old-enemies) s)
   (match e
     [(patch p-added p-removed)
      (define added (static-rects-matcher p-added))
@@ -476,11 +483,11 @@
          (quit '())]
        [else
         (draw-game dc new-player new-env new-goal)
-        (transition (game-state new-player new-env new-goal)
+        (transition (game-state new-player new-env new-goal old-enemies)
                     '())])]
     [(message (player new-player))
      (draw-game dc new-player old-env old-goal)
-     (transition (game-state new-player old-env old-goal)
+     (transition (game-state new-player old-env old-goal old-enemies)
                  '())]
     [_ #f]))
 
