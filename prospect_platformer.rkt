@@ -629,7 +629,9 @@
     [(message (defeat))
      #f]
     [(message (level-complete))
-     #f]
+     (match (cdr s)
+       [(cons next-level _) (transition (cdr s) (patch-seq (retract ?)
+                                                           (level->actions next-level)))]
     [_ #f]))
 
 ;; (non-empty-listof level) -> spawn
