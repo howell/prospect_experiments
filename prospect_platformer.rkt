@@ -524,6 +524,8 @@
      (define new-goal (if (set-empty? goal-s) old-goal (goal (car (set-first goal-s)))))
      (define victory? (not-set-empty? (matcher-project/set p-added (compile-projection (victory)))))
      (define defeat? (not-set-empty? (matcher-project/set p-added (compile-projection (defeat)))))
+     (define-values (enemies-added enemies-removed) (patch-enemies e))
+     (define enemies-new (update-enemy-hash enemies-added enemies-removed old-enemies))
      (cond
        [victory?
         (draw-victory dc)
@@ -532,7 +534,7 @@
          (draw-defeat dc)
          (quit '())]
        [else
-        (transition (game-state new-player new-env new-goal old-enemies)
+        (transition (game-state new-player new-env new-goal enemies-new)
                     '())])]
     [(message (player new-player))
      (transition (game-state new-player old-env old-goal old-enemies)
