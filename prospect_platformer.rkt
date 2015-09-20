@@ -710,24 +710,8 @@
 
 (make-enemy 0 180 20 20
             (lambda (n id)
-              (list (message (move-x id ((if (< (modulo n 200) 100) + -) 2))))))
+              (list (message (move-x id ((if (< (modulo n 150) 75) + -) 2))))))
 
-#;(let ([x0 0]
-        [y0 180]
-        [my-w 20]
-        [my-h 20]
-        [id (gensym 'enemy)])
-    (spawn
-     (lambda (e n)
-       (match e
-         [(message timer-tick)
-          (transition (add1 n)
-                      (list (message (move-x id
-                                             ((if (< (modulo n 200) 100) + -) 2)))))]
-         [(kill-enemy (== id))
-          (quit '())]
-         [_ #f]))
-     0
-     (sub (timer-tick))
-     (sub (kill-enemy id))
-     (assert (enemy id (rect (posn x0 y0) my-w my-h)))))
+(make-enemy 200 158 20 20
+            (lambda (n id)
+              (list (message (move-x id ((if (< (modulo n 50) 25) + -) 2))))))
