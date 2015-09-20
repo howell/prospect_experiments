@@ -543,6 +543,10 @@
     [(message (player new-player))
      (transition (game-state new-player old-env old-goal old-enemies)
                  '())]
+    [(message (enemy id rect))
+     (define new-enemies (hash-set old-enemies id (enemy id rect)))
+     (transition (game-state old-player old-env old-goal new-enemies)
+                 '())]
     [(message (timer-tick))
      (draw-game dc old-player old-env old-goal (hash-values old-enemies))
      #f]
