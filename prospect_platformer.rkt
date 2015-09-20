@@ -37,7 +37,8 @@
 ;;   - (player rect) messages
 ;;   - (goal rect) messages
 ;;   - (victory)/(defeat) assertions
-;;   Redraws when the player moves (should be every timer tick).
+;;   - (enemy id rect) messages
+;;   Redraws every timer tick.
 
 (require "./geometry.rkt"
          "./periodic_timer.rkt"
@@ -51,10 +52,10 @@
 (struct motion (v a) #:transparent)
 
 ;; int
-(struct move-x (dx) #:transparent)
+(struct move-x (id dx) #:transparent)
 
 ;; int
-(struct move-y (dy) #:transparent)
+(struct move-y (id dy) #:transparent)
 
 (struct move-left () #:transparent)
 (struct move-right () #:transparent)
@@ -66,6 +67,9 @@
 
 ;; rect
 (struct player (rect) #:transparent)
+
+;; any * rect
+(struct enemy (id rect) #:tranpsarent)
 
 ;; rect
 (struct goal (rect) #:transparent)
