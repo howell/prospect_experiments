@@ -196,8 +196,8 @@
 ;; update a hash of enemies with additions and subtractions
 (define (update-enemy-hash added-enemies removed-enemies h)
   (define h2 (for/fold ([acc h])
-             ([e removed-enemies])
-    (hash-remove acc (enemy-id e))))
+                       ([e removed-enemies])
+               (hash-remove acc (enemy-id e))))
   (for/fold ([acc h2])
             ([e added-enemies])
     (hash-set acc (enemy-id e) e)))
@@ -655,10 +655,11 @@
       [id (gensym 'enemy)])
   (spawn
    (lambda (e n)
-     (match e)
-     [(message timer-tick)
-      (transition (add1 n)
-                  (list (message (move-x id
-                                         ((if (< (modulo n 100) 50) + -) 2)))))])
+     (match e
+       [(message timer-tick)
+        (transition (add1 n)
+                    (list (message (move-x id
+                                           ((if (< (modulo n 100) 50) + -) 2)))))]
+       [_ #f]))
    (sub (timer-tick))
    (assert (enemy id (rect (posn x0 y0) my-w my-h)))))
