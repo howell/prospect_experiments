@@ -237,6 +237,12 @@
                                (if col?
                                    (list (message (y-collision 'player)))
                                    '())))])]
+    [(message (move-x enemy-id dx))
+     (match-define (enemy _ e-rect) (hash-ref enemies-old enemy-id))
+     (define e-rect-new (car (move-player-x e-rect dx env-old)))
+     (define enemies-new (hash-set enemy-id (enemy enemy-id e-rect-new)))
+     (transition (game-state player-old env-old cur-goal enemies-new)
+                 (message (enemy enemy-id e-rect-new)))]
     [(message (jump-request))
      ;; check if there is something right beneath the player
      (if (cdr (move-player-y (game-state-player s) 1 (game-state-env s)))
