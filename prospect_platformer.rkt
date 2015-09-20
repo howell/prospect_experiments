@@ -108,7 +108,7 @@
 (struct game-state (player env goal enemies) #:transparent)
 
 ;; rect * (listof rect) * rect * (listof spawn)
-(struct level (player0 env0 goal enemies) #:transparent
+(struct level (player0 env0 goal enemies) #:transparent)
 
 ;; translate key presses into commands
 ;; asserts (move-left)/(move-right) while the left/right arrow key is held down
@@ -610,6 +610,7 @@
    (sub (defeat))
    (sub (kill-enemy ?))
    (sub (victory))))
+
 
 ;; gui stuff
 (define game-canvas%
