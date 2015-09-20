@@ -632,6 +632,7 @@
      (match (cdr s)
        [(cons next-level _) (transition (cdr s) (patch-seq (retract ?)
                                                            (level->actions next-level)))]
+       [_ (quit (list (message (victory))))])]
     [_ #f]))
 
 ;; (non-empty-listof level) -> spawn
@@ -639,6 +640,8 @@
   (spawn
    level-manager-behavior
    levels
+   (sub (defeat))
+   (sub (level-complete))
    (level->actions (first levels))))
 
 ;; gui stuff
