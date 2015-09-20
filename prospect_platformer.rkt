@@ -208,7 +208,7 @@
         (quit (list (assert (victory))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
         (quit (list (assert (defeat))))]
-       [else (transition (game-state player-n env-old cur-goal)
+       [else (transition (game-state player-n env-old cur-goal enemies-old)
                          (list (message (player player-n))))])]
     [(message (move-y 'player dy))
      (match-define (cons player-n col?) (move-player-y player-old dy env-old))
@@ -217,7 +217,7 @@
         (quit (list (assert (victory))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
         (quit (list (assert (defeat))))]
-       [else (transition (game-state player-n env-old cur-goal)
+       [else (transition (game-state player-n env-old cur-goal enemies-old)
                          (cons (message (player player-n))
                                (if col?
                                    (list (message (y-collision)))
@@ -231,7 +231,7 @@
      (define removed (static-rects-matcher p-removed))
      (define added (static-rects-matcher p-added))
      (define new-env (append added (remove* removed (game-state-env s))))
-     (transition (game-state (game-state-player s) new-env (game-state-goal s)) '())]
+     (transition (game-state player-old new-env cur-goal enemies-old) '())]
     [_ #f]))
 
 ;; rect goal -> spawn
@@ -494,7 +494,7 @@
 (define (spawn-renderer dc)
   (spawn
    (render-behavior dc)
-   (game-state (rect (posn 0 0) 0 0) '() (goal (rect (posn -100 -100) 0 0)) )
+   (game-state (rect (posn 0 0) 0 0) '() (goal (rect (posn -100 -100) 0 0)) (hash))
    (sub (static ?))
    (sub (player ?))
    (sub (goal ?))
