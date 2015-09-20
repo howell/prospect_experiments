@@ -87,6 +87,9 @@
 (struct victory () #:transparent)
 (struct defeat () #:transparent)
 
+;; rect * (listof rect) * rect * (hashof symbol -> enemy)
+(struct game-state (player env goal enemies) #:transparent)
+
 ;; translate key presses into commands
 ;; asserts (move-left)/(move-right) while the left/right arrow key is held down
 ;; space becomes a (jump-request) message
@@ -177,9 +180,6 @@
 ;; create a clock that sends (timer-tick) every period-ms
 (define (spawn-clock period-ms)
   (periodically period-ms (lambda () (message (timer-tick)))))
-
-;; rect * (listof rect) * rect * (hashof symbol -> enemy)
-(struct game-state (player env goal enemies) #:transparent)
 
 (define static-detector (compile-projection (static (?!))))
 (define static-rects-matcher
