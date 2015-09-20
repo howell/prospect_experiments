@@ -247,7 +247,9 @@
      (define added (static-rects-matcher p-added))
      (define new-env (append added (remove* removed (game-state-env s))))
      (define-values (enemies-added enemies-removed) (patch-enemies e))
-     (transition (game-state player-old new-env cur-goal enemies-old) '())]
+     (define enemies-new (update-enemy-hash enemies-added enemies-removed enemies-old))
+     (transition (game-state player-old new-env cur-goal enemies-new)
+                 (map message enemies-added))]
     [_ #f]))
 
 ;; rect goal -> spawn
