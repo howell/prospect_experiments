@@ -703,6 +703,7 @@
                         maybe-messages
                         '()))]
        [_ #f]))
+   0
    (sub (timer-tick))
    (sub (kill-enemy id))
    (assert (enemy id (rect (posn x0 y0) w h)))))
