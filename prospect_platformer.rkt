@@ -51,7 +51,8 @@
          prospect/drivers/timer
          racket/set
          racket/gui
-         racket/draw)
+         racket/draw
+         racket/block)
 
 ;; velocity and acceleration
 (struct motion (v a) #:transparent)
@@ -272,7 +273,7 @@
     [(message (move-x enemy-id dx))
      (define maybe-enemy (hash-ref enemies-old enemy-id #f))
      (if maybe-enemy
-         (begin
+         (block
           (match-define (enemy _ e-rect) maybe-enemy)
           (define e-rect-new (car (move-player-x e-rect dx env-old)))
           (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
@@ -284,7 +285,7 @@
     [(message (move-y enemy-id dy))
      (define maybe-enemy (hash-ref enemies-old enemy-id #f))
      (if maybe-enemy
-         (begin
+         (block
           (match-define (enemy _ e-rect) maybe-enemy)
           (match-define (cons e-rect-new col?) (move-player-y e-rect dy env-old))
           (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
