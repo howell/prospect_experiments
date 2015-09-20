@@ -8,10 +8,12 @@
 ;; Game Logic Process:
 ;;   Decides where the player is on the map and when the game is over.
 ;;   Processes (jump-request) messages. If the player is allowed to jump sends a (jump) message.
-;;   Listens for (move-x dx) and (move-y dy) messages and attempts to move the player accordingly.
-;;   When a (move-y _) command results in a collision with the environment a (y-collision) message is sent.
+;;   Listens for (move-x id dx) and (move-y id dy) messages and attempts to move the player (id = 'player) or enemy accordingly.
+;;   When a (move-y id _) command results in a collision with the environment a (y-collision id) message is sent.
 ;;   The new location of the player is sent as a (player rect) message.
+;;   The new location of an enemy is sent as a (enemy id rect) message.
 ;;   The environment is determined by assertions of the shape (static rect).
+;;   The initial location of enemies is determined by assertions of the shape (enemy id rect).
 ;;   Asserts the location of the goal as (goal rect).
 ;;   When the player reaches the goal, quits and asserts (victory)
 ;;   When the player loses (leaves the map), quits and asserts (defeat)
