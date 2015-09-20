@@ -722,8 +722,9 @@
   (define THRESHOLD (/ x-dist dx))
   (make-enemy x0 y0 w h
               (lambda (n id)
-                (list (message (move-x id (if (< (modulo n (* 2 THRESHOLD)) THRESHOLD)
+                (list (message (move-x id (if (< (modulo n (floor (* 2 THRESHOLD))) THRESHOLD)
                                               dx
                                               (- dx))))))))
 
 (make-horiz-enemy 300 130 20 20 30 1)
+(make-horiz-enemy 400 180 20 20 200 3)
