@@ -257,13 +257,13 @@
     [(message (move-x enemy-id dx))
      (match-define (enemy _ e-rect) (hash-ref enemies-old enemy-id))
      (define e-rect-new (car (move-player-x e-rect dx env-old)))
-     (define enemies-new (hash-set enemy-id (enemy enemy-id e-rect-new)))
+     (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
      (transition (game-state player-old env-old cur-goal enemies-new)
                  (message (enemy enemy-id e-rect-new)))]
     [(message (move-y enemy-id dy))
      (match-define (enemy _ e-rect) (hash-ref enemies-old enemy-id))
      (match-define (cons e-rect-new col?) (move-player-y e-rect dy env-old))
-     (define enemies-new (hash-set enemy-id (enemy enemy-id e-rect-new)))
+     (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
      (transition (game-state player-old env-old cur-goal enemies-new)
                  (cons (message (enemy enemy-id e-rect-new))
                        (if col?
@@ -657,11 +657,10 @@
    (lambda (e n)
      (match e
        [(message timer-tick)
-        (printf "hi!\n")
         (transition (add1 n)
-                    '() #'(list (message (move-x id
+                    (list (message (move-x id
                                            ((if (< (modulo n 100) 50) + -) 2)))))]
-       [_ (printf "foo\n") #f]))
+       [_ #f]))
    0
    (sub (timer-tick))
    (assert (enemy id (rect (posn x0 y0) my-w my-h)))))
