@@ -195,10 +195,10 @@
 ;; update a hash of enemies with additions and subtractions
 (define (update-enemy-hash added-enemies removed-enemies h)
   (define h2 (for/fold ([acc h])
-             (e removed-enemies)
+             ([e removed-enemies])
     (hash-remove acc (enemy-id e))))
   (for/fold ([acc h2])
-            (e added-enemies)
+            ([e added-enemies])
     (hash-set acc (enemy-id e) e)))
 
 ;; the game logic process keeps track of the location of the player and the environment.
