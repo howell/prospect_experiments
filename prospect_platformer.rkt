@@ -253,16 +253,22 @@
                          (list (message (player player-n))))])]
     [(message (move-y 'player dy))
      (match-define (cons player-n col?) (move-player-y player-old dy env-old))
+     (define col-enemies (filter (lambda (e) (overlapping-rects? player-n (enemy-rect e))) (hash-values enemies-old)))
+     (define enemies-new (for/fold ([acc enemies-old])
+                                   ([e col-enemies])
+                           (hash-remove acc (enemy-id e))))
+     (define kill-messages (map (lambda (e) (message (kill-enemy (enemy-id e)))) col-enemies))
      (cond
        [(overlapping-rects? player-n (goal-rect cur-goal))
         (quit (list (assert (victory))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
         (quit (list (assert (defeat))))]
-       [else (transition (game-state player-n env-old cur-goal enemies-old)
-                         (cons (message (player player-n))
-                               (if col?
-                                   (list (message (y-collision 'player)))
-                                   '())))])]
+       [else (transition (game-state player-n env-old cur-goal enemies-new)
+                         (cons kill-messages
+                               (cons (message (player player-n))
+                                     (if col?
+                                         (list (message (y-collision 'player)))
+                                         '()))))])]
     [(message (move-x enemy-id dx))
      (match-define (enemy _ e-rect) (hash-ref enemies-old enemy-id))
      (define e-rect-new (car (move-player-x e-rect dx env-old)))
@@ -270,7 +276,7 @@
      (if (overlapping-rects? player-old e-rect-new)
          (quit (list (assert (defeat))))
          (transition (game-state player-old env-old cur-goal enemies-new)
-                 (message (enemy enemy-id e-rect-new))))]
+                     (message (enemy enemy-id e-rect-new))))]
     [(message (move-y enemy-id dy))
      (match-define (enemy _ e-rect) (hash-ref enemies-old enemy-id))
      (match-define (cons e-rect-new col?) (move-player-y e-rect dy env-old))
