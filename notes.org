@@ -147,7 +147,7 @@ link: bad variable linkage;
 *** add a unique label for each entity to the messages (move-x dx lbl)
 *** game-logic process can use the label as a key
 *** a horizontal collision results in the enemy killing the player
-*** a vertical collision, where the player is moving downward (positive dy) results in the player killing the enemy
+*** a vertical collision, where the player is above the enemy, results in the player killing the enemy
 ** Multiple worlds
 *** The game logic, rendering, and timer processes could live at the top level
 *** each entity (player, enemies) could be in their own sub-world
@@ -163,4 +163,4 @@ link: bad variable linkage;
 *** Have each process listen for a (game-over) message and (quit) on reception
 **** compose every behavior with a behavior that implements this
 **** sounds a lot like inheritance...
-** Rather than having game logic and renderer process maintain a `game-state` struct just have the game logic send its state as a message
+** Rather than having game logic and renderer process maintain a `game-state` struct just have the game logic send the state in a message
