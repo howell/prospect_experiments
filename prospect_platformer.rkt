@@ -220,7 +220,7 @@
        [else (transition (game-state player-n env-old cur-goal enemies-old)
                          (cons (message (player player-n))
                                (if col?
-                                   (list (message (y-collision)))
+                                   (list (message (y-collision 'player)))
                                    '())))])]
     [(message (jump-request))
      ;; check if there is something right beneath the player
