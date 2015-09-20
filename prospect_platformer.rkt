@@ -688,22 +688,45 @@
    (sub (timer-tick))
    (assert (static (rect (posn x0 y0) my-w my-h)))))
 
-(let ([x0 0]
-      [y0 180]
-      [my-w 20]
-      [my-h 20]
-      [id (gensym 'enemy)])
+;; nat nat nat nat (nat symbol -> (U #f (constreeof message))) -> spawn
+(define (make-enemy x0 y0 w h mover)
+  (define id (gensym 'enemy))
   (spawn
    (lambda (e n)
      (match e
-       [(message timer-tick)
-        (transition (add1 n)
-                    (list (message (move-x id
-                                           ((if (< (modulo n 200) 100) + -) 2)))))]
-       [(kill-enemy (== id))
+       [(message (kill-enemy (== id)))
         (quit '())]
+       [(message timer-tick)
+        (define maybe-messages (mover n id))
+        (transition (add1 n)
+                    (if maybe-messages
+                        maybe-messages
+                        '()))]
        [_ #f]))
-   0
    (sub (timer-tick))
    (sub (kill-enemy id))
-   (assert (enemy id (rect (posn x0 y0) my-w my-h)))))
+   (assert (enemy id (rect (posn x0 y0) w h)))))
+
+(make-enemy 0 180 20 20
+            (lambda (n id)
+              (list (message (move-x id ((if (< (modulo n 200) 100) + -) 2))))))
+
+#;(let ([x0 0]
+        [y0 180]
+        [my-w 20]
+        [my-h 20]
+        [id (gensym 'enemy)])
+    (spawn
+     (lambda (e n)
+       (match e
+         [(message timer-tick)
+          (transition (add1 n)
+                      (list (message (move-x id
+                                             ((if (< (modulo n 200) 100) + -) 2)))))]
+         [(kill-enemy (== id))
+          (quit '())]
+         [_ #f]))
+     0
+     (sub (timer-tick))
+     (sub (kill-enemy id))
+     (assert (enemy id (rect (posn x0 y0) my-w my-h)))))
