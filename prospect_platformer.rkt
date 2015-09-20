@@ -622,10 +622,22 @@
         (assert (goal goal0))
         enemies))
 
-;; state is a (non-empty-listof level)
+;; state is a (non-empty-listof level), the first of which is the current level
 ;; need a way to kill all enemies
 (define (level-manager-behavior e s)
-  #f)
+  (match e
+    [(message (defeat))
+     #f]
+    [(message (level-complete))
+     #f]
+    [_ #f]))
+
+;; (non-empty-listof level) -> spawn
+(define (spawn-level-manager levels)
+  (spawn
+   level-manager-behavior
+   levels
+   (level->actions (first levels))))
 
 ;; gui stuff
 (define game-canvas%
