@@ -555,7 +555,7 @@
 (define (draw-defeat dc)
   (big-text dc "Defeat." "red"))
 
-;; draw the player (determined from (player rect) messages, static objects
+;; draw the player (determined from (player rect) messages), static objects
 ;; defined by (static rect) and (goal rect) assertions and update the screen
 ;; each (timer-tick) time the player moves - (player rect) messages.
 ;; if (victory) or (defeat) is detected then quit and draw something special
@@ -572,16 +572,12 @@
      (define goal-s (matcher-project/set p-added (compile-projection (goal (?!)))))
      (define new-goal (if (set-empty? goal-s) old-goal (goal (car (set-first goal-s)))))
      (define victory? (not-set-empty? (matcher-project/set p-added (compile-projection (level-complete)))))
-     (define defeat? (not-set-empty? (matcher-project/set p-added (compile-projection (defeat)))))
      (define-values (enemies-added enemies-removed) (patch-enemies e))
      (define enemies-new (update-enemy-hash enemies-added enemies-removed old-enemies))
      (cond
        [victory?
         (draw-victory dc)
         (quit '())]
-       [defeat?
-         (draw-defeat dc)
-         (quit '())]
        [else
         (transition (game-state new-player new-env new-goal enemies-new)
                     '())])]
@@ -610,7 +606,6 @@
    (sub (player ?))
    (sub (enemy ? ?))
    (sub (goal ?))
-   (sub (defeat))
    (sub (kill-enemy ?))
    (sub (level-complete))))
 
@@ -620,6 +615,7 @@
   (list (assert (player player0))
         (map (lambda (r) (assert (static r))) env0)
         (assert (goal goal0))
+        (spawn-game-logic player0 goal0)
         enemies))
 
 ;; state is a (non-empty-listof level), the first of which is the current level
