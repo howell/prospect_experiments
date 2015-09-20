@@ -579,7 +579,8 @@
         (draw-victory dc)
         (quit '())]
        [defeat?
-         (quit '())]
+         (transition (game-state (rect (posn -100 -100) 0 0) '() (rect (posn -100 -100) 0 0) (hash))
+                     '())]
        [else
         (transition (game-state new-player new-env new-goal enemies-new)
                     '())])]
