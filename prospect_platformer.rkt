@@ -707,37 +707,6 @@
 (spawn-vertical-motion (/ (* 1.0 GRAVITY-PER-SEC) FRAMES-PER-SEC) JUMP-V MAX-V)
 (spawn-clock (/ 1000 FRAMES-PER-SEC))
 
-(define level0
-  (level PLAYER0
-         (list (rect (posn 0 200) 150 10)
-               (rect (posn 400 200) 1000 10)
-               (rect (posn 200 178) 50 10)
-               (rect (posn 300 150) 50 10))
-         GOAL0
-         (list (make-horiz-enemy 0 180 20 20 130 2)
-               (make-horiz-enemy 200 158 20 20 30 1)
-               (make-horiz-enemy 300 130 20 20 30 1)
-               (make-horiz-enemy 400 180 20 20 180 3))))
-
-
-(let ([x0 275]
-      [y0 50]
-      [my-w 10]
-      [my-h 50])
-  (spawn
-   (lambda (e s)
-     (match-define (cons n (posn old-x old-y)) s)
-     (match e
-       [(message (timer-tick))
-        (define new-y (+ y0 (+ 50 (abs (- (modulo n 100) 50)))))
-        (transition (cons (add1 n) (posn old-x new-y))
-                    (patch-seq (retract (static ?))
-                               (assert (static (rect (posn old-x new-y) my-w my-h)))))]
-       [_ #f]))
-   (cons 0 (posn x0 y0))
-   (sub (timer-tick))
-   (assert (static (rect (posn x0 y0) my-w my-h)))))
-
 ;; nat nat nat nat (nat symbol -> (U #f (constreeof message))) -> spawn
 (define (make-enemy x0 y0 w h mover)
   (define id (gensym 'enemy))
@@ -767,3 +736,38 @@
                 (list (message (move-x id (if (< (modulo n (floor (* 2 THRESHOLD))) THRESHOLD)
                                               dx
                                               (- dx))))))))
+
+
+(define level0
+  (level PLAYER0
+         (list (rect (posn 0 200) 150 10)
+               (rect (posn 400 200) 1000 10)
+               (rect (posn 200 178) 50 10)
+               (rect (posn 300 150) 50 10))
+         GOAL0
+         (list (make-horiz-enemy 0 180 20 20 130 2)
+               (make-horiz-enemy 200 158 20 20 30 1)
+               (make-horiz-enemy 300 130 20 20 30 1)
+               (make-horiz-enemy 400 180 20 20 180 3))))
+
+(spawn-level-manager (list level0))
+
+
+#;(let ([x0 275]
+      [y0 50]
+      [my-w 10]
+      [my-h 50])
+  (spawn
+   (lambda (e s)
+     (match-define (cons n (posn old-x old-y)) s)
+     (match e
+       [(message (timer-tick))
+        (define new-y (+ y0 (+ 50 (abs (- (modulo n 100) 50)))))
+        (transition (cons (add1 n) (posn old-x new-y))
+                    (patch-seq (retract (static ?))
+                               (assert (static (rect (posn old-x new-y) my-w my-h)))))]
+       [_ #f]))
+   (cons 0 (posn x0 y0))
+   (sub (timer-tick))
+   (assert (static (rect (posn x0 y0) my-w my-h)))))
+
