@@ -270,27 +270,35 @@
                                          (list (message (y-collision 'player)))
                                          '()))))])]
     [(message (move-x enemy-id dx))
-     (match-define (enemy _ e-rect) (hash-ref enemies-old enemy-id))
-     (define e-rect-new (car (move-player-x e-rect dx env-old)))
-     (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
-     (if (overlapping-rects? player-old e-rect-new)
-         (quit (list (assert (defeat))))
-         (transition (game-state player-old env-old cur-goal enemies-new)
-                     (message (enemy enemy-id e-rect-new))))]
+     (define maybe-enemy (hash-ref enemies-old enemy-id #f))
+     (if maybe-enemy
+         (begin
+          (match-define (enemy _ e-rect) maybe-enemy)
+          (define e-rect-new (car (move-player-x e-rect dx env-old)))
+          (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
+          (if (overlapping-rects? player-old e-rect-new)
+              (quit (list (assert (defeat))))
+              (transition (game-state player-old env-old cur-goal enemies-new)
+                          (message (enemy enemy-id e-rect-new)))))
+         #f)]
     [(message (move-y enemy-id dy))
-     (match-define (enemy _ e-rect) (hash-ref enemies-old enemy-id))
-     (match-define (cons e-rect-new col?) (move-player-y e-rect dy env-old))
-     (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
-     (when (overlapping-rects? player-old e-rect-new)
-       (if (> dy 0)
-           (quit (list (assert (defeat)))) ;; enemy fell on player
-           (transition (game-state player-old env-old cur-goal (hash-remove enemies-new enemy-id))
-                       (list (message (kill-enemy enemy-id))))))
-     (transition (game-state player-old env-old cur-goal enemies-new)
-                 (cons (message (enemy enemy-id e-rect-new))
-                       (if col?
-                           (list (message (y-collision enemy-id)))
-                           '())))]
+     (define maybe-enemy (hash-ref enemies-old enemy-id #f))
+     (if maybe-enemy
+         (begin
+          (match-define (enemy _ e-rect) maybe-enemy)
+          (match-define (cons e-rect-new col?) (move-player-y e-rect dy env-old))
+          (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
+          (when (overlapping-rects? player-old e-rect-new)
+            (if (> dy 0)
+                (quit (list (assert (defeat)))) ;; enemy fell on player
+                (transition (game-state player-old env-old cur-goal (hash-remove enemies-new enemy-id))
+                            (list (message (kill-enemy enemy-id))))))
+          (transition (game-state player-old env-old cur-goal enemies-new)
+                      (cons (message (enemy enemy-id e-rect-new))
+                            (if col?
+                                (list (message (y-collision enemy-id)))
+                                '()))))
+         #f)]
     [(message (jump-request))
      ;; check if there is something right beneath the player
      (if (cdr (move-player-y (game-state-player s) 1 (game-state-env s)))
