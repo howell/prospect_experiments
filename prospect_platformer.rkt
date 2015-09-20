@@ -291,6 +291,7 @@
          (sub (move-y ? ?))
          (sub (static ?))
          (sub (jump-request))
+         (sub (enemy ? ?))
          (assert (player player0))
          (assert goal0)))
 
@@ -553,6 +554,7 @@
    (sub (timer-tick))
    (sub (static ?))
    (sub (player ?))
+   (sub (enemy ? ?))
    (sub (goal ?))
    (sub (defeat))
    (sub (victory))))
@@ -644,4 +646,15 @@
    (cons 0 (posn x0 y0))
    (sub (timer-tick))
    (assert (static (rect (posn x0 y0) my-w my-h)))))
+
+(let ([x0 100]
+      [y0 100]
+      [my-w 20]
+      [my-h 20]
+      [id (gensym 'enemy)])
+  (spawn
+   (lambda (e n)
+     #f)
+   (sub (timer-tick))
+   (assert (enemy id (rect (posn x0 y0) my-w my-h)))))
 
