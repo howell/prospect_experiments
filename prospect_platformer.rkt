@@ -479,14 +479,16 @@
   (send dc set-pen color 1 'solid)
   (send dc draw-rectangle x0 y0 w h))
 
-;; drawing-context rect (listof rect) goal -> void
+;; drawing-context rect (listof rect) goal (listof enemy) -> void
 ;; draws the game
-(define (draw-game dc player env gl)
+(define (draw-game dc player env gl enemies)
   (send dc suspend-flush)
   (send dc clear)
   (for ([r env])
     (draw-rect dc r "black"))
   (draw-goal dc gl)
+  (for ([e enemies])
+    (draw-rect dc (enemy-rect e) "red"))
   (draw-rect dc player "blue")
   (send dc resume-flush))
 
