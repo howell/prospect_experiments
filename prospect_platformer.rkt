@@ -659,7 +659,7 @@
        [(message timer-tick)
         (printf "hi!\n")
         (transition (add1 n)
-                    (list (message (move-x id
+                    '() #'(list (message (move-x id
                                            ((if (< (modulo n 100) 50) + -) 2)))))]
        [_ #f]))
    (sub (timer-tick))
