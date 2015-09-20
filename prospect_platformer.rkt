@@ -7,7 +7,7 @@
 ;; processes in the system:
 ;; Level Manager Process
 ;;   Needs to create the first level when spawned
-;;   When the player reaches the goal (a (victory) message) retract the current level and spawn the next by:
+;;   When the player reaches the goal (a (level-complete) message) retract the current level and spawn the next by:
 ;;     - spawning a game logic process
 ;;     - spawning a rendering process
 ;;     - asserting the environment as (static rect)
@@ -24,7 +24,7 @@
 ;;   The initial location of enemies is determined by assertions of the shape (enemy id rect).
 ;;   If the player kills an enemy then sends a (kill-enemy id) message.
 ;;   Asserts the location of the goal as (goal rect).
-;;   When the player reaches the goal, quits and sends the message (victory)
+;;   When the player reaches the goal, quits and sends the message (level-complete)
 ;;   When the player loses (leaves the map), quits and sends the message (defeat)
 ;; Timer Process:
 ;;   Sends a (timer-tick) message at a fixed rate
@@ -49,7 +49,7 @@
 ;;   - (static rect) assertions
 ;;   - (player rect) messages
 ;;   - (goal rect) messages
-;;   - (victory)/(defeat) assertions
+;;   - (level-complete)/(defeat) assertions
 ;;   - (enemy id rect) messages
 ;;   Redraws every timer tick.
 
@@ -101,7 +101,7 @@
 
 (struct timer-tick () #:transparent)
 
-(struct victory () #:transparent)
+(struct level-complete () #:transparent)
 (struct defeat () #:transparent)
 
 ;; rect * (listof rect) * rect * (hashof symbol -> enemy)
@@ -247,8 +247,8 @@
 ;; If the player is moving down/enemy is moving up and they collide, send a (kill-enemy id)
 ;; message. Otherwise if the player and the enemy collide the game is over.
 ;; asserts the location of the goal as (goal g)
-;; quits and asserts (victory) if the player reaches the goal
-;; quits and asserts (defeat) if the player leaves the map
+;; quits and messages (level-complete) if the player reaches the goal
+;; quits and messages (defeat) if the player leaves the map
 (define (game-logic-behavior e s)
   (match-define (game-state player-old env-old cur-goal enemies-old) s)
   (match e
@@ -256,11 +256,11 @@
      (define player-n (car (move-player-x player-old dx env-old)))
      (cond
        [(overlapping-rects? player-n (goal-rect cur-goal))
-        (quit (list (assert (victory))))]
+        (quit (list (message (level-complete))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
-        (quit (list (assert (defeat))))]
+        (quit (list (message (defeat))))]
        [(ormap (lambda (e) (overlapping-rects? player-n e)) (map enemy-rect (hash-values enemies-old)))
-        (quit (list (assert (defeat))))]
+        (quit (list (message (defeat))))]
        [else (transition (game-state player-n env-old cur-goal enemies-old)
                          (list (message (player player-n))))])]
     [(message (move-y 'player dy))
@@ -272,7 +272,7 @@
      (define kill-messages (map (lambda (e) (message (kill-enemy (enemy-id e)))) col-enemies))
      (cond
        [(overlapping-rects? player-n (goal-rect cur-goal))
-        (quit (list (assert (victory))))]
+        (quit (list (message (level-complete))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
         (quit (list (assert (defeat))))]
        [else (transition (game-state player-n env-old cur-goal enemies-new)
@@ -283,18 +283,20 @@
                                          '()))))])]
     [(message (move-x enemy-id dx))
      (define maybe-enemy (hash-ref enemies-old enemy-id #f))
+     ;; the enemy might not be in the hash if it was recently killed
      (if maybe-enemy
          (block
           (match-define (enemy _ e-rect) maybe-enemy)
           (define e-rect-new (car (move-player-x e-rect dx env-old)))
           (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
           (if (overlapping-rects? player-old e-rect-new)
-              (quit (list (assert (defeat))))
+              (quit (list (message (defeat))))
               (transition (game-state player-old env-old cur-goal enemies-new)
                           (message (enemy enemy-id e-rect-new)))))
          #f)]
     [(message (move-y enemy-id dy))
      (define maybe-enemy (hash-ref enemies-old enemy-id #f))
+     ;; the enemy might not be in the hash if it was recently killed
      (if maybe-enemy
          (block
           (match-define (enemy _ e-rect) maybe-enemy)
@@ -302,7 +304,7 @@
           (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
           (when (overlapping-rects? player-old e-rect-new)
             (if (> dy 0)
-                (quit (list (assert (defeat)))) ;; enemy fell on player
+                (quit (list (message (defeat)))) ;; enemy fell on player
                 (transition (game-state player-old env-old cur-goal (hash-remove enemies-new enemy-id))
                             (list (message (kill-enemy enemy-id))))))
           (transition (game-state player-old env-old cur-goal enemies-new)
@@ -568,7 +570,7 @@
      (define new-player (if (set-empty? player-s) old-player (car (set-first player-s))))
      (define goal-s (matcher-project/set p-added (compile-projection (goal (?!)))))
      (define new-goal (if (set-empty? goal-s) old-goal (goal (car (set-first goal-s)))))
-     (define victory? (not-set-empty? (matcher-project/set p-added (compile-projection (victory)))))
+     (define victory? (not-set-empty? (matcher-project/set p-added (compile-projection (level-complete)))))
      (define defeat? (not-set-empty? (matcher-project/set p-added (compile-projection (defeat)))))
      (define-values (enemies-added enemies-removed) (patch-enemies e))
      (define enemies-new (update-enemy-hash enemies-added enemies-removed old-enemies))
@@ -609,8 +611,11 @@
    (sub (goal ?))
    (sub (defeat))
    (sub (kill-enemy ?))
-   (sub (victory))))
+   (sub (level-complete))))
 
+;; state is a (non-empty-listof level)
+(define (level-manager-behavior e s)
+  )
 
 ;; gui stuff
 (define game-canvas%
