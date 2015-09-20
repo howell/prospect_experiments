@@ -189,7 +189,8 @@
 (define enemy-detector (compile-projection (enemy (?!) (?!))))
 (define (patch-enemies p)
   (define-values (added removed) (patch-project/set p enemy-detector))
-  (values (set-map added enemy) (set-map removed enemy)))
+  (values (set-map added (lambda (l) (enemy (first l) (second l))))
+          (set-map removed (lambda (l) (enemy (first l) (second l))))))
 
 ;; (listof enemy) (listof enemy) (hashof symbol -> enemy) -> (hashof symbol -> enemy)
 ;; update a hash of enemies with additions and subtractions
