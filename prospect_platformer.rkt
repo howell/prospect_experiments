@@ -232,8 +232,8 @@
 ;; object.
 ;; sends a message with the location of the player every time it moves, (player rect)
 ;; sends a message with the location of an enemy each time it moves, (enemy id rect)
-;; If the player drops on to an enemy, send a (kill-enemy id) message. Otherwise if the
-;; player and the enemy collide the game is over.
+;; If the player is moving down/enemy is moving up and they collide, send a (kill-enemy id)
+;; message. Otherwise if the player and the enemy collide the game is over.
 ;; asserts the location of the goal as (goal g)
 ;; quits and asserts (victory) if the player reaches the goal
 ;; quits and asserts (defeat) if the player leaves the map
@@ -275,6 +275,11 @@
      (match-define (enemy _ e-rect) (hash-ref enemies-old enemy-id))
      (match-define (cons e-rect-new col?) (move-player-y e-rect dy env-old))
      (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
+     (when (overlapping-rects? player-old e-rect-new)
+       (if (> dy 0)
+           (quit (list (assert (defeat)))) ;; enemy fell on player
+           (transition (game-state player-old env-old cur-goal (hash-remove enemies-new enemy-id))
+                       (list (message (kill-enemy enemy-id))))))
      (transition (game-state player-old env-old cur-goal enemies-new)
                  (cons (message (enemy enemy-id e-rect-new))
                        (if col?
