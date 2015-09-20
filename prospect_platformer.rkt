@@ -243,6 +243,15 @@
      (define enemies-new (hash-set enemy-id (enemy enemy-id e-rect-new)))
      (transition (game-state player-old env-old cur-goal enemies-new)
                  (message (enemy enemy-id e-rect-new)))]
+    [(message (move-y enemy-id dy))
+     (match-define (enemy _ e-rect) (hash-ref enemies-old enemy-id))
+     (match-define (cons e-rect-new col?) (move-player-y e-rect dy env-old))
+     (define enemies-new (hash-set enemy-id (enemy enemy-id e-rect-new)))
+     (transition (game-state player-old env-old cur-goal enemies-new)
+                 (cons (message (enemy enemy-id e-rect-new))
+                       (if col?
+                           (list (message (y-collision enemy-id)))
+                           '())))]
     [(message (jump-request))
      ;; check if there is something right beneath the player
      (if (cdr (move-player-y (game-state-player s) 1 (game-state-env s)))
