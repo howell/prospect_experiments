@@ -102,6 +102,7 @@
 (struct timer-tick () #:transparent)
 
 (struct level-complete () #:transparent)
+(struct victory () #:transparent)
 (struct defeat () #:transparent)
 
 ;; rect * (listof rect) * rect * (hashof symbol -> enemy)
@@ -274,7 +275,7 @@
        [(overlapping-rects? player-n (goal-rect cur-goal))
         (quit (list (message (level-complete))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
-        (quit (list (assert (defeat))))]
+        (quit (list (message (defeat))))]
        [else (transition (game-state player-n env-old cur-goal enemies-new)
                          (cons kill-messages
                                (cons (message (player player-n))
@@ -303,7 +304,7 @@
           (match-define (cons e-rect-new col?) (move-player-y e-rect dy env-old))
           (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
           (when (overlapping-rects? player-old e-rect-new)
-            (if (> dy 0)
+            (if (positive? dy)
                 (quit (list (message (defeat)))) ;; enemy fell on player
                 (transition (game-state player-old env-old cur-goal (hash-remove enemies-new enemy-id))
                             (list (message (kill-enemy enemy-id))))))
