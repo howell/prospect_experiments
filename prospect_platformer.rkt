@@ -5,6 +5,14 @@
 ;; (key-press key) or (key-release key) messages
 ;; 
 ;; processes in the system:
+;; Level Manager Process
+;;   Needs to create the first level when spawned
+;;   When the player reaches the goal (a (victory) message) retract the current level and spawn the next by:
+;;     - spawning a game logic process
+;;     - spawning a rendering process
+;;     - asserting the environment as (static rect)
+;;     - asserts the initial location of the player as (player rect)
+;;     - spawning any enemies
 ;; Game Logic Process:
 ;;   Decides where the player is on the map and when the game is over.
 ;;   Processes (jump-request) messages. If the player is allowed to jump sends a (jump) message.
@@ -16,8 +24,8 @@
 ;;   The initial location of enemies is determined by assertions of the shape (enemy id rect).
 ;;   If the player kills an enemy then sends a (kill-enemy id) message.
 ;;   Asserts the location of the goal as (goal rect).
-;;   When the player reaches the goal, quits and asserts (victory)
-;;   When the player loses (leaves the map), quits and asserts (defeat)
+;;   When the player reaches the goal, quits and sends the message (victory)
+;;   When the player loses (leaves the map), quits and sends the message (defeat)
 ;; Timer Process:
 ;;   Sends a (timer-tick) message at a fixed rate
 ;; Player Process:
@@ -98,6 +106,9 @@
 
 ;; rect * (listof rect) * rect * (hashof symbol -> enemy)
 (struct game-state (player env goal enemies) #:transparent)
+
+;; rect * (listof rect) * rect * (listof spawn)
+(struct level (player0 env0 goal enemies) #:transparent
 
 ;; translate key presses into commands
 ;; asserts (move-left)/(move-right) while the left/right arrow key is held down
