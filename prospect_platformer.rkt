@@ -714,4 +714,4 @@
 
 (make-enemy 200 158 20 20
             (lambda (n id)
-              (list (message (move-x id ((if (< (modulo n 30) 15) + -) 1))))))
+              (list (message (move-x id ((if (< (modulo n 60) 30) + -) 1))))))
