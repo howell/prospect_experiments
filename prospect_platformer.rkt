@@ -563,6 +563,10 @@
      (define new-enemies (hash-set old-enemies id (enemy id rect)))
      (transition (game-state old-player old-env old-goal new-enemies)
                  '())]
+    [(message (kill-enemy id))
+     (define new-enemies (hash-remove old-enemies id))
+     (transition (game-state old-player old-env old-goal new-enemies)
+                 '())]
     [(message (timer-tick))
      (draw-game dc old-player old-env old-goal (hash-values old-enemies))
      #f]
@@ -578,6 +582,7 @@
    (sub (enemy ? ?))
    (sub (goal ?))
    (sub (defeat))
+   (sub (kill-enemy ?))
    (sub (victory))))
 
 ;; gui stuff
