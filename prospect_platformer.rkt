@@ -186,6 +186,21 @@
   (lambda (m)
     (set-map (matcher-project/set m static-detector) car)))
 
+(define enemy-detector (compile-projection (enemy (?!) (?!))))
+(define (patch-enemies p)
+  (define-values (added removed) (patch-project/set p enemy-detector))
+  (values (set-map added enemy) (set-map removed enemy)))
+
+;; (listof enemy) (listof enemy) (hashof symbol -> enemy) -> (hashof symbol -> enemy)
+;; update a hash of enemies with additions and subtractions
+(define (update-enemy-hash added-enemies removed-enemies h)
+  (define h2 (for/fold ([acc h])
+             (e removed-enemies)
+    (hash-remove acc (enemy-id e))))
+  (for/fold ([acc h2])
+            (e added-enemies)
+    (hash-set acc (enemy-id e) e)))
+
 ;; the game logic process keeps track of the location of the player and the environment.
 ;; processes move-x and move-y commands from the player and enemies. When a collision
 ;; along the y-axis occurs it sends a (y-collision id) message with the id of the moving
@@ -231,6 +246,7 @@
      (define removed (static-rects-matcher p-removed))
      (define added (static-rects-matcher p-added))
      (define new-env (append added (remove* removed (game-state-env s))))
+     (define-values (enemies-added enemies-removed) (patch-enemies e))
      (transition (game-state player-old new-env cur-goal enemies-old) '())]
     [_ #f]))
 
