@@ -643,6 +643,7 @@
    levels
    (sub (defeat))
    (sub (level-complete))
+   (printf "~v\n" (level->actions (first levels)))
    (level->actions (first levels))))
 
 ;; gui stuff
