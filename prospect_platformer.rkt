@@ -627,7 +627,8 @@
 (define (level-manager-behavior e s)
   (match e
     [(message (defeat))
-     #f]
+     (transition s (patch-seq (retract ?)
+                              (level->actions (car s))))]
     [(message (level-complete))
      (match (cdr s)
        [(cons next-level _) (transition (cdr s) (patch-seq (retract ?)
