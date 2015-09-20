@@ -163,3 +163,4 @@ link: bad variable linkage;
 *** Have each process listen for a (game-over) message and (quit) on reception
 **** compose every behavior with a behavior that implements this
 **** sounds a lot like inheritance...
+** Rather than having game logic and renderer process maintain a `game-state` struct just have the game logic send its state as a message
