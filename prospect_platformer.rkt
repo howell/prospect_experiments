@@ -495,6 +495,7 @@
   (spawn
    (render-behavior dc)
    (game-state (rect (posn 0 0) 0 0) '() (goal (rect (posn -100 -100) 0 0)) (hash))
+   (sub (timer-tick))
    (sub (static ?))
    (sub (player ?))
    (sub (goal ?))
