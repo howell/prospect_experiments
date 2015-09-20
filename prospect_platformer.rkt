@@ -649,13 +649,16 @@
    (assert (static (rect (posn x0 y0) my-w my-h)))))
 
 (let ([x0 100]
-      [y0 100]
+      [y0 180]
       [my-w 20]
       [my-h 20]
       [id (gensym 'enemy)])
   (spawn
    (lambda (e n)
-     #f)
+     (match e)
+     [(message timer-tick)
+      (transition (add1 n)
+                  (list (message (move-x id
+                                         ((if (< (modulo n 100) 50) + -) 2)))))])
    (sub (timer-tick))
    (assert (enemy id (rect (posn x0 y0) my-w my-h)))))
-
