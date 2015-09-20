@@ -207,6 +207,16 @@
 (check-equal? (update-enemy-hash (list (enemy 'foo (rect (posn 0 0) 1 1))) '() (hash))
               (hash 'foo (enemy 'foo (rect (posn 0 0) 1 1))))
 
+(check-equal? (update-enemy-hash '()
+                                 (list (enemy 'foo (rect (posn 0 0) 1 1)))
+                                 (hash 'foo (enemy 'foo (rect (posn 0 0) 1 1))))
+              (hash))
+
+(check-equal? (update-enemy-hash (list (enemy 'foo (rect (posn 1 1) 1 1)))
+                                 (list (enemy 'foo (rect (posn 0 0) 1 1)))
+                                 (hash 'foo (enemy 'foo (rect (posn 0 0) 1 1))))
+              (hash 'foo (enemy 'foo (rect (posn 1 1) 1 1))))
+
 ;; the game logic process keeps track of the location of the player and the environment.
 ;; processes move-x and move-y commands from the player and enemies. When a collision
 ;; along the y-axis occurs it sends a (y-collision id) message with the id of the moving
