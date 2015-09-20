@@ -616,11 +616,11 @@
 ;; level -> (constreeof action)
 (define (level->actions l)
   (match-define (level player0 env0 goal0 enemies) l)
-  (list (assert (player player0))
-        (map (lambda (r) (assert (static r))) env0)
-        (assert (goal goal0))
-        (spawn-game-logic player0 goal0)
-        enemies))
+  (flatten (list (assert (player player0))
+                 (map (lambda (r) (assert (static r))) env0)
+                 (assert (goal goal0))
+                 (spawn-game-logic player0 goal0)
+                 enemies)))
 
 ;; state is a (non-empty-listof level), the first of which is the current level
 ;; need a way to kill all enemies
@@ -754,20 +754,20 @@
 
 
 #;(let ([x0 275]
-      [y0 50]
-      [my-w 10]
-      [my-h 50])
-  (spawn
-   (lambda (e s)
-     (match-define (cons n (posn old-x old-y)) s)
-     (match e
-       [(message (timer-tick))
-        (define new-y (+ y0 (+ 50 (abs (- (modulo n 100) 50)))))
-        (transition (cons (add1 n) (posn old-x new-y))
-                    (patch-seq (retract (static ?))
-                               (assert (static (rect (posn old-x new-y) my-w my-h)))))]
-       [_ #f]))
-   (cons 0 (posn x0 y0))
-   (sub (timer-tick))
-   (assert (static (rect (posn x0 y0) my-w my-h)))))
+        [y0 50]
+        [my-w 10]
+        [my-h 50])
+    (spawn
+     (lambda (e s)
+       (match-define (cons n (posn old-x old-y)) s)
+       (match e
+         [(message (timer-tick))
+          (define new-y (+ y0 (+ 50 (abs (- (modulo n 100) 50)))))
+          (transition (cons (add1 n) (posn old-x new-y))
+                      (patch-seq (retract (static ?))
+                                 (assert (static (rect (posn old-x new-y) my-w my-h)))))]
+         [_ #f]))
+     (cons 0 (posn x0 y0))
+     (sub (timer-tick))
+     (assert (static (rect (posn x0 y0) my-w my-h)))))
 
