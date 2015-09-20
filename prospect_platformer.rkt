@@ -232,9 +232,8 @@
 ;; object.
 ;; sends a message with the location of the player every time it moves, (player rect)
 ;; sends a message with the location of an enemy each time it moves, (enemy id rect)
-;;
-;; TODO >>>>>>>>> If the player and an enemy collide __________ <<<<<<<<<<<<<<<< TODO
-;;
+;; If the player drops on to an enemy, send a (kill-enemy id) message. Otherwise if the
+;; player and the enemy collide the game is over.
 ;; asserts the location of the goal as (goal g)
 ;; quits and asserts (victory) if the player reaches the goal
 ;; quits and asserts (defeat) if the player leaves the map
@@ -247,6 +246,8 @@
        [(overlapping-rects? player-n (goal-rect cur-goal))
         (quit (list (assert (victory))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
+        (quit (list (assert (defeat))))]
+       [(ormap (lambda (e) (overlapping-rects? player-n e)) (map enemy-rect (hash-values enemies-old)))
         (quit (list (assert (defeat))))]
        [else (transition (game-state player-n env-old cur-goal enemies-old)
                          (list (message (player player-n))))])]
