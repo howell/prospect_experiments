@@ -652,7 +652,7 @@
    (sub (timer-tick))
    (assert (static (rect (posn x0 y0) my-w my-h)))))
 
-(let ([x0 100]
+(let ([x0 0]
       [y0 180]
       [my-w 20]
       [my-h 20]
@@ -663,7 +663,7 @@
        [(message timer-tick)
         (transition (add1 n)
                     (list (message (move-x id
-                                           ((if (< (modulo n 100) 50) + -) 2)))))]
+                                           ((if (< (modulo n 200) 100) + -) 2)))))]
        [_ #f]))
    0
    (sub (timer-tick))
