@@ -661,6 +661,6 @@
         (transition (add1 n)
                     '() #'(list (message (move-x id
                                            ((if (< (modulo n 100) 50) + -) 2)))))]
-       [_ #f]))
+       [_ (printf "foo\n") #f]))
    (sub (timer-tick))
    (assert (enemy id (rect (posn x0 y0) my-w my-h)))))
