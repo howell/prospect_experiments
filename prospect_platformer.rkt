@@ -710,8 +710,8 @@
 
 (make-enemy 0 180 20 20
             (lambda (n id)
-              (list (message (move-x id ((if (< (modulo n 150) 75) + -) 2))))))
+              (list (message (move-x id ((if (< (modulo n 130) 65) + -) 2))))))
 
 (make-enemy 200 158 20 20
             (lambda (n id)
-              (list (message (move-x id ((if (< (modulo n 50) 25) + -) 2))))))
+              (list (message (move-x id ((if (< (modulo n 30) 15) + -) 2))))))
