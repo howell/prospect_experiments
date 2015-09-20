@@ -578,6 +578,8 @@
        [victory?
         (draw-victory dc)
         (quit '())]
+       [defeat?
+         (quit '())]
        [else
         (transition (game-state new-player new-env new-goal enemies-new)
                     '())])]
@@ -606,6 +608,7 @@
    (sub (player ?))
    (sub (enemy ? ?))
    (sub (goal ?))
+   (sub (defeat))
    (sub (kill-enemy ?))
    (sub (level-complete))))
 
