@@ -706,14 +706,19 @@
 (spawn-horizontal-motion (/ (* 1.0 DX-PER-SEC) FRAMES-PER-SEC))
 (spawn-vertical-motion (/ (* 1.0 GRAVITY-PER-SEC) FRAMES-PER-SEC) JUMP-V MAX-V)
 (spawn-clock (/ 1000 FRAMES-PER-SEC))
-(spawn-game-logic PLAYER0 GOAL0)
-(spawn
- (lambda (e s) #f)
- (void)
- (assert (static (rect (posn 0 200) 150 10)))
- (assert (static (rect (posn 400 200) 1000 10)))
- (assert (static (rect (posn 200 178) 50 10)))
- (assert (static (rect (posn 300 150) 50 10))))
+
+(define level0
+  (level PLAYER0
+         (list (rect (posn 0 200) 150 10)
+               (rect (posn 400 200) 1000 10)
+               (rect (posn 200 178) 50 10)
+               (rect (posn 300 150) 50 10))
+         GOAL0
+         (list (make-horiz-enemy 0 180 20 20 130 2)
+               (make-horiz-enemy 200 158 20 20 30 1)
+               (make-horiz-enemy 300 130 20 20 30 1)
+               (make-horiz-enemy 400 180 20 20 180 3))))
+
 
 (let ([x0 275]
       [y0 50]
@@ -762,8 +767,3 @@
                 (list (message (move-x id (if (< (modulo n (floor (* 2 THRESHOLD))) THRESHOLD)
                                               dx
                                               (- dx))))))))
-
-(make-horiz-enemy 0 180 20 20 130 2)
-(make-horiz-enemy 200 158 20 20 30 1)
-(make-horiz-enemy 300 130 20 20 30 1)
-(make-horiz-enemy 400 180 20 20 180 3)
