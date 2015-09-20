@@ -14,6 +14,7 @@
 ;;   The new location of an enemy is sent as a (enemy id rect) message.
 ;;   The environment is determined by assertions of the shape (static rect).
 ;;   The initial location of enemies is determined by assertions of the shape (enemy id rect).
+;;   If the player kills an enemy then sends a (kill-enemy id) message.
 ;;   Asserts the location of the goal as (goal rect).
 ;;   When the player reaches the goal, quits and asserts (victory)
 ;;   When the player loses (leaves the map), quits and asserts (defeat)
@@ -31,6 +32,10 @@
 ;;   Sends (move-y 'player dy) every (timer-tick).
 ;;   Interprets (jump) messages into upward motion.
 ;;   When a (y-collision 'player) is detected reset velocity to 0
+;; Enemy Process(es):
+;;   Asserts the initial position and id as (enemy id (rect posn0 w h)).
+;;   Moves by sending (move-x id dx) and (move-y id dy) messages.
+;;   Quits when a (kill-enemy id) message is received.
 ;; Rendering Process:
 ;;   Tracks and draws the state of the game:
 ;;   - (static rect) assertions
@@ -71,6 +76,9 @@
 
 ;; any * rect
 (struct enemy (id rect) #:transparent)
+
+;; any
+(struct kill-enemy (id) #:transparent)
 
 ;; rect
 (struct goal (rect) #:transparent)
@@ -664,7 +672,10 @@
         (transition (add1 n)
                     (list (message (move-x id
                                            ((if (< (modulo n 200) 100) + -) 2)))))]
+       [(kill-enemy (== id))
+        (quit '())]
        [_ #f]))
    0
    (sub (timer-tick))
+   (sub (kill-enemy id))
    (assert (enemy id (rect (posn x0 y0) my-w my-h)))))
