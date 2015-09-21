@@ -577,17 +577,10 @@
      (define new-player (if (set-empty? player-s) old-player (car (set-first player-s))))
      (define goal-s (matcher-project/set p-added (compile-projection (goal (?!)))))
      (define new-goal (if (set-empty? goal-s) old-goal (car (set-first goal-s))))
-     ;#;(define victory? (not-set-empty? (matcher-project/set p-added (compile-projection (victory)))))
      (define-values (enemies-added enemies-removed) (patch-enemies e))
      (define enemies-new (update-enemy-hash enemies-added enemies-removed old-enemies))
-     (cond
-       #;[victory?
-          (printf "victory!\n")
-          (draw-victory dc)
-          (quit '())]
-       [else
-        (transition (game-state new-player new-env new-goal enemies-new)
-                    '())])]
+     (transition (game-state new-player new-env new-goal enemies-new)
+                 '())]
     [(message (player new-player))
      (transition (game-state new-player old-env old-goal old-enemies)
                  '())]
@@ -600,7 +593,6 @@
      (transition (game-state old-player old-env old-goal new-enemies)
                  '())]
     [(message (victory))
-     (printf "\nvictory!\n")
      (draw-victory dc)
      (quit '())]
     [(message (defeat))
@@ -631,7 +623,6 @@
   (match-define (level player0 env0 goal0 enemies) l)
   (flatten (list (assert (player player0))
                  (map (lambda (r) (assert (static r))) env0)
-                 #;(spawn-game-logic player0 goal0)
                  (map (lambda (e) (assert (spawn-enemy e))) enemies))))
 
 ;; state is a (non-empty-listof level), the first of which is the current level
