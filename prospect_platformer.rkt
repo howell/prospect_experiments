@@ -638,14 +638,12 @@
 
 ;; (non-empty-listof level) -> spawn
 (define (spawn-level-manager levels)
-  (printf "~v\n"
   (spawn
    level-manager-behavior
    levels
-   (sub (defeat))
-   (sub (level-complete))
-   #;(printf "~v\n" (level->actions (first levels)))
-   (level->actions (first levels)))))
+   (apply patch-seq (flatten (list (sub (defeat))
+                                   (sub (level-complete))
+                                   (level->actions (first levels)))))))
 
 ;; gui stuff
 (define game-canvas%
