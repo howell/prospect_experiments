@@ -52,6 +52,9 @@
 ;;   - (level-complete)/(defeat) assertions
 ;;   - (enemy id rect) messages
 ;;   Redraws every timer tick.
+;; Enemy Making Process:
+;;   Spawns enemy processes on demand.
+;;   Listens for (spawn-enemy spawn) and spawns the argument
 
 (require "./geometry.rkt"
          "./periodic_timer.rkt"
@@ -85,6 +88,9 @@
 
 ;; any * rect
 (struct enemy (id rect) #:transparent)
+
+;; spawn
+(struct spawn-enemy (spawn) #:transparent)
 
 ;; any
 (struct kill-enemy (id) #:transparent)
@@ -627,16 +633,18 @@
 (define (level-manager-behavior e s)
   (match e
     [(message (defeat))
-     (transition s (patch-seq (retract (static ?))
-                              (retract (goal ?))
-                              (retract (player ?))
-                              (level->actions (car s))))]
+     (transition s (patch-seq (flatten (list (retract (static ?))
+                                             (retract (goal ?))
+                                             (retract (player ?))
+                                             (retract (spawn-enemy ?))
+                                             (level->actions (car s))))))]
     [(message (level-complete))
      (match (cdr s)
-       [(cons next-level _) (transition (cdr s) (patch-seq (retract (static ?))
-                                                           (retract (goal ?))
-                                                           (retract (player ?))
-                                                           (level->actions next-level)))]
+       [(cons next-level _) (transition (cdr s) (patch-seq (flatten (list (retract (static ?))
+                                                                          (retract (goal ?))
+                                                                          (retract (player ?))
+                                                                          (retract (spawn-enemy ?))
+                                                                          (level->actions next-level)))))]
        [_ (quit (list (message (victory))))])]
     [_ #f]))
 
@@ -648,6 +656,13 @@
    (apply patch-seq (flatten (list (sub (defeat))
                                    (sub (level-complete))
                                    (level->actions (first levels)))))))
+
+;; enemy spawner
+(define (enemy-spawner-behavior e s)
+  (match e
+    [(? patch-added?)
+     #f]
+    [_ #f]))
 
 ;; gui stuff
 (define game-canvas%
