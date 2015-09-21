@@ -631,7 +631,6 @@
   (match-define (level player0 env0 goal0 enemies) l)
   (flatten (list (assert (player player0))
                  (map (lambda (r) (assert (static r))) env0)
-                 (assert (goal goal0))
                  #;(spawn-game-logic player0 goal0)
                  (map (lambda (e) (assert (spawn-enemy e))) enemies))))
 
@@ -643,18 +642,16 @@
      (match-define (level player0 env0 goal0 enemies) (car s))
      (transition s (list (spawn-game-logic player0 goal0)
                          (retract (static ?))
-                         (retract (goal ?))
                          (retract (player ?))
                          (retract (spawn-enemy ?))
                          (apply patch-seq (flatten (level->actions (car s))))))]
     [(message (level-complete))
      (match (cdr s)
-       [(cons next-level _) (transition (cdr s) (list  (spawn-game-logic (level-player0 next-level) (level-goal next-level))
-                                                       (retract (static ?))
-                                                       (retract (goal ?))
-                                                       (retract (player ?))
-                                                       (retract (spawn-enemy ?))
-                                                       (apply patch-seq (flatten (level->actions next-level)))))]
+       [(cons next-level _) (transition (cdr s) (list (spawn-game-logic (level-player0 next-level) (level-goal next-level))
+                                                      (retract (static ?))
+                                                      (retract (player ?))
+                                                      (retract (spawn-enemy ?))
+                                                      (apply patch-seq (flatten (level->actions next-level)))))]
        [_ (quit (list (message (victory))))])]
     [_ #f]))
 
