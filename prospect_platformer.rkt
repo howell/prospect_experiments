@@ -572,7 +572,9 @@
     [(patch p-added p-removed)
      (define added (static-rects-matcher p-added))
      (define removed (static-rects-matcher p-removed))
+     (printf "added: ~v\nremoved: ~v\n" added removed)
      (define new-env (append added (remove* removed old-env)))
+     (printf "new-env: ~v\n" new-env)
      (define player-s (matcher-project/set p-added (compile-projection (player (?!)))))
      (define new-player (if (set-empty? player-s) old-player (car (set-first player-s))))
      (define goal-s (matcher-project/set p-added (compile-projection (goal (?!)))))
@@ -585,6 +587,7 @@
         (draw-victory dc)
         (quit '())]
        [defeat?
+         (printf "\n\ndefeat~\n\n")
          (transition (game-state (rect (posn -100 -100) 0 0) '() (rect (posn -100 -100) 0 0) (hash))
                      '())]
        [else
