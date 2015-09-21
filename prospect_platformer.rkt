@@ -51,7 +51,7 @@
 ;;   - (victory)/(defeat) assertions
 ;;   - (enemy id rect) messages
 ;;   Redraws every timer tick.
-;; Enemy Making Process:
+;; Enemy Spawning Process:
 ;;   Spawns enemy processes on demand.
 ;;   Listens for (spawn-enemy spawn) and spawns the argument
 
@@ -737,9 +737,9 @@
   (spawn
    (lambda (e n)
      (match e
-       [(or (message (kill-enemy (== id)))
-            (message (defeat))
-            (message (level-complete)))
+       [(message (or (kill-enemy (== id))
+                     (defeat)
+                     (level-complete)))
         (quit '())]
        [(message (timer-tick))
         (define maybe-messages (mover n id))

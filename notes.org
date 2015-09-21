@@ -138,6 +138,7 @@ link: bad variable linkage;
 *** Could I create one process that is responsible for maintaining said set, asserts the set, and other interested processes ignore the elements and listen for the set?
 ** Can an assertion be a boot action for a world?
 ** Want to use a constree of actions as an initial actions
+** why does #f keep getting passed to processes?
 
 * Platformer Notes
 ** Should the game logic process be handling (jump) commands?
