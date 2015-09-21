@@ -577,7 +577,7 @@
      (define new-player (if (set-empty? player-s) old-player (car (set-first player-s))))
      (define goal-s (matcher-project/set p-added (compile-projection (goal (?!)))))
      (define new-goal (if (set-empty? goal-s) old-goal (car (set-first goal-s))))
-     (define victory? (not-set-empty? (matcher-project/set p-added (compile-projection (level-complete)))))
+     (define victory? (not-set-empty? (matcher-project/set p-added (compile-projection (victory)))))
      (define-values (enemies-added enemies-removed) (patch-enemies e))
      (define enemies-new (update-enemy-hash enemies-added enemies-removed old-enemies))
      (cond
