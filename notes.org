@@ -139,7 +139,8 @@ link: bad variable linkage;
 ** Can an assertion be a boot action for a world?
 ** Want to use a constree of actions as an initial actions
 ** why does #f keep getting passed to processes?
-
+** If I spawn a world, is there a way for me to listen to events in that world?
+*** include a "relay" actor in the newly-spawned world?
 
 * Platformer Notes
 ** Should the game logic process be handling (jump) commands?
