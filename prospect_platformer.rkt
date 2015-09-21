@@ -635,17 +635,19 @@
   (match e
     [(message (defeat))
      (transition s (apply patch-seq (flatten (list (retract (static ?))
-                                             (retract (goal ?))
-                                             (retract (player ?))
-                                             (retract (spawn-enemy ?))
-                                             (level->actions (car s))))))]
+                                                   (retract (goal ?))
+                                                   (retract (player ?))
+                                                   (retract (spawn-enemy ?))
+                                                   (apply patch-seq (flatten 
+                                                                     (level->actions (car s))))))))]
     [(message (level-complete))
      (match (cdr s)
-       [(cons next-level _) (transition (cdr s) (apply patch-seq (flatten (list (retract (static ?))
-                                                                          (retract (goal ?))
-                                                                          (retract (player ?))
-                                                                          (retract (spawn-enemy ?))
-                                                                          (level->actions next-level)))))]
+       [(cons next-level _) (transition (cdr s) (list (retract (static ?))
+                                                      (retract (goal ?))
+                                                      (retract (player ?))
+                                                      (retract (spawn-enemy ?))
+                                                      (apply patch-seq (flatten 
+                                                                        (level->actions next-level)))))]
        [_ (quit (list (message (victory))))])]
     [_ #f]))
 
