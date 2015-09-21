@@ -582,6 +582,7 @@
      (define enemies-new (update-enemy-hash enemies-added enemies-removed old-enemies))
      (cond
        [victory?
+        (printf "victory!\n")
         (draw-victory dc)
         (quit '())]
        [else
