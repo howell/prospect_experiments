@@ -577,14 +577,14 @@
      (define new-player (if (set-empty? player-s) old-player (car (set-first player-s))))
      (define goal-s (matcher-project/set p-added (compile-projection (goal (?!)))))
      (define new-goal (if (set-empty? goal-s) old-goal (car (set-first goal-s))))
-     (define victory? (not-set-empty? (matcher-project/set p-added (compile-projection (victory)))))
+     ;#;(define victory? (not-set-empty? (matcher-project/set p-added (compile-projection (victory)))))
      (define-values (enemies-added enemies-removed) (patch-enemies e))
      (define enemies-new (update-enemy-hash enemies-added enemies-removed old-enemies))
      (cond
-       [victory?
-        (printf "victory!\n")
-        (draw-victory dc)
-        (quit '())]
+       #;[victory?
+          (printf "victory!\n")
+          (draw-victory dc)
+          (quit '())]
        [else
         (transition (game-state new-player new-env new-goal enemies-new)
                     '())])]
@@ -599,8 +599,12 @@
      (define new-enemies (hash-remove old-enemies id))
      (transition (game-state old-player old-env old-goal new-enemies)
                  '())]
+    [(message (victory))
+     (printf "\nvictory!\n")
+     (draw-victory dc)
+     (quit '())]
     [(message (defeat))
-     (printf "\n\ndefeat~\n\n")
+     (printf "\n\ndefeat\n\n")
      (transition (game-state (rect (posn -100 -100) 0 0) '() (rect (posn -100 -100) 0 0) (hash))
                  '())]
     [(message (timer-tick))
