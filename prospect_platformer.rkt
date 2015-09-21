@@ -6,12 +6,13 @@
 ;; 
 ;; processes in the system:
 ;; Level Manager Process
-;;   Needs to create the first level when spawned
+;;   Create the first level when spawned.
 ;;   When the player reaches the goal (a (level-complete) message) retract the current level and spawn the next by:
 ;;     - spawning a game logic process
 ;;     - asserting the environment as (static rect)
 ;;     - asserts the initial location of the player as (player rect)
-;;     - spawning any enemies
+;;     - spawning any enemies.
+;;   Similarly, when the player dies (a (defeat) message) retract the current level and then spawn it again
 ;; Game Logic Process:
 ;;   Decides where the player is on the map and when the game is over.
 ;;   Processes (jump-request) messages. If the player is allowed to jump sends a (jump) message.
@@ -24,7 +25,7 @@
 ;;   If the player kills an enemy then sends a (kill-enemy id) message.
 ;;   Asserts the location of the goal as (goal rect).
 ;;   When the player reaches the goal, quits and sends the message (level-complete)
-;;   When the player loses (leaves the map), quits and sends the message (defeat)
+;;   When the player loses (leaves the map/killed by an enemy), quits and sends the message (defeat)
 ;; Timer Process:
 ;;   Sends a (timer-tick) message at a fixed rate
 ;; Player Process:
