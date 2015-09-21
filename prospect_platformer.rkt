@@ -625,8 +625,8 @@
   (flatten (list (assert (player player0))
                  (map (lambda (r) (assert (static r))) env0)
                  (assert (goal goal0))
-                 (spawn-game-logic player0 goal0)
-                 enemies)))
+                 #;(spawn-game-logic player0 goal0)
+                 (map (lambda (e) (assert (spawn-enemy e))) enemies))))
 
 ;; state is a (non-empty-listof level), the first of which is the current level
 ;; need a way to kill all enemies
@@ -776,6 +776,8 @@
                (make-horiz-enemy 300 130 20 20 30 1)
                (make-horiz-enemy 400 180 20 20 180 3))))
 
+(spawn-enemy-spawner)
+(spawn-game-logic PLAYER0 GOAL0)
 (spawn-level-manager (list level0))
 
 
