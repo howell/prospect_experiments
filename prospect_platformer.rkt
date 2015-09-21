@@ -560,10 +560,12 @@
 (define (draw-defeat dc)
   (big-text dc "Defeat." "red"))
 
-;; draw the player (determined from (player rect) messages), static objects
-;; defined by (static rect) and (goal rect) assertions and update the screen
-;; each (timer-tick) time the player moves - (player rect) messages.
-;; if (victory) or (defeat) is detected then quit and draw something special
+;; draw the player and enemies (determined from (player rect) and (enemy id rect)
+;; messages), static objects defined by (static rect) and (goal rect) assertions
+;; and update the screen each (timer-tick) time the player moves - (player rect)
+;; messages.
+;; if (level-complete) or (level-complete) are detected then reset all state
+;; if (victory) is detected draw something special
 (define ((render-behavior dc) e s)
   ;; state is a game-state struct
   (match-define (game-state old-player old-env old-goal old-enemies) s)
