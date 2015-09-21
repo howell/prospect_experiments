@@ -577,27 +577,23 @@
      (define goal-s (matcher-project/set p-added (compile-projection (goal (?!)))))
      (define new-goal (if (set-empty? goal-s) old-goal (car (set-first goal-s))))
      (define-values (enemies-added enemies-removed) (patch-enemies e))
-     (match enemies-removed
-       [(cons _ _) (printf "enemies removed: ~v\n" enemies-removed)]
-       [_ (void)])
-     (match enemies-added
-       [(cons _ _) (printf "enemies added ~v\n" enemies-added)]
-       [_ (void)])
      (define enemies-new (update-enemy-hash enemies-added enemies-removed old-enemies))
-     (printf "enemies-new: ~v\n" enemies-new)
      (transition (game-state new-player new-env new-goal enemies-new)
                  '())]
     [(message (player new-player))
      (transition (game-state new-player old-env old-goal old-enemies)
                  '())]
     [(message (enemy id rect))
-     (define new-enemies (hash-set old-enemies id (enemy id rect)))
-     (transition (game-state old-player old-env old-goal new-enemies)
-                 '())]
+     (if (hash-has-key? old-enemies id)
+         (block
+          (define new-enemies (hash-set old-enemies id (enemy id rect)))
+          (transition (game-state old-player old-env old-goal new-enemies)
+                      '()))
+         #f)]
     #;[(message (kill-enemy id))
-     (define new-enemies (hash-remove old-enemies id))
-     (transition (game-state old-player old-env old-goal new-enemies)
-                 '())]
+       (define new-enemies (hash-remove old-enemies id))
+       (transition (game-state old-player old-env old-goal new-enemies)
+                   '())]
     [(message (victory))
      (draw-victory dc)
      (quit '())]
