@@ -577,6 +577,12 @@
      (define goal-s (matcher-project/set p-added (compile-projection (goal (?!)))))
      (define new-goal (if (set-empty? goal-s) old-goal (car (set-first goal-s))))
      (define-values (enemies-added enemies-removed) (patch-enemies e))
+     (match enemies-removed
+       [(cons _ _) (printf "enemies removed: ~v\n" enemies-removed)]
+       [_ (void)])
+     (match enemies-added
+       [(cons _ _) (printf "enemies added ~v\n" enemies-added)]
+       [_ (void)])
      (define enemies-new (update-enemy-hash enemies-added enemies-removed old-enemies))
      (transition (game-state new-player new-env new-goal enemies-new)
                  '())]
