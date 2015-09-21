@@ -641,22 +641,20 @@
   (match e
     [(message (defeat))
      (match-define (level player0 env0 goal0 enemies) (car s))
-     (transition s
-                 (spawn-game-logic player0 goal0)
-                 (retract (static ?))
-                 (retract (goal ?))
-                 (retract (player ?))
-                 (retract (spawn-enemy ?))
-                 (apply patch-seq (flatten (level->actions (car s)))))]
+     (transition s (list (spawn-game-logic player0 goal0)
+                         (retract (static ?))
+                         (retract (goal ?))
+                         (retract (player ?))
+                         (retract (spawn-enemy ?))
+                         (apply patch-seq (flatten (level->actions (car s))))))]
     [(message (level-complete))
      (match (cdr s)
-       [(cons next-level _) (transition (cdr s)
-                                        (spawn-game-logic (level-player0 next-level) (level-goal next-level))
-                                        (retract (static ?))
-                                        (retract (goal ?))
-                                        (retract (player ?))
-                                        (retract (spawn-enemy ?))
-                                        (apply patch-seq (flatten (level->actions next-level))))]
+       [(cons next-level _) (transition (cdr s) (list  (spawn-game-logic (level-player0 next-level) (level-goal next-level))
+                                                       (retract (static ?))
+                                                       (retract (goal ?))
+                                                       (retract (player ?))
+                                                       (retract (spawn-enemy ?))
+                                                       (apply patch-seq (flatten (level->actions next-level)))))]
        [_ (quit (list (message (victory))))])]
     [_ #f]))
 
@@ -759,10 +757,13 @@
                     (if maybe-messages
                         maybe-messages
                         '()))]
+       [(message (defeat))
+        (quit '())]
        [_ #f]))
    0
    (sub (timer-tick))
    (sub (kill-enemy id))
+   (sub (defeat))
    (assert (enemy id (rect (posn x0 y0) w h)))))
 
 ;; spawn an enemy that travels from (x0, y0) to (x0 + x-dist, y0) then back to
