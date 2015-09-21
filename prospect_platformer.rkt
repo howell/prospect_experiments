@@ -586,10 +586,6 @@
        [victory?
         (draw-victory dc)
         (quit '())]
-       [defeat?
-         (printf "\n\ndefeat~\n\n")
-         (transition (game-state (rect (posn -100 -100) 0 0) '() (rect (posn -100 -100) 0 0) (hash))
-                     '())]
        [else
         (transition (game-state new-player new-env new-goal enemies-new)
                     '())])]
@@ -603,6 +599,10 @@
     [(message (kill-enemy id))
      (define new-enemies (hash-remove old-enemies id))
      (transition (game-state old-player old-env old-goal new-enemies)
+                 '())]
+    [(message (defeat))
+     (printf "\n\ndefeat~\n\n")
+     (transition (game-state (rect (posn -100 -100) 0 0) '() (rect (posn -100 -100) 0 0) (hash))
                  '())]
     [(message (timer-tick))
      (draw-game dc old-player old-env old-goal (hash-values old-enemies))
