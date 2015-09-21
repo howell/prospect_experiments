@@ -634,14 +634,14 @@
 (define (level-manager-behavior e s)
   (match e
     [(message (defeat))
-     (transition s (patch-seq (flatten (list (retract (static ?))
+     (transition s (apply patch-seq (flatten (list (retract (static ?))
                                              (retract (goal ?))
                                              (retract (player ?))
                                              (retract (spawn-enemy ?))
                                              (level->actions (car s))))))]
     [(message (level-complete))
      (match (cdr s)
-       [(cons next-level _) (transition (cdr s) (patch-seq (flatten (list (retract (static ?))
+       [(cons next-level _) (transition (cdr s) (apply patch-seq (flatten (list (retract (static ?))
                                                                           (retract (goal ?))
                                                                           (retract (player ?))
                                                                           (retract (spawn-enemy ?))
