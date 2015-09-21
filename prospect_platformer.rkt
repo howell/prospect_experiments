@@ -584,6 +584,7 @@
        [(cons _ _) (printf "enemies added ~v\n" enemies-added)]
        [_ (void)])
      (define enemies-new (update-enemy-hash enemies-added enemies-removed old-enemies))
+     (printf "enemies-new: ~v\n" enemies-new)
      (transition (game-state new-player new-env new-goal enemies-new)
                  '())]
     [(message (player new-player))
