@@ -627,11 +627,15 @@
 (define (level-manager-behavior e s)
   (match e
     [(message (defeat))
-     (transition s (patch-seq (retract ?)
+     (transition s (patch-seq (retract (static ?))
+                              (retract (goal ?))
+                              (retract (player ?))
                               (level->actions (car s))))]
     [(message (level-complete))
      (match (cdr s)
-       [(cons next-level _) (transition (cdr s) (patch-seq (retract ?)
+       [(cons next-level _) (transition (cdr s) (patch-seq (retract (static ?))
+                                                           (retract (goal ?))
+                                                           (retract (player ?))
                                                            (level->actions next-level)))]
        [_ (quit (list (message (victory))))])]
     [_ #f]))
