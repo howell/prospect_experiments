@@ -660,9 +660,16 @@
 ;; enemy spawner
 (define (enemy-spawner-behavior e s)
   (match e
-    [(? patch-added?)
-     #f]
+    [(? patch/added? p)
+     (define added (matcher-project/set (patch-added p) (compile-projection (spawn-enemy (?!)))))
+     (define spawns (set-map added car))
+     (transition s spawns)]
     [_ #f]))
+
+(define (spawn-enemy-spawner)
+  (spawn enemy-spawner-behavior
+         (void)
+         (sub (spawn-enemy ?))))
 
 ;; gui stuff
 (define game-canvas%
