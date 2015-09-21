@@ -634,20 +634,23 @@
 (define (level-manager-behavior e s)
   (match e
     [(message (defeat))
-     (transition s (apply patch-seq (flatten (list (retract (static ?))
-                                                   (retract (goal ?))
-                                                   (retract (player ?))
-                                                   (retract (spawn-enemy ?))
-                                                   (apply patch-seq (flatten 
-                                                                     (level->actions (car s))))))))]
+     (match-define (level player0 env0 goal0 enemies) (car s))
+     (transition s
+                 (spawn-game-logic player0 goal0)
+                 (retract (static ?))
+                 (retract (goal ?))
+                 (retract (player ?))
+                 (retract (spawn-enemy ?))
+                 (apply patch-seq (flatten (level->actions (car s)))))]
     [(message (level-complete))
      (match (cdr s)
-       [(cons next-level _) (transition (cdr s) (list (retract (static ?))
-                                                      (retract (goal ?))
-                                                      (retract (player ?))
-                                                      (retract (spawn-enemy ?))
-                                                      (apply patch-seq (flatten 
-                                                                        (level->actions next-level)))))]
+       [(cons next-level _) (transition (cdr s)
+                                        (spawn-game-logic (level-player0 next-level) (level-goal next-level))
+                                        (retract (static ?))
+                                        (retract (goal ?))
+                                        (retract (player ?))
+                                        (retract (spawn-enemy ?))
+                                        (apply patch-seq (flatten (level->actions next-level))))]
        [_ (quit (list (message (victory))))])]
     [_ #f]))
 
