@@ -587,7 +587,7 @@
      (define new-enemies (hash-set old-enemies id (enemy id rect)))
      (transition (game-state old-player old-env old-goal new-enemies)
                  '())]
-    [(message (kill-enemy id))
+    #;[(message (kill-enemy id))
      (define new-enemies (hash-remove old-enemies id))
      (transition (game-state old-player old-env old-goal new-enemies)
                  '())]
