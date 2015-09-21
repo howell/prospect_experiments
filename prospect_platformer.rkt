@@ -755,6 +755,7 @@
                         maybe-messages
                         '()))]
        [(message (defeat))
+        (printf "aaaaarghghagh!\n")
         (quit '())]
        [_ #f]))
    0
