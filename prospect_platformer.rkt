@@ -552,7 +552,7 @@
   (send dc set-text-foreground color)
   (define fnt (make-object font% 100 'default))
   (send dc set-font fnt)
-  (send dc draw-text text (/ (posn-x bot-right) 4) (/ (posn-y bot-right) 4))
+  (send dc draw-text text (/ (posn-x bot-right) 6) (/ (posn-y bot-right) 4))
   (send dc resume-flush))
 
 (define (draw-victory dc)
@@ -596,7 +596,6 @@
      (draw-victory dc)
      (quit '())]
     [(message (defeat))
-     (printf "\n\ndefeat\n\n")
      (transition (game-state (rect (posn -100 -100) 0 0) '() (rect (posn -100 -100) 0 0) (hash))
                  '())]
     [(message (timer-tick))
@@ -746,7 +745,6 @@
                         maybe-messages
                         '()))]
        [(message (defeat))
-        (printf "aaaaarghghagh!\n")
         (quit '())]
        [_ #f]))
    0
