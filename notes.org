@@ -170,3 +170,4 @@ link: bad variable linkage;
 ** Rather than having game logic and renderer process maintain a `game-state` struct just have the game logic send the state in a message
 ** As I add features the graph of connections between processes is growing more and more complex
 ** Exacerbates the lack of testing of process behavior
+** If I was using layering/sandboxing the problem with overlapping messages between switching levels would be a lot easier
