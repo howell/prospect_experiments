@@ -594,7 +594,7 @@
     [(message (victory))
      (draw-victory dc)
      (quit '())]
-    [(message (defeat))
+    [(message (or (defeat) (level-complete)))
      (transition (game-state (rect (posn -100 -100) 0 0) '() (rect (posn -100 -100) 0 0) (hash))
                  '())]
     [(message (timer-tick))
