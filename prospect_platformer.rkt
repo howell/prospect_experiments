@@ -623,6 +623,7 @@
    (sub (goal ?))
    (sub (defeat))
    (sub (kill-enemy ?))
+   (sub (victory))
    (sub (level-complete))))
 
 ;; level -> (constreeof action)
