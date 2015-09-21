@@ -9,7 +9,6 @@
 ;;   Needs to create the first level when spawned
 ;;   When the player reaches the goal (a (level-complete) message) retract the current level and spawn the next by:
 ;;     - spawning a game logic process
-;;     - spawning a rendering process
 ;;     - asserting the environment as (static rect)
 ;;     - asserts the initial location of the player as (player rect)
 ;;     - spawning any enemies
@@ -43,13 +42,13 @@
 ;; Enemy Process(es):
 ;;   Asserts the initial position and id as (enemy id (rect posn0 w h)).
 ;;   Moves by sending (move-x id dx) and (move-y id dy) messages.
-;;   Quits when a (kill-enemy id) message is received.
+;;   Quits when a (kill-enemy id) or (defeat) message is received.
 ;; Rendering Process:
 ;;   Tracks and draws the state of the game:
 ;;   - (static rect) assertions
 ;;   - (player rect) messages
 ;;   - (goal rect) messages
-;;   - (level-complete)/(defeat) assertions
+;;   - (victory)/(defeat) assertions
 ;;   - (enemy id rect) messages
 ;;   Redraws every timer tick.
 ;; Enemy Making Process:
