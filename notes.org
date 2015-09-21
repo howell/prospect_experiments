@@ -140,6 +140,7 @@ link: bad variable linkage;
 ** Want to use a constree of actions as an initial actions
 ** why does #f keep getting passed to processes?
 
+
 * Platformer Notes
 ** Should the game logic process be handling (jump) commands?
 *** it could check if there is a piece of the environment directly below the player
@@ -167,3 +168,5 @@ link: bad variable linkage;
 **** compose every behavior with a behavior that implements this
 **** sounds a lot like inheritance...
 ** Rather than having game logic and renderer process maintain a `game-state` struct just have the game logic send the state in a message
+** As I add features the graph of connections between processes is growing more and more complex
+** Exacerbates the lack of testing of process behavior
