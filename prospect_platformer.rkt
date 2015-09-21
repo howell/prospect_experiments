@@ -748,7 +748,7 @@
      (match e
        [(message (kill-enemy (== id)))
         (quit '())]
-       [(message timer-tick)
+       [(message (timer-tick))
         (define maybe-messages (mover n id))
         (transition (add1 n)
                     (if maybe-messages
