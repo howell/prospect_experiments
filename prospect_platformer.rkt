@@ -584,16 +584,14 @@
      (transition (game-state new-player old-env old-goal old-enemies)
                  '())]
     [(message (enemy id rect))
+     ;; this check is necessary due to trickiness when transitioning between levels.
+     ;; there could still be (enemy _ _) messages floating around from the last level.
      (if (hash-has-key? old-enemies id)
          (block
           (define new-enemies (hash-set old-enemies id (enemy id rect)))
           (transition (game-state old-player old-env old-goal new-enemies)
                       '()))
          #f)]
-    #;[(message (kill-enemy id))
-       (define new-enemies (hash-remove old-enemies id))
-       (transition (game-state old-player old-env old-goal new-enemies)
-                   '())]
     [(message (victory))
      (draw-victory dc)
      (quit '())]
@@ -615,7 +613,6 @@
    (sub (enemy ? ?))
    (sub (goal ?))
    (sub (defeat))
-   (sub (kill-enemy ?))
    (sub (victory))
    (sub (level-complete))))
 
