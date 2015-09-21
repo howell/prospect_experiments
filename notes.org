@@ -171,3 +171,7 @@ link: bad variable linkage;
 ** As I add features the graph of connections between processes is growing more and more complex
 ** Exacerbates the lack of testing of process behavior
 ** If I was using layering/sandboxing the problem with overlapping messages between switching levels would be a lot easier
+The problem is that there might still be a message or two from the last level
+lingering around that gets delivered at an unexpected moment, causing a glitch
+with the new level, such as an enemy that was alive when the first level
+finished being rendered in the new level.
