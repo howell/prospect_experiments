@@ -262,7 +262,7 @@
     [(message (move-x 'player dx))
      (define player-n (car (move-player-x player-old dx env-old)))
      (cond
-       [(overlapping-rects? player-n (goal-rect cur-goal))
+       [(overlapping-rects? player-n cur-goal)
         (quit (list (message (level-complete))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
         (quit (list (message (defeat))))]
@@ -278,7 +278,7 @@
                            (hash-remove acc (enemy-id e))))
      (define kill-messages (map (lambda (e) (message (kill-enemy (enemy-id e)))) col-enemies))
      (cond
-       [(overlapping-rects? player-n (goal-rect cur-goal))
+       [(overlapping-rects? player-n cur-goal)
         (quit (list (message (level-complete))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
         (quit (list (message (defeat))))]
@@ -518,7 +518,7 @@
 ;; drawing-context goal -> void
 ;; draws the goal as a 3x3 yellow star
 (define (draw-goal dc g)
-  (match-define (goal (rect (posn x0 y0) _ _)) g)
+  (match-define (rect (posn x0 y0) _ _) g)
   (send dc set-brush "yellow" 'solid)
   (send dc set-pen "yellow" 1 'solid)
   (send dc set-smoothing 'aligned)
@@ -609,7 +609,7 @@
 (define (spawn-renderer dc)
   (spawn
    (render-behavior dc)
-   (game-state (rect (posn 0 0) 0 0) '() (goal (rect (posn -100 -100) 0 0)) (hash))
+   (game-state (rect (posn 0 0) 0 0) '() (rect (posn -100 -100) 0 0) (hash))
    (sub (timer-tick))
    (sub (static ?))
    (sub (player ?))
@@ -715,7 +715,7 @@
     (spawn-renderer dc)))
 
 (define PLAYER0 (rect (posn 0 0) 8 32))
-(define GOAL0 (goal (rect (posn 500 150) 50 50)))
+(define GOAL0 (rect (posn 500 150) 50 50))
 
 (define FRAMES-PER-SEC 24)
 
