@@ -42,7 +42,7 @@
 ;; Enemy Process(es):
 ;;   Asserts the initial position and id as (enemy id (rect posn0 w h)).
 ;;   Moves by sending (move-x id dx) and (move-y id dy) messages.
-;;   Quits when a (kill-enemy id) or (defeat) message is received.
+;;   Quits when a (kill-enemy id), (defeat), or (level-complete) message is received.
 ;; Rendering Process:
 ;;   Tracks and draws the state of the game:
 ;;   - (static rect) assertions
@@ -735,7 +735,9 @@
   (spawn
    (lambda (e n)
      (match e
-       [(message (kill-enemy (== id)))
+       [(or (message (kill-enemy (== id)))
+            (message (defeat))
+            (message (level-complete)))
         (quit '())]
        [(message (timer-tick))
         (define maybe-messages (mover n id))
@@ -743,13 +745,12 @@
                     (if maybe-messages
                         maybe-messages
                         '()))]
-       [(message (defeat))
-        (quit '())]
        [_ #f]))
    0
    (sub (timer-tick))
    (sub (kill-enemy id))
    (sub (defeat))
+   (sub (level-complete))
    (assert (enemy id (rect (posn x0 y0) w h)))))
 
 ;; spawn an enemy that travels from (x0, y0) to (x0 + x-dist, y0) then back to
