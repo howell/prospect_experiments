@@ -18,7 +18,7 @@
 ;;     - spawning any enemies.
 ;;   Similarly, when the player dies (a (defeat) message) retract the current level and then spawn it again
 ;; Game Logic Process:
-;;   Decides where the player is on the map and when the level is over.
+;;   Decides where the player and enemies are on the map and when the level is over.
 ;;   Processes (jump-request) messages. If the player is allowed to jump sends a (jump) message.
 ;;   Listens for (move-x id dx) and (move-y id dy) messages and attempts to move the player (id = 'player) or enemy accordingly.
 ;;   When a (move-y id _) command results in a collision with the environment a (y-collision id) message is sent.
@@ -26,7 +26,7 @@
 ;;   The new location of an enemy is sent as a (enemy id rect) message.
 ;;   The environment is determined by assertions of the shape (static rect).
 ;;   The initial location of enemies is determined by assertions of the shape (enemy id rect).
-;;   If the player kills an enemy then sends a (kill-enemy id) message.
+;;   If the player kills an enemy sends a (kill-enemy id) message.
 ;;   Asserts the location of the goal as (goal rect).
 ;;   When the player reaches the goal, quits and sends the message (level-complete)
 ;;   When the player loses (leaves the map/killed by an enemy), quits and sends the message (defeat)
