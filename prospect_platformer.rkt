@@ -8,10 +8,10 @@
 ;; Level Manager Process:
 ;;   Manage transitions between levels, which are one of:
 ;;     - no levels -> first-level, when the game starts
-;;     - current-level -> current-level, when the player dies
-;;     - current-level -> next-level, when the player reaches the goal
+;;     - current-level -> current-level, when the player dies (a (defeat) message)
+;;     - current-level -> next-level, when the player reaches the goal (a (level-complete) message))
 ;;     - last-level -> end-screen, when the player beats the game
-;;   When the player reaches the goal (a (level-complete) message) retract the current level and spawn the next by:
+;;   Transitions are accompished by:
 ;;     - spawning a game logic process
 ;;     - asserting the environment as (static rect)
 ;;     - asserts the initial location of the player as (player rect)
