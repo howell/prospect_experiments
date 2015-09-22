@@ -770,6 +770,17 @@
                                               dx
                                               (- dx))))))))
 
+;; spawn an enemy that travels from (x0, y0) to (x0, y0 + y-dist) then back to
+;; (x0, y0) at a rate of dy per clock tick
+(define (make-vert-enemy x0 y0 w h y-dist dy)
+  (define THRESHOLD (/ y-dist dy))
+  (make-enemy x0 y0 w h
+              (lambda (n id)
+                (list (message (move-y id (if (< (modulo n (floor (* 2 THRESHOLD))) THRESHOLD)
+                                              dy
+                                              (- dy))))))))
+
+
 
 (define level0
   (level PLAYER0
