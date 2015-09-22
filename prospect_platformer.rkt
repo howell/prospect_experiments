@@ -18,7 +18,7 @@
 ;;     - spawning any enemies.
 ;;   Similarly, when the player dies (a (defeat) message) retract the current level and then spawn it again
 ;; Game Logic Process:
-;;   Decides where the player is on the map and when the game is over.
+;;   Decides where the player is on the map and when the level is over.
 ;;   Processes (jump-request) messages. If the player is allowed to jump sends a (jump) message.
 ;;   Listens for (move-x id dx) and (move-y id dy) messages and attempts to move the player (id = 'player) or enemy accordingly.
 ;;   When a (move-y id _) command results in a collision with the environment a (y-collision id) message is sent.
