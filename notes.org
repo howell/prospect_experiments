@@ -142,6 +142,23 @@ link: bad variable linkage;
 ** If I spawn a world, is there a way for me to listen to events in that world?
 *** include a "relay" actor in the newly-spawned world?
 ** Mistake I've made several times: updating a behavior to handle a new kind of event but not updating the initial subscriptions to include it
+** ctrl-c killed process, not program
+^CProcess (0) died with exception:
+user break
+  context...:
+   /Applications/Racket v6.2.1/share/pkgs/draw-lib/racket/draw/private/dc.rkt:1135:4: draw-rectangle method in dc%
+   /Applications/Racket v6.2.1/share/pkgs/draw-lib/racket/draw/private/record-dc.rkt:415:15: draw-rectangle method in ...rivate/record-dc.rkt:355:2
+   /Users/scaldwell/git/prospect_experiments/prospect_platformer.rkt:547:2: for-loop
+   /Users/scaldwell/git/prospect_experiments/prospect_platformer.rkt:541:0: draw-game
+   /Users/scaldwell/git/prospect_experiments/prospect_platformer.rkt:574:0
+   /Users/scaldwell/git/prospect/prospect/core.rkt:162:0: send-event
+   /Users/scaldwell/git/prospect/prospect/core.rkt:300:0
+   /Users/scaldwell/git/prospect/prospect/core.rkt:259:0: transition-bind
+   /Users/scaldwell/git/prospect/prospect/core.rkt:292:2: for-loop
+   /Users/scaldwell/git/prospect/prospect/core.rkt:259:0: transition-bind
+   /Applications/Racket v6.2.1/collects/racket/private/list.rkt:229:4: foldl
+   /Users/scaldwell/git/prospect/prospect/ground.rkt:71:2: await-interrupt
+   /Users/scaldwell/git/prospect_experiments/prospect_platformer.rkt: [running body]
 
 * Platformer Notes
 ** DONE Should the game logic process be handling (jump) commands?

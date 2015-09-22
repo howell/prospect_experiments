@@ -799,7 +799,7 @@
          (list (rect (posn 0 200) 600 10))
          GOAL0
          (list (make-horiz-enemy 0 180 20 20 580 4)
-               (make-horiz-enemy 0 150 20 20 580 8)
+               (make-horiz-enemy 0 140 20 20 580 8)
                (make-vert-enemy 50 125 20 20 75 4)
                (make-vert-enemy 100 125 20 20 75 4)
                (make-vert-enemy 150 125 20 20 75 4)
