@@ -798,12 +798,13 @@
   (level PLAYER0
          (list (rect (posn 0 200) 600 10))
          GOAL0
-         (list (make-horiz-enemy 0 180 20 20 580 4))))
+         (list (make-horiz-enemy 0 180 20 20 580 4)
+               (make-vert-enemy 50 100 20 20 100 4))))
 
 (spawn-enemy-spawner)
 (spawn-game-logic PLAYER0 GOAL0)
-(spawn-level-manager (list level0
-                           level1))
+(spawn-level-manager (list level1
+                           level0))
 
 
 #;(let ([x0 275]
