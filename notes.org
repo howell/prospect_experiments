@@ -141,6 +141,7 @@ link: bad variable linkage;
 ** why does #f keep getting passed to processes?
 ** If I spawn a world, is there a way for me to listen to events in that world?
 *** include a "relay" actor in the newly-spawned world?
+** Mistake I've made several times: updating a behavior to handle a new kind of event but not updating the initial subscriptions to include it
 
 * Platformer Notes
 ** Should the game logic process be handling (jump) commands?
