@@ -799,7 +799,10 @@
          (list (rect (posn 0 200) 600 10))
          GOAL0
          (list (make-horiz-enemy 0 180 20 20 580 4)
-               (make-vert-enemy 50 100 20 20 100 4))))
+               (make-vert-enemy 50 100 20 20 100 4)
+               (make-vert-enemy 100 125 20 20 75 4)
+               (make-vert-enemy 150 150 20 20 50 4)
+               (make-vert-enemy 200 175 20 20 25 4))))
 
 (spawn-enemy-spawner)
 (spawn-game-logic PLAYER0 GOAL0)
