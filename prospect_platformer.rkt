@@ -811,8 +811,8 @@
 
 (spawn-enemy-spawner)
 (spawn-game-logic PLAYER0 GOAL0)
-(spawn-level-manager (list level1
-                           level0))
+(spawn-level-manager (list level0
+                           level1))
 
 
 #;(let ([x0 275]
