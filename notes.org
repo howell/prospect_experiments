@@ -144,10 +144,10 @@ link: bad variable linkage;
 ** Mistake I've made several times: updating a behavior to handle a new kind of event but not updating the initial subscriptions to include it
 
 * Platformer Notes
-** Should the game logic process be handling (jump) commands?
+** DONE Should the game logic process be handling (jump) commands?
 *** it could check if there is a piece of the environment directly below the player
 *** then send a (actually-jump) message to the vertical motion process?
-** Adding enemies
+** DONE Adding enemies
 *** Use same (move-x dx) (move-y dy) messages to game-logic process approach as used for player
 *** add a unique label for each entity to the messages (move-x dx lbl)
 *** game-logic process can use the label as a key
