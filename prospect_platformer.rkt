@@ -313,16 +313,16 @@
           (match-define (enemy _ e-rect) maybe-enemy)
           (match-define (cons e-rect-new col?) (move-player-y e-rect dy env-old))
           (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
-          (when (overlapping-rects? player-old e-rect-new)
-            (if (positive? dy)
-                (quit (list (message (defeat)))) ;; enemy fell on player
-                (transition (game-state player-old env-old cur-goal (hash-remove enemies-new enemy-id))
-                            (list (message (kill-enemy enemy-id))))))
-          (transition (game-state player-old env-old cur-goal enemies-new)
-                      (cons (message (enemy enemy-id e-rect-new))
-                            (if col?
-                                (list (message (y-collision enemy-id)))
-                                '()))))
+          (if (overlapping-rects? player-old e-rect-new)
+              (if (positive? dy)
+                  (quit (list (message (defeat)))) ;; enemy fell on player
+                  (transition (game-state player-old env-old cur-goal (hash-remove enemies-new enemy-id))
+                              (list (message (kill-enemy enemy-id)))))
+              (transition (game-state player-old env-old cur-goal enemies-new)
+                          (cons (message (enemy enemy-id e-rect-new))
+                                (if col?
+                                    (list (message (y-collision enemy-id)))
+                                    '())))))
          #f)]
     [(message (jump-request))
      ;; check if there is something right beneath the player
