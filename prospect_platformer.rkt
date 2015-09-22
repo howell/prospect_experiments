@@ -5,8 +5,12 @@
 ;; (key-press key) or (key-release key) messages
 ;; 
 ;; processes in the system:
-;; Level Manager Process
-;;   Create the first level when spawned.
+;; Level Manager Process:
+;;   Manage transitions between levels, which are one of:
+;;     - no levels -> first-level, when the game starts
+;;     - current-level -> current-level, when the player dies
+;;     - current-level -> next-level, when the player reaches the goal
+;;     - last-level -> end-screen, when the player beats the game
 ;;   When the player reaches the goal (a (level-complete) message) retract the current level and spawn the next by:
 ;;     - spawning a game logic process
 ;;     - asserting the environment as (static rect)
