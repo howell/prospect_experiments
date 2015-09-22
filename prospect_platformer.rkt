@@ -520,7 +520,7 @@
          (5 . 7))))
 
 ;; drawing-context goal -> void
-;; draws the goal as a 3x3 yellow star
+;; draws the goal as a 50x50 yellow star
 (define (draw-goal dc g)
   (match-define (rect (posn x0 y0) _ _) g)
   (send dc set-brush "yellow" 'solid)
@@ -529,7 +529,7 @@
   (send dc draw-polygon (star-points 5) x0 y0))
 
 ;; drawing-context rect color -> void
-;; draws a black rectangle
+;; draws a solid rectangle
 (define (draw-rect dc r color)
   (match-define (rect (posn x0 y0) w h) r)
   (send dc set-brush color 'solid)
