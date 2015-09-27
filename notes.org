@@ -221,4 +221,3 @@ quotient/remainder: contract violation
    /Users/scaldwell/test/racket/breakout/game.rkt: [running body]
 ** Ball moved along x-axis and got stuck in the top right corner
 ** Ball bounced around between the top and bottom of the paddle
-** Lives = 0 but game kept playing
