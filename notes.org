@@ -195,3 +195,29 @@ The problem is that there might still be a message or two from the last level
 lingering around that gets delivered at an unexpected moment, causing a glitch
 with the new level, such as an enemy that was alive when the first level
 finished being rendered in the new level.
+
+* Breakout Notes
+** Exception when dying
+Process (115) died with exception:
+quotient/remainder: contract violation
+  expected: integer?
+  given: 685/2
+  argument position: 1st
+  other arguments...:
+   60
+  context...:
+   /Users/scaldwell/test/racket/breakout/defs.rkt:84:0: bricks-within6
+   f80
+   /Users/scaldwell/git/prospect/prospect/core.rkt:162:0: send-event
+   /Users/scaldwell/git/prospect/prospect/core.rkt:300:0
+   /Users/scaldwell/git/prospect/prospect/core.rkt:259:0: transition-bind
+   /Users/scaldwell/git/prospect/prospect/core.rkt:292:2: for-loop
+   /Users/scaldwell/git/prospect/prospect/core.rkt:259:0: transition-bind
+   /Applications/Racket v6.2.1/collects/racket/private/list.rkt:229:4: foldl
+   /Users/scaldwell/git/prospect/prospect/big-bang.rkt:77:0: interpret-actions
+   /Applications/Racket v6.2.1/share/pkgs/gui-lib/mred/private/wx/common/queue.rkt:454:6
+   /Applications/Racket v6.2.1/share/pkgs/gui-lib/mred/private/wx/common/queue.rkt:505:32
+   /Applications/Racket v6.2.1/share/pkgs/htdp-lib/2htdp/private/last.rkt:18:4: last method in ...tdp/private/last.rkt:8:2
+   /Users/scaldwell/test/racket/breakout/game.rkt: [running body]
+** Ball moved along x-axis and got stuck in the top right corner
+** Ball bounced around between the top and bottom of the paddle
