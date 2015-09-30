@@ -340,8 +340,9 @@
      (define new-env (append added (remove* removed (game-state-env s))))
      (define-values (enemies-added enemies-removed) (patch-enemies e))
      (define enemies-new (update-enemy-hash enemies-added enemies-removed enemies-old))
-     (transition (game-state player-old new-env cur-goal enemies-new)
-                 (map message enemies-added))]
+     (define next-state (game-state player-old new-env cur-goal enemies-new))
+     (transition next-state (cons (message next-state)
+                                  (map message enemies-added)))]
     [_ #f]))
 
 ;; rect goal -> spawn
