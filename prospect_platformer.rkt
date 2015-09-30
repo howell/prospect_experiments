@@ -294,9 +294,8 @@
         (transition next-state (list kill-messages
                                      (message (player player-n))
                                      (message next-state)
-                                     (if col?
-                                         (message (y-collision 'player))
-                                          '())))])]
+                                     (when col?
+                                         (message (y-collision 'player)))))])]
     [(message (move-x enemy-id dx))
      (define maybe-enemy (hash-ref enemies-old enemy-id #f))
      ;; the enemy might not be in the hash if it was recently killed
@@ -305,10 +304,11 @@
           (match-define (enemy _ e-rect) maybe-enemy)
           (define e-rect-new (car (move-player-x e-rect dx env-old)))
           (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
+          (define next-state (game-state player-old env-old cur-goal enemies-new))
           (if (overlapping-rects? player-old e-rect-new)
               (quit (list (message (defeat))))
-              (transition (game-state player-old env-old cur-goal enemies-new)
-                          (message (enemy enemy-id e-rect-new)))))
+              (transition next-state (list (message (enemy enemy-id e-rect-new))
+                                           (message next-state)))))
          #f)]
     [(message (move-y enemy-id dy))
      (define maybe-enemy (hash-ref enemies-old enemy-id #f))
