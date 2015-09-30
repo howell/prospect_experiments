@@ -565,6 +565,8 @@
 (define (draw-defeat dc)
   (big-text dc "Defeat." "red"))
 
+;; draw the state of the game (determined by the last (game-state ...) message received)
+;; every (timer-tick)
 ;; draw the player and enemies (determined from (player rect) and (enemy id rect)
 ;; messages), static objects defined by (static rect) and (goal rect) assertions
 ;; and update the screen each (timer-tick) time the player moves - (player rect)
@@ -575,6 +577,8 @@
   ;; state is a game-state struct
   (match-define (game-state old-player old-env old-goal old-enemies) s)
   (match e
+    [(message (? game-state? new-state))
+     (transition new-state '())]
     [(patch p-added p-removed)
      (define added (static-rects-matcher p-added))
      (define removed (static-rects-matcher p-removed))
