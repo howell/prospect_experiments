@@ -321,13 +321,13 @@
           (if (overlapping-rects? player-old e-rect-new)
               (if (positive? dy)
                   (quit (list (message (defeat)))) ;; enemy fell on player
-                  (transition (game-state player-old env-old cur-goal (hash-remove enemies-new enemy-id))
-                              (list (message (kill-enemy enemy-id)))))
-              (transition (game-state player-old env-old cur-goal enemies-new)
-                          (cons (message (enemy enemy-id e-rect-new))
-                                (if col?
-                                    (list (message (y-collision enemy-id)))
-                                    '())))))
+                  (let ([next-state (game-state player-old env-old cur-goal (hash-remove enemies-new enemy-id))])
+                    (transition next-state (list (message (kill-enemy enemy-id))
+                                                 (message next-state)))))
+              (let ([next-state (game-state player-old env-old cur-goal enemies-new)])
+                (transition next-state (list (message (enemy enemy-id e-rect-new))
+                                             (message next-state)
+                                             (when col? (message (y-collision enemy-id))))))))
          #f)]
     [(message (jump-request))
      ;; check if there is something right beneath the player
