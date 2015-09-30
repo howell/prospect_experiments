@@ -274,9 +274,7 @@
         (quit (list (message (defeat))))]
        [else
         (define next-state (game-state player-n env-old cur-goal enemies-old))
-        (transition next-state
-                    (list (message (player player-n))
-                          (message next-state)))])]
+        (transition next-state (message next-state))])]
     [(message (move-y 'player dy))
      (match-define (cons player-n col?) (move-player-y player-old dy env-old))
      (define col-enemies (filter (lambda (e) (overlapping-rects? player-n (enemy-rect e))) (hash-values enemies-old)))
