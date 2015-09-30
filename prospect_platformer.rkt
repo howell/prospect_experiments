@@ -22,12 +22,10 @@
 ;;   Processes (jump-request) messages. If the player is allowed to jump sends a (jump) message.
 ;;   Listens for (move-x id dx) and (move-y id dy) messages and attempts to move the player (id = 'player) or enemy accordingly.
 ;;   When a (move-y id _) command results in a collision with the environment a (y-collision id) message is sent.
-;;   The new location of the player is sent as a (player rect) message.
-;;   The new location of an enemy is sent as a (enemy id rect) message.
+;;   Sends the entire (game-state ...) as a message every 
 ;;   The environment is determined by assertions of the shape (static rect).
 ;;   The initial location of enemies is determined by assertions of the shape (enemy id rect).
 ;;   If the player kills an enemy sends a (kill-enemy id) message.
-;;   Asserts the location of the goal as (goal rect).
 ;;   When the player reaches the goal, quits and sends the message (level-complete)
 ;;   When the player loses (leaves the map/killed by an enemy), quits and sends the message (defeat)
 ;; Timer Process:
@@ -50,11 +48,8 @@
 ;;   Quits when a (kill-enemy id), (defeat), or (level-complete) message is received.
 ;; Rendering Process:
 ;;   Tracks and draws the state of the game:
-;;   - (static rect) assertions
-;;   - (player rect) messages
-;;   - (goal rect) messages
+;;   - (game-state ...) messages
 ;;   - (victory)/(defeat) assertions
-;;   - (enemy id rect) messages
 ;;   Redraws every timer tick.
 ;; Enemy Spawning Process:
 ;;   Spawns enemy processes on demand.
@@ -249,17 +244,16 @@
                                  (hash 'foo (enemy 'foo (rect (posn 0 0) 1 1))))
               (hash 'foo (enemy 'foo (rect (posn 1 1) 1 1))))
 
-;; the game logic process keeps track of the location of the player and the environment.
+;; The game logic process keeps track of the location of the player and the environment.
 ;; processes move-x and move-y commands from the player and enemies. When a collision
 ;; along the y-axis occurs it sends a (y-collision id) message with the id of the moving
 ;; object.
-;; sends the entire state of the game as a message - (message (game-state ...)) - every
+;; Sends the entire state of the game as a message - (message (game-state ...)) - every
 ;; time it changes.
 ;; If the player is moving down/enemy is moving up and they collide, send a (kill-enemy id)
 ;; message. Otherwise if the player and the enemy collide the game is over.
-;; asserts the location of the goal as (goal g)
-;; quits and messages (level-complete) if the player reaches the goal
-;; quits and messages (defeat) if the player leaves the map
+;; Quits and messages (level-complete) if the player reaches the goal
+;; Quits and messages (defeat) if the player leaves the map
 (define (game-logic-behavior e s)
   (match-define (game-state player-old env-old cur-goal enemies-old) s)
   (match e
@@ -447,11 +441,19 @@
                              (list (rect (posn 0 0) 1 1)))
               (cons (rect (posn 1 0) 1 1) #t))
 
+;; /\/\ -~ wooh ~- \/\/
+(define (swaparoo r)
+  (match-define (rect (posn x y) w h) r)
+  (rect (posn y x) h w))
+
 ;; rect num [listof rect] -> (pair rect bool)
 ;; attempt to move the player given by the first argument along the y-axis
 ;; when a collision occurs move as far as possible without colliding
 ;; returns the new rect for the player as well as if a collision occured
 (define (move-player-y p dy env)
+  (match-define (cons r col?) (move-player-x (swaparoo p) dy (map swaparoo env)))
+  (cons (swaparoo r) col?))
+#|
   (match-define (rect (posn p-x0 p-y0) p-w p-h) p)
   (match-define (and p-n (rect (posn pn-x0 pn-y0) pn-w pn-h)) (move-rect p 0 dy))
   (match-define motion-rect
@@ -466,6 +468,7 @@
                                (+ col-y0 col-h))])
         (cons (rect (posn p-x0 new-y0) p-w p-h) #t))
       (cons p-n #f)))
+|#
 
 (check-equal? (move-player-y (rect (posn 0 0) 1 1)
                              1
