@@ -347,9 +347,7 @@
          (sub (move-y ? ?))
          (sub (static ?))
          (sub (jump-request))
-         (sub (enemy ? ?))
-         #;(assert (player player0))
-         #;(assert (goal goal0))))
+         (sub (enemy ? ?))))
 
 ;; rect posn (listof rect) -> (U rect #f)
 ;; find the colliding rectange that is closest to the given position, if any exist
