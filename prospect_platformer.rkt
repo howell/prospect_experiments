@@ -253,8 +253,8 @@
 ;; processes move-x and move-y commands from the player and enemies. When a collision
 ;; along the y-axis occurs it sends a (y-collision id) message with the id of the moving
 ;; object.
-;; sends a message with the location of the player every time it moves, (player rect)
-;; sends a message with the location of an enemy each time it moves, (enemy id rect)
+;; sends the entire state of the game as a message - (message (game-state ...)) - every
+;; time it changes.
 ;; If the player is moving down/enemy is moving up and they collide, send a (kill-enemy id)
 ;; message. Otherwise if the player and the enemy collide the game is over.
 ;; asserts the location of the goal as (goal g)
@@ -348,8 +348,8 @@
          (sub (static ?))
          (sub (jump-request))
          (sub (enemy ? ?))
-         (assert (player player0))
-         (assert (goal goal0))))
+         #;(assert (player player0))
+         #;(assert (goal goal0))))
 
 ;; rect posn (listof rect) -> (U rect #f)
 ;; find the colliding rectange that is closest to the given position, if any exist
