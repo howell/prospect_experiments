@@ -272,8 +272,11 @@
         (quit (list (message (defeat))))]
        [(ormap (lambda (e) (overlapping-rects? player-n e)) (map enemy-rect (hash-values enemies-old)))
         (quit (list (message (defeat))))]
-       [else (transition (game-state player-n env-old cur-goal enemies-old)
-                         (list (message (player player-n))))])]
+       [else
+        (define next-state (game-state player-n env-old cur-goal enemies-old))
+        (transition next-state
+                    (list (message (player player-n))
+                          (message next-state)))])]
     [(message (move-y 'player dy))
      (match-define (cons player-n col?) (move-player-y player-old dy env-old))
      (define col-enemies (filter (lambda (e) (overlapping-rects? player-n (enemy-rect e))) (hash-values enemies-old)))
@@ -286,12 +289,14 @@
         (quit (list (message (level-complete))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
         (quit (list (message (defeat))))]
-       [else (transition (game-state player-n env-old cur-goal enemies-new)
-                         (cons kill-messages
-                               (cons (message (player player-n))
+       [else
+        (define next-state (game-state player-n env-old cur-goal enemies-new))
+        (transition next-state (list kill-messages
+                                     (message (player player-n))
+                                     (message next-state)
                                      (if col?
-                                         (list (message (y-collision 'player)))
-                                         '()))))])]
+                                         (message (y-collision 'player))
+                                          '())))])]
     [(message (move-x enemy-id dx))
      (define maybe-enemy (hash-ref enemies-old enemy-id #f))
      ;; the enemy might not be in the hash if it was recently killed
