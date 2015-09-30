@@ -441,8 +441,9 @@
                              (list (rect (posn 0 0) 1 1)))
               (cons (rect (posn 1 0) 1 1) #t))
 
-;; /\/\ -~ wooh ~- \/\/
-(define (swaparoo r)
+;; rect -> rect
+;; swap the x and y coordinates as well as the width and height of a rect
+(define (flip-rect r)
   (match-define (rect (posn x y) w h) r)
   (rect (posn y x) h w))
 
@@ -451,24 +452,8 @@
 ;; when a collision occurs move as far as possible without colliding
 ;; returns the new rect for the player as well as if a collision occured
 (define (move-player-y p dy env)
-  (match-define (cons r col?) (move-player-x (swaparoo p) dy (map swaparoo env)))
-  (cons (swaparoo r) col?))
-#|
-  (match-define (rect (posn p-x0 p-y0) p-w p-h) p)
-  (match-define (and p-n (rect (posn pn-x0 pn-y0) pn-w pn-h)) (move-rect p 0 dy))
-  (match-define motion-rect
-    (if (negative? dy)
-        (rect (posn pn-x0 pn-y0) p-w (+ (abs dy) p-h))
-        (rect (posn p-x0 p-y0) p-w (+ (abs dy) p-h))))
-  (define closest-col (closest-colliding motion-rect (rect-top-left p) env))
-  (if closest-col
-      (match-let* ([(rect (posn _ col-y0) _ col-h) closest-col]
-                   [new-y0 (if (< p-y0 col-y0)
-                               (- col-y0 p-h)
-                               (+ col-y0 col-h))])
-        (cons (rect (posn p-x0 new-y0) p-w p-h) #t))
-      (cons p-n #f)))
-|#
+  (match-define (cons r col?) (move-player-x (flip-rect p) dy (map flip-rect env)))
+  (cons (flip-rect r) col?))
 
 (check-equal? (move-player-y (rect (posn 0 0) 1 1)
                              1
