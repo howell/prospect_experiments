@@ -579,6 +579,7 @@
   (match e
     [(message (? game-state? new-state))
      (transition new-state '())]
+    #|
     [(patch p-added p-removed)
      (define added (static-rects-matcher p-added))
      (define removed (static-rects-matcher p-removed))
@@ -603,6 +604,7 @@
           (transition (game-state old-player old-env old-goal new-enemies)
                       '()))
          #f)]
+|#
     [(message (victory))
      (draw-victory dc)
      (quit '())]
@@ -618,6 +620,7 @@
   (spawn
    (render-behavior dc)
    (game-state (rect (posn 0 0) 0 0) '() (rect (posn -100 -100) 0 0) (hash))
+   (sub (game-state ? ? ? ?))
    (sub (timer-tick))
    (sub (static ?))
    (sub (player ?))
