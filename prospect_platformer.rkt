@@ -565,52 +565,18 @@
 (define (draw-defeat dc)
   (big-text dc "Defeat." "red"))
 
-;; draw the state of the game (determined by the last (game-state ...) message received)
-;; every (timer-tick)
-;; draw the player and enemies (determined from (player rect) and (enemy id rect)
-;; messages), static objects defined by (static rect) and (goal rect) assertions
-;; and update the screen each (timer-tick) time the player moves - (player rect)
-;; messages.
-;; if (level-complete) or (level-complete) are detected then reset all state
-;; if (victory) is detected draw something special
+;; draw the state of the game - determined by the last (game-state ...) message
+;; received - every (timer-tick).
+;; if (victory) is detected draw something special.
 (define ((render-behavior dc) e s)
   ;; state is a game-state struct
   (match-define (game-state old-player old-env old-goal old-enemies) s)
   (match e
     [(message (? game-state? new-state))
      (transition new-state '())]
-    #|
-    [(patch p-added p-removed)
-     (define added (static-rects-matcher p-added))
-     (define removed (static-rects-matcher p-removed))
-     (define new-env (append added (remove* removed old-env)))
-     (define player-s (matcher-project/set p-added (compile-projection (player (?!)))))
-     (define new-player (if (set-empty? player-s) old-player (car (set-first player-s))))
-     (define goal-s (matcher-project/set p-added (compile-projection (goal (?!)))))
-     (define new-goal (if (set-empty? goal-s) old-goal (car (set-first goal-s))))
-     (define-values (enemies-added enemies-removed) (patch-enemies e))
-     (define enemies-new (update-enemy-hash enemies-added enemies-removed old-enemies))
-     (transition (game-state new-player new-env new-goal enemies-new)
-                 '())]
-    [(message (player new-player))
-     (transition (game-state new-player old-env old-goal old-enemies)
-                 '())]
-    [(message (enemy id rect))
-     ;; this check is necessary due to trickiness when transitioning between levels.
-     ;; there could still be (enemy _ _) messages floating around from the last level.
-     (if (hash-has-key? old-enemies id)
-         (block
-          (define new-enemies (hash-set old-enemies id (enemy id rect)))
-          (transition (game-state old-player old-env old-goal new-enemies)
-                      '()))
-         #f)]
-|#
     [(message (victory))
      (draw-victory dc)
      (quit '())]
-    #;[(message (or (defeat) (level-complete)))
-     (transition (game-state (rect (posn -100 -100) 0 0) '() (rect (posn -100 -100) 0 0) (hash))
-                 '())]
     [(message (timer-tick))
      (draw-game dc old-player old-env old-goal (hash-values old-enemies))
      #f]
