@@ -290,7 +290,6 @@
        [else
         (define next-state (game-state player-n env-old cur-goal enemies-new))
         (transition next-state (list kill-messages
-                                     (message (player player-n))
                                      (message next-state)
                                      (when col?
                                          (message (y-collision 'player)))))])]
@@ -305,8 +304,7 @@
           (define next-state (game-state player-old env-old cur-goal enemies-new))
           (if (overlapping-rects? player-old e-rect-new)
               (quit (list (message (defeat))))
-              (transition next-state (list (message (enemy enemy-id e-rect-new))
-                                           (message next-state)))))
+              (transition next-state (message next-state))))
          #f)]
     [(message (move-y enemy-id dy))
      (define maybe-enemy (hash-ref enemies-old enemy-id #f))
@@ -323,8 +321,7 @@
                     (transition next-state (list (message (kill-enemy enemy-id))
                                                  (message next-state)))))
               (let ([next-state (game-state player-old env-old cur-goal enemies-new)])
-                (transition next-state (list (message (enemy enemy-id e-rect-new))
-                                             (message next-state)
+                (transition next-state (list (message next-state)
                                              (when col? (message (y-collision enemy-id))))))))
          #f)]
     [(message (jump-request))
@@ -339,8 +336,7 @@
      (define-values (enemies-added enemies-removed) (patch-enemies e))
      (define enemies-new (update-enemy-hash enemies-added enemies-removed enemies-old))
      (define next-state (game-state player-old new-env cur-goal enemies-new))
-     (transition next-state (cons (message next-state)
-                                  (map message enemies-added)))]
+     (transition next-state (message next-state))]
     [_ #f]))
 
 ;; rect goal -> spawn
@@ -626,10 +622,7 @@
    (game-state (rect (posn 0 0) 0 0) '() (rect (posn -100 -100) 0 0) (hash))
    (sub (game-state ? ? ? ?))
    (sub (timer-tick))
-   (sub (static ?))
-   (sub (player ?))
-   (sub (enemy ? ?))
-   (sub (goal ?))
+   
    (sub (defeat))
    (sub (victory))
    (sub (level-complete))))
