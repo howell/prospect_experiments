@@ -22,7 +22,7 @@
 ;;   Processes (jump-request) messages. If the player is allowed to jump sends a (jump) message.
 ;;   Listens for (move-x id dx) and (move-y id dy) messages and attempts to move the player (id = 'player) or enemy accordingly.
 ;;   When a (move-y id _) command results in a collision with the environment a (y-collision id) message is sent.
-;;   Sends the entire (game-state ...) as a message every 
+;;   Sends the entire (game-state ...) as a message every time it updates.
 ;;   The environment is determined by assertions of the shape (static rect).
 ;;   The initial location of enemies is determined by assertions of the shape (enemy id rect).
 ;;   If the player kills an enemy sends a (kill-enemy id) message.
