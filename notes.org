@@ -195,7 +195,7 @@ The problem is that there might still be a message or two from the last level
 lingering around that gets delivered at an unexpected moment, causing a glitch
 with the new level, such as an enemy that was alive when the first level
 finished being rendered in the new level.
-
+*** drawback: code migration process to a different structure introducing bugs
 * Thoughts on Testing
 ** The definition of an actor behavior strongly resembles an OO class definition
 *** The arms of the event pattern match are the methods
