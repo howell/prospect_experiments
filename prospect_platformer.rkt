@@ -24,7 +24,7 @@
 ;;   When a (move-y id _) command results in a collision with the environment a (y-collision id) message is sent.
 ;;   Sends the entire (game-state ...) as a message every time it updates.
 ;;   The environment is determined by assertions of the shape (static rect).
-;;   The initial location of enemies is determined by assertions of the shape (enemy id rect).
+;;   The existence of enemies and their initial location is determined by assertions of the shape (enemy id rect).
 ;;   If the player kills an enemy sends a (kill-enemy id) message.
 ;;   When the player reaches the goal, quits and sends the message (level-complete)
 ;;   When the player loses (leaves the map/killed by an enemy), quits and sends the message (defeat)
