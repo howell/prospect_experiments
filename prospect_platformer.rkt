@@ -255,7 +255,7 @@
 ;; Quits and messages (level-complete) if the player reaches the goal
 ;; Quits and messages (defeat) if the player leaves the map
 (define (game-logic-behavior e s)
-  (match-define (game-state player-old env-old cur-goal enemies-old (posn x-limit y-limit)) s)
+  (match-define (game-state player-old env-old cur-goal enemies-old (or lsize (posn x-limit y-limit))) s)
   (match e
     [(message (move-x 'player dx))
      (define player-n (car (move-player-x player-old dx env-old)))
@@ -267,7 +267,7 @@
        [(ormap (lambda (e) (overlapping-rects? player-n e)) (map enemy-rect (hash-values enemies-old)))
         (quit (list (message (defeat))))]
        [else
-        (define next-state (game-state player-n env-old cur-goal enemies-old))
+        (define next-state (game-state player-n env-old cur-goal enemies-old lsize))
         (transition next-state (message next-state))])]
     [(message (move-y 'player dy))
      (match-define (cons player-n col?) (move-player-y player-old dy env-old))
@@ -282,7 +282,7 @@
        [(not (overlapping-rects? player-n (rect (posn 0 0) x-limit y-limit)))
         (quit (list (message (defeat))))]
        [else
-        (define next-state (game-state player-n env-old cur-goal enemies-new))
+        (define next-state (game-state player-n env-old cur-goal enemies-new lsize))
         (transition next-state (list kill-messages
                                      (message next-state)
                                      (when col?
@@ -295,7 +295,7 @@
           (match-define (enemy _ e-rect) maybe-enemy)
           (define e-rect-new (car (move-player-x e-rect dx env-old)))
           (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
-          (define next-state (game-state player-old env-old cur-goal enemies-new))
+          (define next-state (game-state player-old env-old cur-goal enemies-new lsize))
           (if (overlapping-rects? player-old e-rect-new)
               (quit (list (message (defeat))))
               (transition next-state (message next-state))))
@@ -311,10 +311,10 @@
           (if (overlapping-rects? player-old e-rect-new)
               (if (positive? dy)
                   (quit (list (message (defeat)))) ;; enemy fell on player
-                  (let ([next-state (game-state player-old env-old cur-goal (hash-remove enemies-new enemy-id))])
+                  (let ([next-state (game-state player-old env-old cur-goal (hash-remove enemies-new enemy-id) lsize)])
                     (transition next-state (list (message (kill-enemy enemy-id))
                                                  (message next-state)))))
-              (let ([next-state (game-state player-old env-old cur-goal enemies-new)])
+              (let ([next-state (game-state player-old env-old cur-goal enemies-new lsize)])
                 (transition next-state (list (message next-state)
                                              (when col? (message (y-collision enemy-id))))))))
          #f)]
@@ -329,7 +329,7 @@
      (define new-env (append added (remove* removed (game-state-env s))))
      (define-values (enemies-added enemies-removed) (patch-enemies e))
      (define enemies-new (update-enemy-hash enemies-added enemies-removed enemies-old))
-     (define next-state (game-state player-old new-env cur-goal enemies-new))
+     (define next-state (game-state player-old new-env cur-goal enemies-new lsize))
      (transition next-state (message next-state))]
     [_ #f]))
 
@@ -595,7 +595,7 @@
   (spawn
    (render-behavior dc)
    (game-state (rect (posn 0 0) 0 0) '() (rect (posn -100 -100) 0 0) (hash) (posn 100 100))
-   (sub (game-state ? ? ? ?))
+   (sub (game-state ? ? ? ? ?))
    (sub (timer-tick))
    (sub (defeat))
    (sub (victory))
