@@ -262,7 +262,7 @@
      (cond
        [(overlapping-rects? player-n cur-goal)
         (quit (list (message (level-complete))))]
-       [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
+       [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x canvas-bot-right) (posn-y canvas-bot-right))))
         (quit (list (message (defeat))))]
        [(ormap (lambda (e) (overlapping-rects? player-n e)) (map enemy-rect (hash-values enemies-old)))
         (quit (list (message (defeat))))]
@@ -279,7 +279,7 @@
      (cond
        [(overlapping-rects? player-n cur-goal)
         (quit (list (message (level-complete))))]
-       [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x bot-right) (posn-y bot-right))))
+       [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x canvas-bot-right) (posn-y canvas-bot-right))))
         (quit (list (message (defeat))))]
        [else
         (define next-state (game-state player-n env-old cur-goal enemies-new))
@@ -542,7 +542,7 @@
   (send dc set-text-foreground color)
   (define fnt (make-object font% 100 'default))
   (send dc set-font fnt)
-  (send dc draw-text text (/ (posn-x bot-right) 6) (/ (posn-y bot-right) 4))
+  (send dc draw-text text (/ (posn-x canvas-bot-right) 6) (/ (posn-y canvas-bot-right) 4))
   (send dc resume-flush))
 
 (define (draw-victory dc)
@@ -653,7 +653,7 @@
     [_ #f]))
 
 ;; global (mutable) variable with the canvas's bottom-right posn 
-(define bot-right #f)
+(define canvas-bot-right #f)
 
 (define (make-frame width height)
   (parameterize ((current-eventspace (make-eventspace)))
@@ -668,7 +668,7 @@
     (send canvas focus)
     (send frame show #t)
     (define-values (x-max y-max) (send canvas get-client-size))
-    (set! bot-right (posn x-max y-max))
+    (set! canvas-bot-right (posn x-max y-max))
     (define dc (send canvas get-dc))
     (spawn-renderer dc)))
 
