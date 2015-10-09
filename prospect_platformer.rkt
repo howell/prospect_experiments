@@ -534,7 +534,7 @@
     (draw-rect dc (enemy-rect e) "red"))
   (draw-rect dc player "blue")
   #;(send dc resume-flush)
-  (send cdc draw-bitmap bitmap 0 0))
+  #;(send cdc draw-bitmap bitmap 0 0))
 
 (define (render-game canvas-dc gstate)
   (match-define (game-state player env gl enemies) gstate)
@@ -543,7 +543,10 @@
                    (posn-y canvas-bot-right)))
   (define bitmap-dc (send bitmap make-dc))
   (draw-game bitmap-dc player env gl enemies)
-  (send canvas-dc draw-bitmap bitmap 0 0))
+  (send canvas-dc suspend-flush)
+  (send canvas-dc clear)
+  (send canvas-dc draw-bitmap bitmap 0 0)
+  (send canvas-dc resume-flush))
 
 (define (big-text dc text color)
   (send dc suspend-flush)
