@@ -255,14 +255,14 @@
 ;; Quits and messages (level-complete) if the player reaches the goal
 ;; Quits and messages (defeat) if the player leaves the map
 (define (game-logic-behavior e s)
-  (match-define (game-state player-old env-old cur-goal enemies-old) s)
+  (match-define (game-state player-old env-old cur-goal enemies-old (posn x-limit y-limit)) s)
   (match e
     [(message (move-x 'player dx))
      (define player-n (car (move-player-x player-old dx env-old)))
      (cond
        [(overlapping-rects? player-n cur-goal)
         (quit (list (message (level-complete))))]
-       [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x canvas-bot-right) (posn-y canvas-bot-right))))
+       [(not (overlapping-rects? player-n (rect (posn 0 0) x-limit y-limit)))
         (quit (list (message (defeat))))]
        [(ormap (lambda (e) (overlapping-rects? player-n e)) (map enemy-rect (hash-values enemies-old)))
         (quit (list (message (defeat))))]
@@ -279,7 +279,7 @@
      (cond
        [(overlapping-rects? player-n cur-goal)
         (quit (list (message (level-complete))))]
-       [(not (overlapping-rects? player-n (rect (posn 0 0) (posn-x canvas-bot-right) (posn-y canvas-bot-right))))
+       [(not (overlapping-rects? player-n (rect (posn 0 0) x-limit y-limit)))
         (quit (list (message (defeat))))]
        [else
         (define next-state (game-state player-n env-old cur-goal enemies-new))
@@ -334,9 +334,9 @@
     [_ #f]))
 
 ;; rect goal -> spawn
-(define (spawn-game-logic player0 goal0)
+(define (spawn-game-logic player0 goal0 level-size)
   (spawn game-logic-behavior
-         (game-state player0 '() goal0 (hash))
+         (game-state player0 '() goal0 (hash) level-size)
          (sub (move-x ? ?))
          (sub (move-y ? ?))
          (sub (static ?))
@@ -536,20 +536,19 @@
   #;(send dc resume-flush)
   #;(send cdc draw-bitmap bitmap 0 0))
 
-(define (render-game canvas-dc player env gl enemies)
+(define (render-game canvas-dc player env gl enemies lsize)
   (match-define (posn x-size y-size) canvas-bot-right)
   (match-define (posn player-x player-y) (rect-top-left player))
-  (define X-LIMIT x-size)
-  (define Y-LIMIT y-size)
+  (match-define (posn x-limit y-limit) lsize)
   (define src-x
     (cond
       [(> 0 (- player-x (/ x-size 2))) 0]
-      [(< X-LIMIT (+ player-x (/ x-size 2))) (- X-LIMIT x-size)]
+      [(< x-limit (+ player-x (/ x-size 2))) (- x-limit x-size)]
       [else (- player-x (/ x-size 2))]))
   (define src-y
     (cond
       [(> 0 (- player-y (/ y-size 2))) 0]
-      [(< Y-LIMIT (+ player-y (/ y-size 2))) (- Y-LIMIT y-size)]
+      [(< y-limit (+ player-y (/ y-size 2))) (- y-limit y-size)]
       [else (- player-y (/ y-size 2))]))
   (define bitmap (make-object bitmap% x-size y-size))
   (define bitmap-dc (send bitmap make-dc))
@@ -580,7 +579,7 @@
 ;; if (victory) is detected draw something special.
 (define ((render-behavior dc) e s)
   ;; state is a game-state struct
-  (match-define (game-state old-player old-env old-goal old-enemies) s)
+  (match-define (game-state old-player old-env old-goal old-enemies lsize) s)
   (match e
     [(message (? game-state? new-state))
      (transition new-state '())]
@@ -588,14 +587,14 @@
      (draw-victory dc)
      (quit '())]
     [(message (timer-tick))
-     (render-game dc old-player old-env old-goal (hash-values old-enemies))
+     (render-game dc old-player old-env old-goal (hash-values old-enemies) lsize)
      #f]
     [_ #f]))
 
 (define (spawn-renderer dc)
   (spawn
    (render-behavior dc)
-   (game-state (rect (posn 0 0) 0 0) '() (rect (posn -100 -100) 0 0) (hash))
+   (game-state (rect (posn 0 0) 0 0) '() (rect (posn -100 -100) 0 0) (hash) (posn 100 100))
    (sub (game-state ? ? ? ?))
    (sub (timer-tick))
    (sub (defeat))
