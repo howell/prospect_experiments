@@ -286,7 +286,7 @@
         (transition next-state (list kill-messages
                                      (message next-state)
                                      (when col?
-                                         (message (y-collision 'player)))))])]
+                                       (message (y-collision 'player)))))])]
     [(message (move-x enemy-id dx))
      (define maybe-enemy (hash-ref enemies-old enemy-id #f))
      ;; the enemy might not be in the hash if it was recently killed
@@ -527,17 +527,19 @@
 (define (draw-game dc player env gl enemies)
   (let* ([bitmap (new bitmap%
                       [width (posn-x canvas-bot-right)]
-                      [height (posn-y canvas-bot-right)])])
-                      
-  (send dc suspend-flush)
-  (send dc clear)
-  (for ([r env])
-    (draw-rect dc r "black"))
-  (draw-goal dc gl)
-  (for ([e enemies])
-    (draw-rect dc (enemy-rect e) "red"))
-  (draw-rect dc player "blue")
-  (send dc resume-flush)))
+                      [height (posn-y canvas-bot-right)])]
+         [cdc dc]
+         [dc (send bitmap make-dc)])
+    ((send dc suspend-flush)
+     (send dc clear)
+     (for ([r env])
+       (draw-rect dc r "black"))
+     (draw-goal dc gl)
+     (for ([e enemies])
+       (draw-rect dc (enemy-rect e) "red"))
+     (draw-rect dc player "blue")
+     (send dc resume-flush)
+     (send cdc draw-bitmap bitmap 0 0))))
 
 (define (big-text dc text color)
   (send dc suspend-flush)
