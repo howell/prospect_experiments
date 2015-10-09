@@ -533,20 +533,24 @@
     (draw-rect dc (enemy-rect e) "red"))
   (draw-rect dc player "blue"))
 
+;; num num num -> num
+;; determine an offset for side-scrolling
+(define (scroll-offset player canvas-size level-size)
+  (define csize/2 (/ canvas-size 2))
+  (cond
+    ;; don't scroll when the player is close to the beginning of the level
+    [(< (- player csize/2) 0) 0]
+    ;; similarly, don't scroll when near the end
+    [(> (+ player csize/2) level-size) (- level-size canvas-size)]
+    ;; otherwise put the player at the center of the screen
+    [else (- player csize/2)]))
+
 (define (render-game canvas-dc player env gl enemies lsize)
   (match-define (posn x-size y-size) canvas-bot-right)
   (match-define (posn player-x player-y) (rect-top-left player))
   (match-define (posn x-limit y-limit) lsize)
-  (define src-x
-    (cond
-      [(> 0 (- player-x (/ x-size 2))) 0]
-      [(< x-limit (+ player-x (/ x-size 2))) (- x-limit x-size)]
-      [else (- player-x (/ x-size 2))]))
-  (define src-y
-    (cond
-      [(> 0 (- player-y (/ y-size 2))) 0]
-      [(< y-limit (+ player-y (/ y-size 2))) (- y-limit y-size)]
-      [else (- player-y (/ y-size 2))]))
+  (define src-x (scroll-offset player-x x-size x-limit))
+  (define src-y (scroll-offset player-y y-size y-limit))
   (define bitmap (make-object bitmap% x-size y-size))
   (define bitmap-dc (send bitmap make-dc))
   (draw-game bitmap-dc player env gl enemies)
