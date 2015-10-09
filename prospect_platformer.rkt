@@ -525,6 +525,10 @@
 ;; drawing-context rect (listof rect) goal (listof enemy) -> void
 ;; draws the game
 (define (draw-game dc player env gl enemies)
+  (let* ([bitmap (new bitmap%
+                      [width (posn-x canvas-bot-right)]
+                      [height (posn-y canvas-bot-right)])])
+                      
   (send dc suspend-flush)
   (send dc clear)
   (for ([r env])
@@ -533,7 +537,7 @@
   (for ([e enemies])
     (draw-rect dc (enemy-rect e) "red"))
   (draw-rect dc player "blue")
-  (send dc resume-flush))
+  (send dc resume-flush)))
 
 (define (big-text dc text color)
   (send dc suspend-flush)
