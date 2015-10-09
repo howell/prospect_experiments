@@ -255,7 +255,8 @@
 ;; Quits and messages (level-complete) if the player reaches the goal
 ;; Quits and messages (defeat) if the player leaves the map
 (define (game-logic-behavior e s)
-  (match-define (game-state player-old env-old cur-goal enemies-old (or lsize (posn x-limit y-limit))) s)
+  (match-define (game-state player-old env-old cur-goal enemies-old lsize) s)
+  (match-define (posn x-limit y-limit) lsize)
   (match e
     [(message (move-x 'player dx))
      (define player-n (car (move-player-x player-old dx env-old)))
