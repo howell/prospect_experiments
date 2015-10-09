@@ -539,6 +539,18 @@
 (define (render-game canvas-dc player env gl enemies)
   (match-define (posn x-size y-size) canvas-bot-right)
   (match-define (posn player-x player-y) (rect-top-left (player-rect player)))
+  (define X-LIMIT x-size)
+  (define Y-LIMIT y-size)
+  (define src-x
+    (cond
+      [(> 0 (- player-x (/ x-size 2))) 0]
+      [(> X-LIMIT (+ player-x (/ x-size 2))) (- X-LIMIT x-size)]
+      [else (- player-x (/ x-size 2))]))
+  (define src-y
+    (cond
+      [(> 0 (- player-y (/ y-size 2))) 0]
+      [(> Y-LIMIT (+ player-y (/ y-size 2))) (- Y-LIMIT y-size)]
+      [else (- player-y (/ y-size 2))]))
   (define bitmap (make-object bitmap% x-size y-size))
   (define bitmap-dc (send bitmap make-dc))
   (draw-game bitmap-dc player env gl enemies)
