@@ -113,8 +113,8 @@
 ;; rect * (listof rect) * rect * (hashof symbol -> enemy)
 (struct game-state (player env goal enemies) #:transparent)
 
-;; rect * (listof rect) * rect * (listof spawn)
-(struct level (player0 env0 goal enemies) #:transparent)
+;; rect * (listof rect) * rect * (listof spawn) * posn
+(struct level (player0 env0 goal enemies size) #:transparent)
 
 ;; translate key presses into commands
 ;; asserts (move-left)/(move-right) while the left/right arrow key is held down
