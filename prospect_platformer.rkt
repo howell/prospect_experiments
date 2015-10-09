@@ -778,7 +778,7 @@
 (define level1
   (level PLAYER0
          (list (rect (posn 0 200) 600 10))
-         GOAL0
+         GOAL1
          (list (make-horiz-enemy 0 180 20 20 580 4)
                (make-horiz-enemy 0 140 20 20 580 8)
                (make-vert-enemy 50 125 20 20 75 4)
