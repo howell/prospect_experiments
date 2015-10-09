@@ -622,7 +622,7 @@
                          (apply patch-seq (flatten (level->actions (car s))))))]
     [(message (level-complete))
      (match (cdr s)
-       [(cons next-level _) (transition (cdr s) (list (spawn-game-logic (level-player0 next-level) (level-goal next-level))
+       [(cons next-level _) (transition (cdr s) (list (spawn-game-logic (level-player0 next-level) (level-goal next-level) (level-size next-level))
                                                       (retract (static ?))
                                                       (retract (player ?))
                                                       (retract (spawn-enemy ?))
