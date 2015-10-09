@@ -772,7 +772,7 @@
                (make-horiz-enemy 200 158 20 20 30 1)
                (make-horiz-enemy 300 130 20 20 30 1)
                (make-horiz-enemy 400 180 20 20 180 3))
-         (posn 600 400)))
+         (posn 1000 400)))
 
 (define level1
   (level PLAYER0
