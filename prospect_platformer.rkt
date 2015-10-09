@@ -525,21 +525,25 @@
 ;; drawing-context rect (listof rect) goal (listof enemy) -> void
 ;; draws the game
 (define (draw-game dc player env gl enemies)
-  (let* ([bitmap (make-object bitmap%
+  #;(send dc suspend-flush)
+  #;(send dc clear)
+  (for ([r env])
+    (draw-rect dc r "black"))
+  (draw-goal dc gl)
+  (for ([e enemies])
+    (draw-rect dc (enemy-rect e) "red"))
+  (draw-rect dc player "blue")
+  #;(send dc resume-flush)
+  (send cdc draw-bitmap bitmap 0 0))
+
+(define (render-game canvas-dc gstate)
+  (match-define (game-state player env gl enemies) gstate)
+  (define bitmap (make-object bitmap%
                    (posn-x canvas-bot-right)
-                   (posn-y canvas-bot-right))]
-         [cdc dc]
-         [dc (send bitmap make-dc)])
-    (send dc suspend-flush)
-    (send dc clear)
-    (for ([r env])
-      (draw-rect dc r "black"))
-    (draw-goal dc gl)
-    (for ([e enemies])
-      (draw-rect dc (enemy-rect e) "red"))
-    (draw-rect dc player "blue")
-    (send dc resume-flush)
-    (send cdc draw-bitmap bitmap 0 0)))
+                   (posn-y canvas-bot-right)))
+  (define bitmap-dc (send bitmap make-dc))
+  (draw-game bitmap-dc player env gl enemies)
+  (send canvas-dc draw-bitmap bitmap 0 0))
 
 (define (big-text dc text color)
   (send dc suspend-flush)
