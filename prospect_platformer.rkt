@@ -536,8 +536,7 @@
   #;(send dc resume-flush)
   #;(send cdc draw-bitmap bitmap 0 0))
 
-(define (render-game canvas-dc gstate)
-  (match-define (game-state player env gl enemies) gstate)
+(define (render-game canvas-dc player env gl enemies)
   (define bitmap (make-object bitmap%
                    (posn-x canvas-bot-right)
                    (posn-y canvas-bot-right)))
@@ -577,7 +576,7 @@
      (draw-victory dc)
      (quit '())]
     [(message (timer-tick))
-     (draw-game dc old-player old-env old-goal (hash-values old-enemies))
+     (render-game dc old-player old-env old-goal (hash-values old-enemies))
      #f]
     [_ #f]))
 
