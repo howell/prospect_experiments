@@ -551,7 +551,7 @@
   (match-define (posn x-limit y-limit) lsize)
   (define src-x (scroll-offset player-x x-size x-limit))
   (define src-y (scroll-offset player-y y-size y-limit))
-  (define bitmap (make-object bitmap% x-size y-size))
+  (define bitmap (make-object bitmap% x-limit y-limit))
   (define bitmap-dc (send bitmap make-dc))
   (draw-game bitmap-dc player env gl enemies)
   (send canvas-dc suspend-flush)
@@ -772,7 +772,7 @@
                (make-horiz-enemy 200 158 20 20 30 1)
                (make-horiz-enemy 300 130 20 20 30 1)
                (make-horiz-enemy 400 180 20 20 180 3))
-         (posn 400 600)))
+         (posn 600 400)))
 
 (define level1
   (level PLAYER0
@@ -788,7 +788,7 @@
                (make-vert-enemy 300 125 20 20 75 4)
                (make-vert-enemy 350 125 20 20 75 4)
                (make-vert-enemy 400 125 20 20 75 4))
-         (posn 400 600)))
+         (posn 600 400)))
 
 (spawn-enemy-spawner)
 (spawn-game-logic PLAYER0 GOAL0 (level-size level0))
