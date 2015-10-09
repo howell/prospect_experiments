@@ -525,9 +525,9 @@
 ;; drawing-context rect (listof rect) goal (listof enemy) -> void
 ;; draws the game
 (define (draw-game dc player env gl enemies)
-  (let* ([bitmap (new bitmap%
-                      [width (posn-x canvas-bot-right)]
-                      [height (posn-y canvas-bot-right)])]
+  (let* ([bitmap (make-object bitmap%
+                   (posn-x canvas-bot-right)
+                   (posn-y canvas-bot-right))]
          [cdc dc]
          [dc (send bitmap make-dc)])
     ((send dc suspend-flush)
