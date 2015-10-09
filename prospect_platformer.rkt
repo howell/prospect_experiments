@@ -538,12 +538,13 @@
 
 (define (render-game canvas-dc player env gl enemies)
   (match-define (posn x-size y-size) canvas-bot-right)
+  (match-define (posn player-x player-y) (rect-top-left (player-rect player)))
   (define bitmap (make-object bitmap% x-size y-size))
   (define bitmap-dc (send bitmap make-dc))
   (draw-game bitmap-dc player env gl enemies)
   (send canvas-dc suspend-flush)
   (send canvas-dc clear)
-  (send canvas-dc draw-bitmap bitmap 0 0)
+  (send canvas-dc draw-bitmap-section bitmap 0 0 ? ? x-size y-size)
   (send canvas-dc resume-flush))
 
 (define (big-text dc text color)
