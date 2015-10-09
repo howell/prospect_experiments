@@ -110,8 +110,8 @@
 (struct victory () #:transparent)
 (struct defeat () #:transparent)
 
-;; rect * (listof rect) * rect * (hashof symbol -> enemy)
-(struct game-state (player env goal enemies) #:transparent)
+;; rect * (listof rect) * rect * (hashof symbol -> enemy) * posn
+(struct game-state (player env goal enemies level-size) #:transparent)
 
 ;; rect * (listof rect) * rect * (listof spawn) * posn
 (struct level (player0 env0 goal enemies size) #:transparent)
