@@ -603,7 +603,7 @@
 
 ;; level -> (constreeof action)
 (define (level->actions l)
-  (match-define (level player0 env0 goal0 enemies) l)
+  (match-define (level player0 env0 goal0 enemies lsize) l)
   (flatten (list (assert (player player0))
                  (map (lambda (r) (assert (static r))) env0)
                  (map (lambda (e) (assert (spawn-enemy e))) enemies))))
@@ -613,8 +613,8 @@
 (define (level-manager-behavior e s)
   (match e
     [(message (defeat))
-     (match-define (level player0 env0 goal0 enemies) (car s))
-     (transition s (list (spawn-game-logic player0 goal0)
+     (match-define (level player0 env0 goal0 enemies size) (car s))
+     (transition s (list (spawn-game-logic player0 goal0 size)
                          (retract (static ?))
                          (retract (player ?))
                          (retract (spawn-enemy ?))
@@ -770,7 +770,8 @@
          (list (make-horiz-enemy 0 180 20 20 130 2)
                (make-horiz-enemy 200 158 20 20 30 1)
                (make-horiz-enemy 300 130 20 20 30 1)
-               (make-horiz-enemy 400 180 20 20 180 3))))
+               (make-horiz-enemy 400 180 20 20 180 3))
+         (posn 400 600)))
 
 (define level1
   (level PLAYER0
@@ -785,10 +786,11 @@
                (make-vert-enemy 250 125 20 20 75 4)
                (make-vert-enemy 300 125 20 20 75 4)
                (make-vert-enemy 350 125 20 20 75 4)
-               (make-vert-enemy 400 125 20 20 75 4))))
+               (make-vert-enemy 400 125 20 20 75 4))
+         (posn 400 600)))
 
 (spawn-enemy-spawner)
-(spawn-game-logic PLAYER0 GOAL0)
+(spawn-game-logic PLAYER0 GOAL0 (level-size level0))
 (spawn-level-manager (list level0
                            level1))
 
