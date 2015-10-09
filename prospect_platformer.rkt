@@ -526,16 +526,12 @@
 ;; drawing-context rect (listof rect) goal (listof enemy) -> void
 ;; draws the game
 (define (draw-game dc player env gl enemies)
-  #;(send dc suspend-flush)
-  #;(send dc clear)
   (for ([r env])
     (draw-rect dc r "black"))
   (draw-goal dc gl)
   (for ([e enemies])
     (draw-rect dc (enemy-rect e) "red"))
-  (draw-rect dc player "blue")
-  #;(send dc resume-flush)
-  #;(send cdc draw-bitmap bitmap 0 0))
+  (draw-rect dc player "blue"))
 
 (define (render-game canvas-dc player env gl enemies lsize)
   (match-define (posn x-size y-size) canvas-bot-right)
