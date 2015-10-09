@@ -537,9 +537,8 @@
   #;(send cdc draw-bitmap bitmap 0 0))
 
 (define (render-game canvas-dc player env gl enemies)
-  (define bitmap (make-object bitmap%
-                   (posn-x canvas-bot-right)
-                   (posn-y canvas-bot-right)))
+  (match-define (posn x-size y-size) canvas-bot-right)
+  (define bitmap (make-object bitmap% x-size y-size))
   (define bitmap-dc (send bitmap make-dc))
   (draw-game bitmap-dc player env gl enemies)
   (send canvas-dc suspend-flush)
