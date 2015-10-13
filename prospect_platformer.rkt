@@ -809,12 +809,14 @@
   (let ([stairs (ascending-stairs (+ 50 50) (- 800 40)
                                   100 -40
                                   50 10
-                                  10)])
+                                  10)]
+        [birdies (for/list ([i (in-range 5)])
+                   (make-vert-enemy x0 y0 20 20 75 4))]
     (level (make-player 0 750)
            (flatten (list stairs
                           (rect (posn 0 800) 50 200)))
            (make-goal 1100 950)
-           '()
+           birdies
            (posn 2000 1000))))
 
 (define levels (list level2 level0 level1))
