@@ -811,7 +811,7 @@
                                   50 10
                                   10)]
         [birdies (for/list ([i (in-range 5)])
-                   (make-vert-enemy x0 y0 20 20 75 4))]
+                   (make-vert-enemy (+ 150 (* i 100)) (- 750 (* i 80)) 20 20 75 4))])
     (level (make-player 0 750)
            (flatten (list stairs
                           (rect (posn 0 800) 50 200)))
