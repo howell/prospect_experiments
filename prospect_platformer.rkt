@@ -793,7 +793,7 @@
 
 ;; int int int int int nat nat -> (list rect)
 ;; make a stair case starting at a given position
-(define (ascending-stairs x0 y0 vdist hdist w h n)
+(define (ascending-stairs x0 y0 hdist vdist w h n)
   (for/list ([i (in-range n)])
     (define dx (* hdist i))
     (define dy (* vdist i))
@@ -801,7 +801,7 @@
 
 (define level2
   (let ([stairs (ascending-stairs (+ 50 50) 300
-                                  50 -25
+                                  100 -40
                                   50 10
                                   5)])
     (printf "~v\n" stairs)
