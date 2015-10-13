@@ -799,9 +799,23 @@
     (define dy (* vdist i))
     (rect (posn (+ x0 dx) (+ y0 dy)) w h)))
 
+(define level2
+  (let ([stairs (ascending-stairs (+ 150 50) 300
+                                  50 25
+                                  50 10
+                                  5)])
+    (level PLAYER0
+           (flatten (list stairs
+                          (rect (posn 0 275) 150 200)))
+           GOAL0
+           '()
+           (posn 1000 1000))))
+
+
 (spawn-enemy-spawner)
 (spawn-game-logic PLAYER0 GOAL0 (level-size level0))
-(spawn-level-manager (list level0
+(spawn-level-manager (list level2
+                           level0
                            level1))
 
 
