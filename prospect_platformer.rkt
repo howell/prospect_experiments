@@ -800,7 +800,7 @@
     (rect (posn (+ x0 dx) (+ y0 dy)) w h)))
 
 (define level2
-  (let ([stairs (ascending-stairs (+ 50 50) 300
+  (let ([stairs (ascending-stairs (+ 50 50) (- 800 40)
                                   100 -40
                                   50 10
                                   10)])
@@ -809,7 +809,7 @@
                           (rect (posn 0 800) 50 200)))
            GOAL0
            '()
-           (posn 1000 1000))))
+           (posn 2000 1000))))
 
 (define levels (list level2 level0 level1))
 
