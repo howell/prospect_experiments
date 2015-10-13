@@ -804,9 +804,9 @@
                                   100 -40
                                   50 10
                                   10)])
-    (level PLAYER0
+    (level (rect (posn 0 750) 8 32)
            (flatten (list stairs
-                          #;(rect (posn 0 275) 50 200)))
+                          (rect (posn 0 800) 50 200)))
            GOAL0
            '()
            (posn 1000 1000))))
@@ -816,7 +816,7 @@
 
 (spawn-enemy-spawner)
 (spawn-game-logic (level-player0 (car levels))
-                  (level-goal0 (car levels))
+                  (level-goal (car levels))
                   (level-size (car levels)))
 (spawn-level-manager levels)
 
