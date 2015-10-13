@@ -696,9 +696,15 @@
     (define dc (send canvas get-dc))
     (spawn-renderer dc)))
 
-(define PLAYER0 (rect (posn 0 0) 8 32))
-(define GOAL0 (rect (posn 900 150) 50 50))
-(define GOAL1 (rect (posn 500 150) 50 50))
+(define (make-player x0 y0)
+  (rect (posn x0 y0) 8 32))
+
+(define (make-goal x0 y0)
+  (rect (posn x0 y0) 50 50))
+
+(define PLAYER0 (make-player 0 0))
+(define GOAL0 (make-goal 900 150))
+(define GOAL1 (make-goal 500 150))
 
 (define FRAMES-PER-SEC 24)
 
@@ -804,10 +810,10 @@
                                   100 -40
                                   50 10
                                   10)])
-    (level (rect (posn 0 750) 8 32)
+    (level (make-player 0 750)
            (flatten (list stairs
                           (rect (posn 0 800) 50 200)))
-           GOAL0
+           (make-goal 1100 950)
            '()
            (posn 2000 1000))))
 
