@@ -800,13 +800,13 @@
     (rect (posn (+ x0 dx) (+ y0 dy)) w h)))
 
 (define level2
-  (let ([stairs (ascending-stairs (+ 150 50) 300
-                                  50 25
+  (let ([stairs (ascending-stairs (+ 50 50) 300
+                                  50 -25
                                   50 10
                                   5)])
     (level PLAYER0
            (flatten (list stairs
-                          (rect (posn 0 275) 150 200)))
+                          (rect (posn 0 275) 50 200)))
            GOAL0
            '()
            (posn 1000 1000))))
