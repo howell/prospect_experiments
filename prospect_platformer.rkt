@@ -803,8 +803,7 @@
   (let ([stairs (ascending-stairs (+ 50 50) 300
                                   100 -40
                                   50 10
-                                  5)])
-    (printf "~v\n" stairs)
+                                  10)])
     (level PLAYER0
            (flatten (list stairs
                           #;(rect (posn 0 275) 50 200)))
@@ -812,12 +811,14 @@
            '()
            (posn 1000 1000))))
 
+(define levels (list level2 level0 level1))
+
 
 (spawn-enemy-spawner)
-(spawn-game-logic PLAYER0 GOAL0 (level-size level0))
-(spawn-level-manager (list level2
-                           level0
-                           level1))
+(spawn-game-logic (level-player0 (car levels))
+                  (level-goal0 (car levels))
+                  (level-size (car levels)))
+(spawn-level-manager levels)
 
 
 #;(let ([x0 275]
