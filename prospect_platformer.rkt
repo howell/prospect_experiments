@@ -804,9 +804,10 @@
                                   50 -25
                                   50 10
                                   5)])
+    (printf "~v\n" stairs)
     (level PLAYER0
            (flatten (list stairs
-                          (rect (posn 0 275) 50 200)))
+                          #;(rect (posn 0 275) 50 200)))
            GOAL0
            '()
            (posn 1000 1000))))
