@@ -791,13 +791,13 @@
                (make-vert-enemy 400 125 20 20 75 4))
          (posn 600 400)))
 
-;; int int int int int -> (list rect)
+;; int int int int int nat nat -> (list rect)
 ;; make a stair case starting at a given position
-(define (ascending-stairs x0 y0 vdist hdist n)
+(define (ascending-stairs x0 y0 vdist hdist w h n)
   (for/list ([i (in-range n)])
     (define dx (* hdist i))
     (define dy (* vdist i))
-    (rect (posn (+ x0 dx) (+ y0 dy)) 40 10)))
+    (rect (posn (+ x0 dx) (+ y0 dy)) w h)))
 
 (spawn-enemy-spawner)
 (spawn-game-logic PLAYER0 GOAL0 (level-size level0))
