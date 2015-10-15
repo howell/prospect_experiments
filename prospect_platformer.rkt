@@ -819,7 +819,7 @@
            birdies
            (posn 2000 1000))))
 
-(define levels (list level2 level0 level1))
+(define levels (list level0 level1 level2))
 
 
 (spawn-enemy-spawner)
