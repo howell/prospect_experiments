@@ -3,10 +3,11 @@
 (require 2htdp/universe
          2htdp/image
          (only-in "./geometry.rkt"
-                    rect rect-top-left
-                    posn
-                    move-rect
-                    overlapping-rects?))
+                  rect rect-top-left
+                  posn
+                  move-rect
+                  overlapping-rects?
+                  point-distance))
 
 ;; num * num * num
 (struct motion (dx dy ddy) #:transparent)
@@ -41,22 +42,22 @@
     ['() #f]
     [(cons closest _) closest]))
 
-(check-equal? (closest-colliding (rect (posn 0 0) 1 1)
+(check-expect (closest-colliding (rect (posn 0 0) 1 1)
                                  (posn 0 0)
                                  '())
               #f)
 
-(check-equal? (closest-colliding (rect (posn 0 0) 2 1)
+(check-expect (closest-colliding (rect (posn 0 0) 2 1)
                                  (posn 0 0)
                                  (list (rect (posn 1 0) 1 1)))
               (rect (posn 1 0) 1 1))
 
-(check-equal? (closest-colliding (rect (posn 1 1) 1 1)
+(check-expect (closest-colliding (rect (posn 1 1) 1 1)
                                  2
                                  (list (rect (posn 3 0) 2 30)))
               #f)
 
-(check-equal? (closest-colliding (rect (posn 0 0) 10 1)
+(check-expect (closest-colliding (rect (posn 0 0) 10 1)
                                  (posn 0 0)
                                  (list (rect (posn 4 0) 1 1)
                                        (rect (posn 3 0) 1 1)
@@ -89,39 +90,39 @@
                              '())
               (cons (rect (posn 1 0) 1 1) #f))
 
-(check-equal? (move-player-x (rect (posn 0 0) 1 1)
+(check-expect (move-player-x (rect (posn 0 0) 1 1)
                              1
                              (list (rect (posn 1 0) 1 1)))
               (cons (rect (posn 0 0) 1 1) #t))
 
-(check-equal? (move-player-x (rect (posn 1 1) 1 1)
+(check-expect (move-player-x (rect (posn 1 1) 1 1)
                              2
                              (list (rect (posn 3 0) 2 30)))
               (cons (rect (posn 2 1) 1 1) #t))
 
-(check-equal? (move-player-x (rect (posn 1 1) 1 1)
+(check-expect (move-player-x (rect (posn 1 1) 1 1)
                              2
                              (list (rect (posn 3 0) 2 30)
                                    (rect (posn 40 40) 1 1)))
               (cons (rect (posn 2 1) 1 1) #t))
 
-(check-equal? (move-player-x (rect (posn 0 0) 1 1)
+(check-expect (move-player-x (rect (posn 0 0) 1 1)
                              10
                              (list (rect (posn 6 -8) 30 40)))
               (cons (rect (posn 5 0) 1 1) #t))
 
-(check-equal? (move-player-x (rect (posn 0 0) 1 1)
+(check-expect (move-player-x (rect (posn 0 0) 1 1)
                              10
                              (list (rect (posn 3 -4) 1 20)))
               (cons (rect (posn 2 0) 1 1) #t))
 
-(check-equal? (move-player-x (rect (posn 0 0) 1 1)
+(check-expect (move-player-x (rect (posn 0 0) 1 1)
                              4
                              (list (rect (posn 2 0) 1 1)
                                    (rect (posn 1 0) 1 1)))
               (cons (rect (posn 0 0) 1 1) #t))
 
-(check-equal? (move-player-x (rect (posn 1 0) 1 1)
+(check-expect (move-player-x (rect (posn 1 0) 1 1)
                              -1
                              (list (rect (posn 0 0) 1 1)))
               (cons (rect (posn 1 0) 1 1) #t))
@@ -140,38 +141,38 @@
   (match-define (cons r col?) (move-player-x (flip-rect p) dy (map flip-rect env)))
   (cons (flip-rect r) col?))
 
-(check-equal? (move-player-y (rect (posn 0 0) 1 1)
+(check-expect (move-player-y (rect (posn 0 0) 1 1)
                              1
                              '())
               (cons (rect (posn 0 1) 1 1) #f))
 
-(check-equal? (move-player-y (rect (posn 0 0) 1 1)
+(check-expect (move-player-y (rect (posn 0 0) 1 1)
                              1
                              (list (rect (posn 0 1) 1 1)))
               (cons (rect (posn 0 0) 1 1) #t))
 
-(check-equal? (move-player-y (rect (posn 1 1) 1 1)
+(check-expect (move-player-y (rect (posn 1 1) 1 1)
                              2
                              (list (rect (posn 0 3) 30 2)))
               (cons (rect (posn 1 2) 1 1) #t))
 
-(check-equal? (move-player-y (rect (posn 1 1) 1 1)
+(check-expect (move-player-y (rect (posn 1 1) 1 1)
                              2
                              (list (rect (posn 0 3) 30 2)
                                    (rect (posn 40 40) 1 1)))
               (cons (rect (posn 1 2) 1 1) #t))
 
-(check-equal? (move-player-y (rect (posn 0 0) 1 1)
+(check-expect (move-player-y (rect (posn 0 0) 1 1)
                              10
                              (list (rect (posn -8 6) 40 30)))
               (cons (rect (posn 0 5) 1 1) #t))
 
-(check-equal? (move-player-y (rect (posn 0 0) 1 1)
+(check-expect (move-player-y (rect (posn 0 0) 1 1)
                              10
                              (list (rect (posn -4 3) 20 1)))
               (cons (rect (posn 0 2) 1 1) #t))
 
-(check-equal? (move-player-y (rect (posn 0 0) 1 1)
+(check-expect (move-player-y (rect (posn 0 0) 1 1)
                              4
                              (list (rect (posn 0 2) 1 1)
                                    (rect (posn 0 1) 1 1)))
