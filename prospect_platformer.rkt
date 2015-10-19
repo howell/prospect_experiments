@@ -16,15 +16,19 @@
 ;;     - asserting the environment as (static rect)
 ;;     - asserts the initial location of the player as (player rect)
 ;;     - spawning any enemies.
-;;   Similarly, when the player dies (a (defeat) message) retract the current level and then spawn it again
+;;   Similarly, when the player dies (a (defeat) message) retract
+;;      the current level and then spawn it again
 ;; Game Logic Process:
 ;;   Decides where the player and enemies are on the map and when the level is over.
 ;;   Processes (jump-request) messages. If the player is allowed to jump sends a (jump) message.
-;;   Listens for (move-x id dx) and (move-y id dy) messages and attempts to move the player (id = 'player) or enemy accordingly.
-;;   When a (move-y id _) command results in a collision with the environment a (y-collision id) message is sent.
+;;   Listens for (move-x id dx) and (move-y id dy) messages and attempts to move the player
+;;         (id = 'player) or enemy accordingly.
+;;   When a (move-y id _) command results in a collision with the environment a (y-collision id)
+;;         message is sent.
 ;;   Sends the entire (game-state ...) as a message every time it updates.
 ;;   The environment is determined by assertions of the shape (static rect).
-;;   The existence of enemies and their initial location is determined by assertions of the shape (enemy id rect).
+;;   The existence of enemies and their initial location is determined by assertions of the shape
+;;         (enemy id rect).
 ;;   If the player kills an enemy sends a (kill-enemy id) message.
 ;;   When the player reaches the goal, quits and sends the message (level-complete)
 ;;   When the player loses (leaves the map/killed by an enemy), quits and sends the message (defeat)
@@ -36,7 +40,8 @@
 ;;   sends a (jump-request) message when space is pressed
 ;; Horizontal Motion Process:
 ;;   Interprets the output of the Player Process into commands for the Game Logic Process.
-;;   Sends the messsage (move-x 'player +-dx) on every (timer-tick) while (move-left) or (move-right) is being asserted.
+;;   Sends the messsage (move-x 'player +-dx) on every (timer-tick) while (move-left) or
+;;       (move-right) is being asserted.
 ;; Vertical Motion Process:
 ;;   Represents gravity and the player's attempts to fight gravity by jumping.
 ;;   Sends (move-y 'player dy) every (timer-tick).
@@ -191,7 +196,8 @@
     [(message (jump))
      (transition (cons #t (motion jump-v (motion-a motion-old))) '())]
     [(message (timer-tick))
-     (define motion-n (motion (min v-max (+ (motion-v motion-old) (motion-a motion-old))) (motion-a motion-old)))
+     (define motion-n
+       (motion (min v-max (+ (motion-v motion-old) (motion-a motion-old))) (motion-a motion-old)))
      (transition (cons jumping? motion-n) (list (message (move-y 'player (motion-v motion-old)))))]
     [(message (y-collision 'player))
      (transition (cons #f (motion 0 (motion-a motion-old))) '())]
@@ -267,14 +273,16 @@
         (quit (list (message (level-complete))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) x-limit y-limit)))
         (quit (list (message (defeat))))]
-       [(ormap (lambda (e) (overlapping-rects? player-n e)) (map enemy-rect (hash-values enemies-old)))
+       [(xyz? enemies-old player-n)  
         (quit (list (message (defeat))))]
        [else
         (define next-state (game-state player-n env-old cur-goal enemies-old lsize))
         (transition next-state (message next-state))])]
     [(message (move-y 'player dy))
      (match-define (cons player-n col?) (move-player-y player-old dy env-old))
-     (define col-enemies (filter (lambda (e) (overlapping-rects? player-n (enemy-rect e))) (hash-values enemies-old)))
+     (define col-enemies
+       (for/list ([e (hash-values enemies-old)] #:when (overlapping-rects? player-n (enemy-rect e)))
+         e))
      (define enemies-new (for/fold ([acc enemies-old])
                                    ([e col-enemies])
                            (hash-remove acc (enemy-id e))))
@@ -293,16 +301,15 @@
     [(message (move-x enemy-id dx))
      (define maybe-enemy (hash-ref enemies-old enemy-id #f))
      ;; the enemy might not be in the hash if it was recently killed
-     (if maybe-enemy
-         (block
-          (match-define (enemy _ e-rect) maybe-enemy)
-          (define e-rect-new (car (move-player-x e-rect dx env-old)))
-          (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
-          (define next-state (game-state player-old env-old cur-goal enemies-new lsize))
-          (if (overlapping-rects? player-old e-rect-new)
-              (quit (list (message (defeat))))
-              (transition next-state (message next-state))))
-         #f)]
+     (and maybe-enemy
+          (block
+           (match-define (enemy _ e-rect) maybe-enemy)
+           (define e-rect-new (first (move-player-x e-rect dx env-old)))
+           (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
+           (define next-state (game-state player-old env-old cur-goal enemies-new lsize))
+           (if (overlapping-rects? player-old e-rect-new)
+               (quit (list (message (defeat))))
+               (transition next-state (message next-state)))))]
     [(message (move-y enemy-id dy))
      (define maybe-enemy (hash-ref enemies-old enemy-id #f))
      ;; the enemy might not be in the hash if it was recently killed
@@ -312,11 +319,14 @@
           (match-define (cons e-rect-new col?) (move-player-y e-rect dy env-old))
           (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
           (if (overlapping-rects? player-old e-rect-new)
-              (if (positive? dy)
-                  (quit (list (message (defeat)))) ;; enemy fell on player
-                  (let ([next-state (game-state player-old env-old cur-goal (hash-remove enemies-new enemy-id) lsize)])
-                    (transition next-state (list (message (kill-enemy enemy-id))
-                                                 (message next-state)))))
+              (cond
+                [(positive? dy)
+                 (quit (list (message (defeat))))] ;; enemy fell on player
+                [else
+                 (define xxx (hash-remove enemies-new enemy-id))
+                 (define next-state (game-state player-old env-old cur-goal xxx lsize))
+                 (transition next-state (list (message (kill-enemy enemy-id))
+                                              (message next-state)))])
               (let ([next-state (game-state player-old env-old cur-goal enemies-new lsize)])
                 (transition next-state (list (message next-state)
                                              (when col? (message (y-collision enemy-id))))))))
@@ -335,6 +345,10 @@
      (define next-state (game-state player-old new-env cur-goal enemies-new lsize))
      (transition next-state (message next-state))]
     [_ #f]))
+
+
+(define (xyz? enemies-old player-n)
+  (ormap (lambda (e) (overlapping-rects? player-n (enemy-rect e))) (hash-values enemies-old)))
 
 ;; rect goal -> spawn
 (define (spawn-game-logic player0 goal0 level-size)
@@ -475,11 +489,13 @@
                          (apply patch-seq (flatten (level->actions (car s))))))]
     [(message (level-complete))
      (match (cdr s)
-       [(cons next-level _) (transition (cdr s) (list (spawn-game-logic (level-player0 next-level) (level-goal next-level) (level-size next-level))
-                                                      (retract (static ?))
-                                                      (retract (player ?))
-                                                      (retract (spawn-enemy ?))
-                                                      (apply patch-seq (flatten (level->actions next-level)))))]
+       [(cons next-level _)
+        (transition (cdr s) (list (spawn-game-logic (level-player0 next-level)
+                                                    (level-goal next-level) (level-size next-level))
+                                  (retract (static ?))
+                                  (retract (player ?))
+                                  (retract (spawn-enemy ?))
+                                  (apply patch-seq (flatten (level->actions next-level)))))]
        [_ (quit (list (message (victory))))])]
     [_ #f]))
 
