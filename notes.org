@@ -159,7 +159,8 @@ user break
    /Applications/Racket v6.2.1/collects/racket/private/list.rkt:229:4: foldl
    /Users/scaldwell/git/prospect/prospect/ground.rkt:71:2: await-interrupt
    /Users/scaldwell/git/prospect_experiments/prospect_platformer.rkt: [running body]
-
+** want a way to not have to handle all subscriptions when looking at a patch
+*** designate which ones should (not) be grouped)
 * Platformer Notes
 ** DONE Should the game logic process be handling (jump) commands?
 *** it could check if there is a piece of the environment directly below the player
