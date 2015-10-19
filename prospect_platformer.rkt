@@ -304,7 +304,7 @@
      (and maybe-enemy
           (block
            (match-define (enemy _ e-rect) maybe-enemy)
-           (define e-rect-new (first (move-player-x e-rect dx env-old)))
+           (define e-rect-new (car (move-player-x e-rect dx env-old)))
            (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
            (define next-state (game-state player-old env-old cur-goal enemies-new lsize))
            (if (overlapping-rects? player-old e-rect-new)
