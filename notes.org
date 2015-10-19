@@ -90,7 +90,7 @@ everything actually is.
   new location.
 - a drawing process D listens for every location and draws/erases to the screen
   as postions are asserted and retracted.
-*** TODO Improvement needed: deliberate, instead of random, collision reaction.
+*** DONE Improvement needed: deliberate, instead of random, collision reaction.
 *** Take 4: motion messages
 - key board events are injected into the system using messages of the form
   ('key-event k)
@@ -197,7 +197,7 @@ lingering around that gets delivered at an unexpected moment, causing a glitch
 with the new level, such as an enemy that was alive when the first level
 finished being rendered in the new level.
 *** drawback: code migration process to a different structure introducing bugs
-** TODO side scrolling!
+** DONE side scrolling!
 * Thoughts on Testing
 ** The definition of an actor behavior strongly resembles an OO class definition
 *** The arms of the event pattern match are the methods
@@ -215,7 +215,7 @@ Messages are processed one at a time, but assertions are added/retracted in
 sets. There could be any number in a given event. This is necessary in order to
 express atomic actions in protocols. When transitioning between two states
 asserting `X` and asserting `Y`, we don't want there to be an intermediate
-point where someone can observe *nothing* being asserted. Therefore thre
+point where someone can observe *nothing* being asserted. Therefore the
 retraction of `X` and assertion of `Y` must be delivered together.
 ** Can this be reconciled?
 
