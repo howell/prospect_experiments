@@ -209,6 +209,7 @@
   (periodically period-ms (lambda () (message (timer-tick)))))
 
 (define static-detector (compile-projection (static (?!))))
+;; matcher -> (listof rect)
 (define static-rects-matcher
   (lambda (m)
     (set-map (matcher-project/set m static-detector) car)))
