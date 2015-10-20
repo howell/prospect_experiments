@@ -377,6 +377,21 @@
                                   (when col?
                                     (message (y-collision 'player)))))]))
 
+(define (enemy-motion-x gs id dx)
+  (match-define (game-state player-old env-old cur-goal enemies-old lsize) gs)
+  (define maybe-enemy (hash-ref enemies-old id #f))
+  ;; the enemy might not be in the hash if it was recently killed
+  (and maybe-enemy
+       (block
+        (match-define (enemy _ e-rect) maybe-enemy)
+        (define e-rect-new (car (move-player-x e-rect dx env-old)))
+        (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
+        (define next-state (game-state player-old env-old cur-goal enemies-new lsize))
+        (cond
+          [(overlapping-rects? player-old e-rect-new)
+           (quit (list (message (defeat))))]
+          [else (transition next-state (message next-state))]))))
+
 ;; (hashof symbol -> enemy) rect -> bool
 (define (hit-enemy? enemies-old player-n)
   (ormap (lambda (e) (overlapping-rects? player-n (enemy-rect e))) (hash-values enemies-old)))
