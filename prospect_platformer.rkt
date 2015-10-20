@@ -367,6 +367,7 @@
                                     (message (y-collision 'player)))))]))
 
 ;; game-state symbol num -> action*
+;; move an enemy along the x-axis
 (define (enemy-motion-x gs id dx)
   (match-define (game-state player-old env-old cur-goal enemies-old lsize) gs)
   (define maybe-enemy (hash-ref enemies-old id #f))
@@ -381,6 +382,29 @@
           [(overlapping-rects? player-old e-rect-new)
            (quit (list (message (defeat))))]
           [else (transition next-state (message next-state))]))))
+
+(define (enemy-motion-y gs id dy)
+  (match-define (game-state player-old env-old cur-goal enemies-old lsize) gs)
+  (define maybe-enemy (hash-ref enemies-old id #f))
+  ;; the enemy might not be in the hash if it was recently killed
+  (and maybe-enemy
+       (block
+        (match-define (enemy _ e-rect) maybe-enemy)
+        (match-define (cons e-rect-new col?) (move-player-y e-rect dy env-old))
+        (define enemies-new (hash-set enemies-old id (enemy id e-rect-new)))
+        (define player-collision? (overlapping-rects? player-old e-rect-new))
+        (cond
+          [(and player-collision? (positive? dy))
+           (quit (list (message (defeat))))] ;; enemy fell on player
+          [player-collision?
+           (define enemies-final (hash-remove enemies-new id))
+           (define next-state (game-state player-old env-old cur-goal enemies-final lsize))
+           (transition next-state (list (message (kill-enemy id))
+                                        (message next-state)))]
+          [else
+           (define next-state (game-state player-old env-old cur-goal enemies-new lsize))
+           (transition next-state (list (message next-state)
+                                        (when col? (message (y-collision id)))))]))))
 
 ;; (hashof symbol -> enemy) rect -> bool
 (define (hit-enemy? enemies-old player-n)
