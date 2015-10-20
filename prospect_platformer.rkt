@@ -298,10 +298,9 @@
      (define col-enemies
        (for/list ([e (hash-values enemies-old)] #:when (overlapping-rects? player-n (enemy-rect e)))
          e))
-     (define enemies-new (for/fold ([acc enemies-old])
-                                   ([e col-enemies])
-                           (hash-remove acc (enemy-id e))))
-     (define kill-messages (map (lambda (e) (message (kill-enemy (enemy-id e)))) col-enemies))
+     (define enemies-new (hash-remove-enemies enemies-old col-enemies))
+     (define kill-messages (for/list [(e col-enemies)]
+                             (message (kill-enemy (enemy-id e)))))
      (cond
        [(overlapping-rects? player-n cur-goal)
         (quit (list (message (level-complete))))]
