@@ -313,7 +313,7 @@
     [(message (move-y enemy-id dy))
      (define maybe-enemy (hash-ref enemies-old enemy-id #f))
      ;; the enemy might not be in the hash if it was recently killed
-     (if maybe-enemy
+     (and maybe-enemy
          (block
           (match-define (enemy _ e-rect) maybe-enemy)
           (match-define (cons e-rect-new col?) (move-player-y e-rect dy env-old))
@@ -329,8 +329,7 @@
                                               (message next-state)))])
               (let ([next-state (game-state player-old env-old cur-goal enemies-new lsize)])
                 (transition next-state (list (message next-state)
-                                             (when col? (message (y-collision enemy-id))))))))
-         #f)]
+                                             (when col? (message (y-collision enemy-id)))))))))]
     [(message (jump-request))
      ;; check if there is something right beneath the player
      (if (cdr (move-player-y (game-state-player s) 1 (game-state-env s)))
