@@ -273,7 +273,7 @@
         (quit (list (message (level-complete))))]
        [(not (overlapping-rects? player-n (rect (posn 0 0) x-limit y-limit)))
         (quit (list (message (defeat))))]
-       [(xyz? enemies-old player-n)  
+       [(hit-enemy? enemies-old player-n)  
         (quit (list (message (defeat))))]
        [else
         (define next-state (game-state player-n env-old cur-goal enemies-old lsize))
@@ -332,9 +332,8 @@
                                              (when col? (message (y-collision enemy-id)))))))))]
     [(message (jump-request))
      ;; check if there is something right beneath the player
-     (if (cdr (move-player-y (game-state-player s) 1 (game-state-env s)))
-         (transition s (message (jump)))
-         #f)]
+     (and (cdr (move-player-y (game-state-player s) 1 (game-state-env s)))
+         (transition s (message (jump))))]
     [(patch p-added p-removed)
      (define removed (static-rects-matcher p-removed))
      (define added (static-rects-matcher p-added))
@@ -346,7 +345,8 @@
     [_ #f]))
 
 
-(define (xyz? enemies-old player-n)
+;; (hashof symbol -> enemy) rect -> bool
+(define (hit-enemy? enemies-old player-n)
   (ormap (lambda (e) (overlapping-rects? player-n (enemy-rect e))) (hash-values enemies-old)))
 
 ;; rect goal -> spawn
