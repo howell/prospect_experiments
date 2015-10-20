@@ -360,6 +360,21 @@
      (transition next-state (message next-state))]
     [_ #f]))
 
+;; game-state num -> action*
+(define (player-motion-x gs dx)
+  (match-define (game-state player-old env-old cur-goal enemies-old lsize) gs)
+  (match-define (posn x-limit y-limit) lsize)
+  (define player-n (car (move-player-x player-old dx env-old)))
+     (cond
+       [(overlapping-rects? player-n cur-goal)
+        (quit (list (message (level-complete))))]
+       [(not (overlapping-rects? player-n (rect (posn 0 0) x-limit y-limit)))
+        (quit (list (message (defeat))))]
+       [(hit-enemy? enemies-old player-n)  
+        (quit (list (message (defeat))))]
+       [else
+        (define next-state (game-state player-n env-old cur-goal enemies-old lsize))
+        (transition next-state (message next-state))]))
 
 ;; (hashof symbol -> enemy) rect -> bool
 (define (hit-enemy? enemies-old player-n)
