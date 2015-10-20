@@ -351,13 +351,16 @@
      (define next-state (game-state player-n env-old cur-goal enemies-old lsize))
      (transition next-state (message next-state))]))
 
+;; game-state num -> action*
+;; move the player along the y-axis
 (define (player-motion-y gs dy)
   (match-define (game-state player-old env-old cur-goal enemies-old lsize) gs)
   (match-define (posn x-limit y-limit) lsize)
   (define level-rect (rect (posn 0 0) x-limit y-limit))
   (match-define (cons player-n col?) (move-player-y player-old dy env-old))
   (define col-enemies
-    (for/list ([e (hash-values enemies-old)] #:when (overlapping-rects? player-n (enemy-rect e)))
+    (for/list ([e (hash-values enemies-old)]
+               #:when (overlapping-rects? player-n (enemy-rect e)))
       e))
   (define enemies-new (hash-remove-enemies enemies-old col-enemies))
   (define kill-messages (for/list [(e col-enemies)]
