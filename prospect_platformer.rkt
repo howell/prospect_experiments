@@ -329,26 +329,26 @@
      (define maybe-enemy (hash-ref enemies-old enemy-id #f))
      ;; the enemy might not be in the hash if it was recently killed
      (and maybe-enemy
-         (block
-          (match-define (enemy _ e-rect) maybe-enemy)
-          (match-define (cons e-rect-new col?) (move-player-y e-rect dy env-old))
-          (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
-          (if (overlapping-rects? player-old e-rect-new)
-              (cond
-                [(positive? dy)
-                 (quit (list (message (defeat))))] ;; enemy fell on player
-                [else
-                 (define xxx (hash-remove enemies-new enemy-id))
-                 (define next-state (game-state player-old env-old cur-goal xxx lsize))
-                 (transition next-state (list (message (kill-enemy enemy-id))
-                                              (message next-state)))])
-              (let ([next-state (game-state player-old env-old cur-goal enemies-new lsize)])
-                (transition next-state (list (message next-state)
-                                             (when col? (message (y-collision enemy-id)))))))))]
+          (block
+           (match-define (enemy _ e-rect) maybe-enemy)
+           (match-define (cons e-rect-new col?) (move-player-y e-rect dy env-old))
+           (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
+           (if (overlapping-rects? player-old e-rect-new)
+               (cond
+                 [(positive? dy)
+                  (quit (list (message (defeat))))] ;; enemy fell on player
+                 [else
+                  (define enemies-final (hash-remove enemies-new enemy-id))
+                  (define next-state (game-state player-old env-old cur-goal enemies-final lsize))
+                  (transition next-state (list (message (kill-enemy enemy-id))
+                                               (message next-state)))])
+               (let ([next-state (game-state player-old env-old cur-goal enemies-new lsize)])
+                 (transition next-state (list (message next-state)
+                                              (when col? (message (y-collision enemy-id)))))))))]
     [(message (jump-request))
      ;; check if there is something right beneath the player
      (and (cdr (move-player-y (game-state-player s) 1 (game-state-env s)))
-         (transition s (message (jump))))]
+          (transition s (message (jump))))]
     [(patch p-added p-removed)
      (define removed (static-rects-matcher p-removed))
      (define added (static-rects-matcher p-added))
