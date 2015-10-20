@@ -226,12 +226,17 @@
   (values (set-map added (lambda (l) (enemy (first l) (second l))))
           (set-map removed (lambda (l) (enemy (first l) (second l))))))
 
+;; (hashof Key Any) (listof Key) -> (hashof Key Any)
+;; remove a bunch of keys from a hash
+(define (hash-remove* h keys)
+  (for/fold ([acc h])
+            ([k keys])
+    (hash-remove acc k)))
+
 ;; (listof enemy) (listof enemy) (hashof symbol -> enemy) -> (hashof symbol -> enemy)
 ;; update a hash of enemies with additions and subtractions
 (define (update-enemy-hash added-enemies removed-enemies h)
-  (define h2 (for/fold ([acc h])
-                       ([e removed-enemies])
-               (hash-remove acc (enemy-id e))))
+  (define h2 (hash-remove* h (map (lambda (e) (enemy-id e)))))
   (for/fold ([acc h2])
             ([e added-enemies])
     (hash-set acc (enemy-id e) e)))
