@@ -284,24 +284,7 @@
     [(message (move-x 'player dx))
      (player-motion-x s dx)]
     [(message (move-y 'player dy))
-     (match-define (cons player-n col?) (move-player-y player-old dy env-old))
-     (define col-enemies
-       (for/list ([e (hash-values enemies-old)] #:when (overlapping-rects? player-n (enemy-rect e)))
-         e))
-     (define enemies-new (hash-remove-enemies enemies-old col-enemies))
-     (define kill-messages (for/list [(e col-enemies)]
-                             (message (kill-enemy (enemy-id e)))))
-     (cond
-       [(overlapping-rects? player-n cur-goal)
-        (quit (list (message (level-complete))))]
-       [(not (overlapping-rects? player-n (rect (posn 0 0) x-limit y-limit)))
-        (quit (list (message (defeat))))]
-       [else
-        (define next-state (game-state player-n env-old cur-goal enemies-new lsize))
-        (transition next-state (list kill-messages
-                                     (message next-state)
-                                     (when col?
-                                       (message (y-collision 'player)))))])]
+     (player-motion-y s dy)]
     [(message (move-x enemy-id dx))
      (define maybe-enemy (hash-ref enemies-old enemy-id #f))
      ;; the enemy might not be in the hash if it was recently killed
@@ -351,6 +334,7 @@
     [_ #f]))
 
 ;; game-state num -> action*
+;; move the player along the x-axis
 (define (player-motion-x gs dx)
   (match-define (game-state player-old env-old cur-goal enemies-old lsize) gs)
   (match-define (posn x-limit y-limit) lsize)
@@ -366,6 +350,29 @@
     [else
      (define next-state (game-state player-n env-old cur-goal enemies-old lsize))
      (transition next-state (message next-state))]))
+
+(define (player-motion-y gs dy)
+  (match-define (game-state player-old env-old cur-goal enemies-old lsize) gs)
+  (match-define (posn x-limit y-limit) lsize)
+  (define level-rect (rect (posn 0 0) x-limit y-limit))
+  (match-define (cons player-n col?) (move-player-y player-old dy env-old))
+  (define col-enemies
+    (for/list ([e (hash-values enemies-old)] #:when (overlapping-rects? player-n (enemy-rect e)))
+      e))
+  (define enemies-new (hash-remove-enemies enemies-old col-enemies))
+  (define kill-messages (for/list [(e col-enemies)]
+                          (message (kill-enemy (enemy-id e)))))
+  (cond
+    [(overlapping-rects? player-n cur-goal)
+     (quit (list (message (level-complete))))]
+    [(not (overlapping-rects? player-n level-rect))
+     (quit (list (message (defeat))))]
+    [else
+     (define next-state (game-state player-n env-old cur-goal enemies-new lsize))
+     (transition next-state (list kill-messages
+                                  (message next-state)
+                                  (when col?
+                                    (message (y-collision 'player)))))]))
 
 ;; (hashof symbol -> enemy) rect -> bool
 (define (hit-enemy? enemies-old player-n)
