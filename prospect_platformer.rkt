@@ -401,8 +401,8 @@
          (sub (jump-request))
          (sub (enemy ? ?))))
 
-(define (star-points scl)
-  (map (lambda (pr) (cons (* scl (car pr)) (* scl (cdr pr))))
+(define (star-points scale)
+  (map (lambda (pr) (cons (* scale (car pr)) (* scale (cdr pr))))
        `((0 . 10)
          (2 . 6)
          (0 . 4)
