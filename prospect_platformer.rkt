@@ -321,9 +321,10 @@
            (define e-rect-new (car (move-player-x e-rect dx env-old)))
            (define enemies-new (hash-set enemies-old enemy-id (enemy enemy-id e-rect-new)))
            (define next-state (game-state player-old env-old cur-goal enemies-new lsize))
-           (if (overlapping-rects? player-old e-rect-new)
-               (quit (list (message (defeat))))
-               (transition next-state (message next-state)))))]
+           (cond
+             [(overlapping-rects? player-old e-rect-new)
+              (quit (list (message (defeat))))]
+             [else (transition next-state (message next-state))])))]
     [(message (move-y enemy-id dy))
      (define maybe-enemy (hash-ref enemies-old enemy-id #f))
      ;; the enemy might not be in the hash if it was recently killed
