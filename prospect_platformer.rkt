@@ -661,7 +661,7 @@
 ;; spawn an enemy that travels from (x0, y0) to (x0 + x-dist, y0) then back to
 ;; (x0, y0) at a rate of dx per clock tick
 (define (make-horiz-enemy x0 y0 w h x-dist dx0)
-  (define dx (/ (* dx0 24) FRAMES-PER-SEC))
+  (define dx (/ (* 2 dx0 24) FRAMES-PER-SEC))
   (define THRESHOLD (/ x-dist dx))
   (make-enemy x0 y0 w h
               (lambda (n id)
@@ -672,7 +672,7 @@
 ;; spawn an enemy that travels from (x0, y0) to (x0, y0 + y-dist) then back to
 ;; (x0, y0) at a rate of dy per clock tick
 (define (make-vert-enemy x0 y0 w h y-dist dy0)
-  (define dy (/ (* dy0 24) FRAMES-PER-SEC))
+  (define dy (/ (* 2 dy0 24) FRAMES-PER-SEC))
   (define THRESHOLD (/ y-dist dy))
   (make-enemy x0 y0 w h
               (lambda (n id)
