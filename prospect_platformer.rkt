@@ -623,7 +623,7 @@
 (define GRAVITY-PER-SEC 5)
 (define JUMP-V -4)
 
-(define MAX-V 8)
+(define TERMINAL-VELOCITY 8)
 
 (define DX-PER-SEC 75)
 
@@ -631,7 +631,7 @@
 (spawn-timer-driver)
 (spawn-player)
 (spawn-horizontal-motion (/ (* 1.0 DX-PER-SEC) FRAMES-PER-SEC))
-(spawn-vertical-motion (/ (* 1.0 GRAVITY-PER-SEC) FRAMES-PER-SEC) JUMP-V MAX-V)
+(spawn-vertical-motion (/ (* 1.0 GRAVITY-PER-SEC) FRAMES-PER-SEC) JUMP-V TERMINAL-VELOCITY)
 (spawn-clock (/ 1000 FRAMES-PER-SEC))
 
 ;; nat nat nat nat (nat symbol -> (U #f (constreeof message))) -> spawn
