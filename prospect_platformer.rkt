@@ -618,7 +618,7 @@
 (define GOAL0 (make-goal 900 150))
 (define GOAL1 (make-goal 500 150))
 
-(define FRAMES-PER-SEC 24)
+(define FRAMES-PER-SEC 60)
 
 (define GRAVITY-PER-SEC 5)
 (define JUMP-V -4)
