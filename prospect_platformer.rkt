@@ -340,6 +340,8 @@
      (quit (list (message (level-complete))))]
     [(not (overlapping-rects? player-n level-rect))
      (quit (list (message (defeat))))]
+    [(and (not (empty? col-enemies)) (negative? dy))
+     (quit (message (defeat)))]
     [else
      (define next-state (game-state player-n env-old cur-goal enemies-new lsize))
      (transition next-state (list kill-messages
