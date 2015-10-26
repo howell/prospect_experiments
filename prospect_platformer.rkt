@@ -631,7 +631,7 @@
 (spawn-timer-driver)
 (spawn-player)
 (spawn-horizontal-motion (/ (* 1.0 DX-PER-SEC) FRAMES-PER-SEC))
-(spawn-vertical-motion (/ (* 1.0 GRAVITY-PER-SEC) FRAMES-PER-SEC) JUMP-V TERMINAL-VELOCITY)
+(spawn-vertical-motion (/ GRAVITY-PER-SEC FRAMES-PER-SEC) JUMP-V TERMINAL-VELOCITY)
 (spawn-clock (/ 1000 FRAMES-PER-SEC))
 
 ;; nat nat nat nat (nat symbol -> (U #f (constreeof message))) -> spawn
