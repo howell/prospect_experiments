@@ -621,9 +621,9 @@
 (define FRAMES-PER-SEC 60)
 
 (define GRAVITY-PER-SEC 5)
-(define JUMP-V -4)
+(define JUMP-V (* -4 48/60))
 
-(define TERMINAL-VELOCITY 8)
+(define TERMINAL-VELOCITY (* 8 24/60))
 
 (define DX-PER-SEC 75)
 
