@@ -618,7 +618,7 @@
 (define GOAL0 (make-goal 900 150))
 (define GOAL1 (make-goal 500 150))
 
-(define FRAMES-PER-SEC 60)
+(define FRAMES-PER-SEC 24)
 
 (define GRAVITY-PER-SEC 6)
 (define JUMP-V-PER-SEC -200)
@@ -664,7 +664,7 @@
    (listener-state 1 (current-inexact-milliseconds))
    (sub (timer-tick))))
 
-(spawn-frame-listener)
+#;(spawn-frame-listener)
 
 ;; nat nat nat nat (nat symbol -> (U #f (constreeof message))) -> spawn
 (define (make-enemy x0 y0 w h mover)
