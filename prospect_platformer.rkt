@@ -618,7 +618,7 @@
 (define GOAL0 (make-goal 900 150))
 (define GOAL1 (make-goal 500 150))
 
-(define FRAMES-PER-SEC 24)
+(define FRAMES-PER-SEC 60)
 
 (define GRAVITY-PER-SEC 6)
 (define JUMP-V-PER-SEC -200)
@@ -653,7 +653,7 @@
         (define missed-frames (- ideal-frames-elapsed frame-num))
         #;(define game-elapsed (* (/ frame-num FRAMES-PER-SEC) 1000.0))
         #;(printf "elapsed ms: ~v\n" elapsed-ms)
-        (define fps (/ elapsed-s frame-num))
+        (define fps (/ frame-num elapsed-s))
         (printf "fps: ~v\n" fps)
         #;(printf "ideal: ~v actual: ~v missed: ~v\n"
                 ideal-frames-elapsed
