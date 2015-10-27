@@ -636,6 +636,19 @@
                        (/ TERMINAL-VELOCITY-PER-SEC FRAMES-PER-SEC))
 (spawn-clock (/ 1000 FRAMES-PER-SEC))
 
+
+(define (spawn-frame-listener)
+  (struct listener-state (frame-num last-ms) #:transparent)
+  (spawn
+   (lambda (e s)
+     (match-define (listener-state frame-num last-ms) s)
+     (match e
+       [(message (timer-tick))
+        #f]
+       [_ #f]))
+   (listener-state 0 (current-inexact-milliseconds))
+   (sub (timer-tick))))
+
 ;; nat nat nat nat (nat symbol -> (U #f (constreeof message))) -> spawn
 (define (make-enemy x0 y0 w h mover)
   (define id (gensym 'enemy))
