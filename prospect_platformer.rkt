@@ -644,10 +644,15 @@
      (match-define (listener-state frame-num last-ms) s)
      (match e
        [(message (timer-tick))
-        #f]
+        (define now (current-inexact-milliseconds))
+        (define elapsed (- now last-ms))
+        (printf "elapsed ms: ~v\n" elapsed)
+        (transition (add1 frame-num) now)]
        [_ #f]))
    (listener-state 0 (current-inexact-milliseconds))
    (sub (timer-tick))))
+
+(spawn-frame-listener)
 
 ;; nat nat nat nat (nat symbol -> (U #f (constreeof message))) -> spawn
 (define (make-enemy x0 y0 w h mover)
