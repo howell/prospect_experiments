@@ -647,7 +647,7 @@
         (define now (current-inexact-milliseconds))
         (define elapsed (- now last-ms))
         (printf "elapsed ms: ~v\n" elapsed)
-        (transition (add1 frame-num) now)]
+        (transition (listener-state (add1 frame-num) now) '())]
        [_ #f]))
    (listener-state 0 (current-inexact-milliseconds))
    (sub (timer-tick))))
