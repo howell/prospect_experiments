@@ -14,14 +14,14 @@
   (list (spawn
          (lambda (e n)
            (and (message? e)
-                (let ([msg (set-timer-msg n)]
-                      [x (thunk)]
-                      [actions
-                       (cond
-                         [(action? x) (list x msg)]
-                         [(and (list? x) (andmap action? x))
-                          (cons msg x)]
-                         [else (list msg)])])
+                (let* ([msg (set-timer-message n)]
+                       [x (thunk)]
+                       [actions
+                        (cond
+                          [(action? x) (list x msg)]
+                          [(and (list? x) (andmap action? x))
+                           (cons msg x)]
+                          [else (list msg)])])
                   (transition (add1 n) actions))))
          1
          (sub (timer-expired id ?)))
