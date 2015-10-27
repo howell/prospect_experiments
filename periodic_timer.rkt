@@ -8,15 +8,21 @@
 ;; nat (thunk (U action (listof action)) -> (listof action)
 (define (periodically period-ms thunk)
   (define id (gensym 'after))
-  (define set-timer-message (message (set-timer id period-ms 'relative)))
-  (list (spawn/stateless
-         (lambda (e)
+  (define begin-time (current-inexact-milliseconds))
+  (define (set-timer-message n)
+    (message (set-timer id (+ begin-time (* n period-ms)) 'absolute)))
+  (list (spawn
+         (lambda (e n)
            (and (message? e)
-                (define x (thunk))
-                (cond
-                  [(action? x) (list x set-timer-message)]
-                  [(and (list? x) (andmap action? x))
-                   (cons set-timer-message x)]
-                  [else (list set-timer-message)]))))
-        (sub (timer-expired id ?)))
-  set-timer-message))
+                (let ([msg (set-timer-msg n)]
+                      [x (thunk)]
+                      [actions
+                       (cond
+                         [(action? x) (list x msg)]
+                         [(and (list? x) (andmap action? x))
+                          (cons msg x)]
+                         [else (list msg)])])
+                  (transition (add1 n) actions))))
+         1
+         (sub (timer-expired id ?)))
+        (set-timer-message 0)))
