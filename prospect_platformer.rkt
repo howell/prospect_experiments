@@ -634,7 +634,7 @@
 (spawn-vertical-motion (/ GRAVITY-PER-SEC FRAMES-PER-SEC)
                        (/ JUMP-V-PER-SEC FRAMES-PER-SEC)
                        (/ TERMINAL-VELOCITY-PER-SEC FRAMES-PER-SEC))
-(spawn-clock 0)
+(spawn-clock (/ 1000 FRAMES-PER-SEC))
 
 
 (define (spawn-frame-listener)
