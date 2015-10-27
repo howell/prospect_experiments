@@ -638,6 +638,7 @@
 
 
 (define (spawn-frame-listener)
+  (define begin-time (current-inexact-milliseconds))
   (struct listener-state (frame-num last-ms) #:transparent)
   (spawn
    (lambda (e s)
@@ -645,8 +646,16 @@
      (match e
        [(message (timer-tick))
         (define now (current-inexact-milliseconds))
-        (define elapsed (- now last-ms))
-        (printf "elapsed ms: ~v\n" elapsed)
+        #;(define elapsed-ms (- now last-ms))
+        (define elapsed-ms (- now begin-time))
+        (define ideal-frames-elapsed (* elapsed-ms 1000 FRAMES-PER-SEC))
+        (define missed-frames (- ideal-frames-elapsed frame-num))
+        #;(define game-elapsed (* (/ frame-num FRAMES-PER-SEC) 1000.0))
+        #;(printf "elapsed ms: ~v\n" elapsed-ms)
+        (printf "ideal: ~v actual: ~v missed: ~v\n"
+                ideal-frames-elapsed
+                frame-num
+                missed-frames)
         (transition (listener-state (add1 frame-num) now) '())]
        [_ #f]))
    (listener-state 0 (current-inexact-milliseconds))
