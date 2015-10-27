@@ -648,7 +648,7 @@
         (define now (current-inexact-milliseconds))
         #;(define elapsed-ms (- now last-ms))
         (define elapsed-ms (- now begin-time))
-        (define ideal-frames-elapsed (* elapsed-ms 1000 FRAMES-PER-SEC))
+        (define ideal-frames-elapsed (* (/ elapsed-ms 1000) FRAMES-PER-SEC))
         (define missed-frames (- ideal-frames-elapsed frame-num))
         #;(define game-elapsed (* (/ frame-num FRAMES-PER-SEC) 1000.0))
         #;(printf "elapsed ms: ~v\n" elapsed-ms)
