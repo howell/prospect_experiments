@@ -189,9 +189,9 @@
 ;; this happens periodically when the timer sends a (timer-tick) message
 ;; when a (jump) message is received, temporarily move the player upward
 ;; when a (y-collision) is detected reset velocity to 0
-;; state is a (cons bool motion)
 (define ((vertical-motion-behavior jump-v v-max) e s)
-  (match-define (cons jumping? motion-old) s)
+  (struct v-motion-state (jumping? motion) #:transparent)
+  (match-define (v-motion-state jumping? motion-old) s)
   (match e
     [(message (jump))
      (transition (cons #t (motion jump-v (motion-a motion-old))) '())]
@@ -204,11 +204,27 @@
     [_ #f]))
 
 (define (spawn-vertical-motion gravity jump-v max-v)
-  (spawn (vertical-motion-behavior jump-v max-v)
-         (cons #f (motion 0 gravity))
-         (sub (jump))
-         (sub (timer-tick))
-         (sub (y-collision 'player))))
+  (struct v-motion-state (jumping? motion) #:transparent)
+  (spawn
+   (lambda (e s)
+     (match-define (v-motion-state jumping? motion-old) s)
+     (match e
+       [(message (jump))
+        (transition (v-motion-state #t (motion jump-v (motion-a motion-old)))
+                    #f)]
+       [(message (timer-tick))
+        (define motion-n
+          (motion (min max-v (+ (motion-v motion-old) (motion-a motion-old)))
+                  (motion-a motion-old)))
+        (transition (v-motion-state jumping? motion-n)
+                    (message (move-y 'player (motion-v motion-old))))]
+       [(message (y-collision 'player))
+        (transition (v-motion-state #f (motion 0 (motion-a motion-old))) #f)]
+       [_ #f]))
+   (v-motion-state #f (motion 0 gravity))
+   (sub (jump))
+   (sub (timer-tick))
+   (sub (y-collision 'player))))
 
 ;; create a clock that sends (timer-tick) every period-ms
 (define (spawn-clock period-ms)
@@ -656,9 +672,9 @@
         (define fps (/ frame-num elapsed-s))
         (printf "fps: ~v\n" fps)
         #;(printf "ideal: ~v actual: ~v missed: ~v\n"
-                ideal-frames-elapsed
-                frame-num
-                missed-frames)
+                  ideal-frames-elapsed
+                  frame-num
+                  missed-frames)
         (transition (listener-state (add1 frame-num) now) '())]
        [_ #f]))
    (listener-state 1 (current-inexact-milliseconds))
