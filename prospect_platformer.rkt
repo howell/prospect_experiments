@@ -189,20 +189,6 @@
 ;; this happens periodically when the timer sends a (timer-tick) message
 ;; when a (jump) message is received, temporarily move the player upward
 ;; when a (y-collision) is detected reset velocity to 0
-(define ((vertical-motion-behavior jump-v v-max) e s)
-  (struct v-motion-state (jumping? motion) #:transparent)
-  (match-define (v-motion-state jumping? motion-old) s)
-  (match e
-    [(message (jump))
-     (transition (cons #t (motion jump-v (motion-a motion-old))) '())]
-    [(message (timer-tick))
-     (define motion-n
-       (motion (min v-max (+ (motion-v motion-old) (motion-a motion-old))) (motion-a motion-old)))
-     (transition (cons jumping? motion-n) (list (message (move-y 'player (motion-v motion-old)))))]
-    [(message (y-collision 'player))
-     (transition (cons #f (motion 0 (motion-a motion-old))) '())]
-    [_ #f]))
-
 (define (spawn-vertical-motion gravity jump-v max-v)
   (struct v-motion-state (jumping? motion) #:transparent)
   (spawn
