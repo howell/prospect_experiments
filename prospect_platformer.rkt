@@ -209,6 +209,8 @@
         (transition (v-motion-state jumping? motion-n jump-ticks-n)
                     (message (move-y 'player (motion-v motion-old))))]
        [(message (y-collision 'player))
+        (when (and jumping? (< jump-ticks 10))
+          (error (format "~v" jump-ticks)))
         (transition (v-motion-state #f (motion 0 (motion-a motion-old)) 0) #f)]
        [_ #f]))
    (v-motion-state #f (motion 0 gravity) 0)
@@ -670,7 +672,7 @@
    (listener-state 1 (current-inexact-milliseconds))
    (sub (timer-tick))))
 
-(spawn-frame-listener)
+#;(spawn-frame-listener)
 
 ;; nat nat nat nat (nat symbol -> (U #f (constreeof message))) -> spawn
 (define (make-enemy x0 y0 w h mover)
