@@ -190,24 +190,28 @@
 ;; when a (jump) message is received, temporarily move the player upward
 ;; when a (y-collision) is detected reset velocity to 0
 (define (spawn-vertical-motion gravity jump-v max-v)
-  (struct v-motion-state (jumping? motion) #:transparent)
+  (struct v-motion-state (jumping? motion jump-ticks) #:transparent)
   (spawn
    (lambda (e s)
-     (match-define (v-motion-state jumping? motion-old) s)
+     (match-define (v-motion-state jumping? motion-old jump-ticks) s)
      (match e
        [(message (jump))
-        (transition (v-motion-state #t (motion jump-v (motion-a motion-old)))
+        (transition (v-motion-state #t
+                                    (motion jump-v (motion-a motion-old))
+                                    0)
                     #f)]
        [(message (timer-tick))
         (define motion-n
           (motion (min max-v (+ (motion-v motion-old) (motion-a motion-old)))
                   (motion-a motion-old)))
-        (transition (v-motion-state jumping? motion-n)
+        (define jump-ticks-n
+          (if jumping? (add1 jump-ticks) jump-ticks))
+        (transition (v-motion-state jumping? motion-n jump-ticks-n)
                     (message (move-y 'player (motion-v motion-old))))]
        [(message (y-collision 'player))
-        (transition (v-motion-state #f (motion 0 (motion-a motion-old))) #f)]
+        (transition (v-motion-state #f (motion 0 (motion-a motion-old)) 0) #f)]
        [_ #f]))
-   (v-motion-state #f (motion 0 gravity))
+   (v-motion-state #f (motion 0 gravity) 0)
    (sub (jump))
    (sub (timer-tick))
    (sub (y-collision 'player))))
