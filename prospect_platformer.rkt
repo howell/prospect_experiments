@@ -207,7 +207,7 @@
                   (motion-a motion-old)))
         (define jump-ticks-n
           (if jumping? (add1 jump-ticks) jump-ticks))
-        (transition (v-motion-state jumping? motion-n jump-ticks-n)
+        (transition (v-motion-state jumping? motion-n jump-ticks-n clock)
                     (message (move-y 'player (motion-v motion-old) clock)))]
        [(message (y-collision 'player col-clock))
         (when (and jumping? (< jump-ticks 10))
@@ -721,9 +721,11 @@
   (define THRESHOLD (/ y-dist dy))
   (make-enemy x0 y0 w h
               (lambda (n id)
-                (list (message (move-y id (if (< (modulo n (floor (* 2 THRESHOLD))) THRESHOLD)
+                (list (message (move-y id
+                                       (if (< (modulo n (floor (* 2 THRESHOLD))) THRESHOLD)
                                               dy
-                                              (- dy))))))))
+                                              (- dy))
+                                       0))))))
 
 
 
