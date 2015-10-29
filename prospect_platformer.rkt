@@ -77,7 +77,7 @@
 (struct move-x (id dx) #:transparent)
 
 ;; int
-(struct move-y (id dy) #:transparent)
+(struct move-y (id dy clock) #:transparent)
 
 (struct move-left () #:transparent)
 (struct move-right () #:transparent)
@@ -86,7 +86,7 @@
 (struct jump () #:transparent)
 
 ;; any
-(struct y-collision (id) #:transparent)
+(struct y-collision (id clock) #:transparent)
 
 ;; rect
 (struct player (rect) #:transparent)
@@ -190,15 +190,16 @@
 ;; when a (jump) message is received, temporarily move the player upward
 ;; when a (y-collision) is detected reset velocity to 0
 (define (spawn-vertical-motion gravity jump-v max-v)
-  (struct v-motion-state (jumping? motion jump-ticks) #:transparent)
+  (struct v-motion-state (jumping? motion jump-ticks clock) #:transparent)
   (spawn
    (lambda (e s)
-     (match-define (v-motion-state jumping? motion-old jump-ticks) s)
+     (match-define (v-motion-state jumping? motion-old jump-ticks clock) s)
      (match e
        [(message (jump))
         (transition (v-motion-state #t
                                     (motion jump-v (motion-a motion-old))
-                                    0)
+                                    0
+                                    (add1 clock))
                     #f)]
        [(message (timer-tick))
         (define motion-n
@@ -207,16 +208,20 @@
         (define jump-ticks-n
           (if jumping? (add1 jump-ticks) jump-ticks))
         (transition (v-motion-state jumping? motion-n jump-ticks-n)
-                    (message (move-y 'player (motion-v motion-old))))]
-       [(message (y-collision 'player))
+                    (message (move-y 'player (motion-v motion-old) clock)))]
+       [(message (y-collision 'player col-clock))
         (when (and jumping? (< jump-ticks 10))
           (error (format "~v" jump-ticks)))
-        (transition (v-motion-state #f (motion 0 (motion-a motion-old)) 0) #f)]
+        (and (equal? col-clock clock)
+             (transition (v-motion-state #f
+                                         (motion 0 (motion-a motion-old))
+                                         0
+                                         clock) #f))]
        [_ #f]))
-   (v-motion-state #f (motion 0 gravity) 0)
+   (v-motion-state #f (motion 0 gravity) 0 0)
    (sub (jump))
    (sub (timer-tick))
-   (sub (y-collision 'player))))
+   (sub (y-collision 'player ?))))
 
 ;; create a clock that sends (timer-tick) every period-ms
 (define (spawn-clock period-ms)
