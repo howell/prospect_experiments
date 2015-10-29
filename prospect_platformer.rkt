@@ -653,25 +653,18 @@
      (match e
        [(message (timer-tick))
         (define now (current-inexact-milliseconds))
-        #;(define elapsed-ms (- now last-ms))
         (define elapsed-ms (- now begin-time))
         (define elapsed-s (/ elapsed-ms 1000))
         (define ideal-frames-elapsed (* elapsed-s FRAMES-PER-SEC))
         (define missed-frames (- ideal-frames-elapsed frame-num))
-        #;(define game-elapsed (* (/ frame-num FRAMES-PER-SEC) 1000.0))
-        #;(printf "elapsed ms: ~v\n" elapsed-ms)
         (define fps (/ frame-num elapsed-s))
         (printf "fps: ~v\n" fps)
-        #;(printf "ideal: ~v actual: ~v missed: ~v\n"
-                  ideal-frames-elapsed
-                  frame-num
-                  missed-frames)
         (transition (listener-state (add1 frame-num) now) '())]
        [_ #f]))
    (listener-state 1 (current-inexact-milliseconds))
    (sub (timer-tick))))
 
-#;(spawn-frame-listener)
+(spawn-frame-listener)
 
 ;; nat nat nat nat (nat symbol -> (U #f (constreeof message))) -> spawn
 (define (make-enemy x0 y0 w h mover)
