@@ -210,7 +210,7 @@
         (transition (v-motion-state jumping? motion-n jump-ticks-n clock)
                     (message (move-y 'player (motion-v motion-old) clock)))]
        [(message (y-collision 'player col-clock))
-        (when (and jumping? (< jump-ticks 10))
+        #;(when (and jumping? (< jump-ticks 10))
           (error (format "~v" jump-ticks)))
         (and (equal? col-clock clock)
              (transition (v-motion-state #f
@@ -297,7 +297,7 @@
     [(message (move-x 'player dx))
      (player-motion-x s dx)]
     [(message (move-y 'player dy clock))
-     (player-motion-y s dy)]
+     (player-motion-y s dy clock)]
     [(message (move-x id dx))
      (enemy-motion-x s id dx)]
     [(message (move-y id dy clock))
