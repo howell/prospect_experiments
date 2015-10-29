@@ -296,12 +296,12 @@
   (match e
     [(message (move-x 'player dx))
      (player-motion-x s dx)]
-    [(message (move-y 'player dy))
+    [(message (move-y 'player dy clock))
      (player-motion-y s dy)]
     [(message (move-x id dx))
      (enemy-motion-x s id dx)]
-    [(message (move-y id dy))
-     (enemy-motion-y s id dy)]
+    [(message (move-y id dy clock))
+     (enemy-motion-y s id dy clock)]
     [(message (jump-request))
      ;; check if there is something right beneath the player
      (and (cdr (move-player-y (game-state-player s) 1 (game-state-env s)))
@@ -336,7 +336,7 @@
 
 ;; game-state num -> action*
 ;; move the player along the y-axis
-(define (player-motion-y gs dy)
+(define (player-motion-y gs dy clock)
   (match-define (game-state player-old env-old cur-goal enemies-old lsize) gs)
   (match-define (posn x-limit y-limit) lsize)
   (define level-rect (rect (posn 0 0) x-limit y-limit))
@@ -360,7 +360,7 @@
      (transition next-state (list kill-messages
                                   (message next-state)
                                   (when col?
-                                    (message (y-collision 'player)))))]))
+                                    (message (y-collision 'player clock)))))]))
 
 ;; game-state symbol num -> action*
 ;; move an enemy along the x-axis
@@ -379,7 +379,7 @@
            (quit (list (message (defeat))))]
           [else (transition next-state (message next-state))]))))
 
-(define (enemy-motion-y gs id dy)
+(define (enemy-motion-y gs id dy clock)
   (match-define (game-state player-old env-old cur-goal enemies-old lsize) gs)
   (define maybe-enemy (hash-ref enemies-old id #f))
   ;; the enemy might not be in the hash if it was recently killed
@@ -400,7 +400,7 @@
           [else
            (define next-state (game-state player-old env-old cur-goal enemies-new lsize))
            (transition next-state (list (message next-state)
-                                        (when col? (message (y-collision id)))))]))))
+                                        (when col? (message (y-collision id clock)))))]))))
 
 ;; (hashof symbol -> enemy) rect -> bool
 (define (hit-enemy? enemies-old player-n)
@@ -411,7 +411,7 @@
   (spawn game-logic-behavior
          (game-state player0 '() goal0 (hash) level-size)
          (sub (move-x ? ?))
-         (sub (move-y ? ?))
+         (sub (move-y ? ? ?))
          (sub (static ?))
          (sub (jump-request))
          (sub (enemy ? ?))))
