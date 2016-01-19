@@ -148,8 +148,9 @@
   (spawn
    player-behavior
    #f
-   (sub (key-press ?) #:meta-level 1)
-   (sub (key-release ?) #:meta-level 1)))
+   (list
+    (sub (key-press ?) #:meta-level 1)
+    (sub (key-release ?) #:meta-level 1))))
 
 (define left-matcher (compile-projection (move-left)))
 (define right-matcher (compile-projection (move-right)))
@@ -181,9 +182,9 @@
 (define (spawn-horizontal-motion dx)
   (spawn (horizontal-motion-behavior dx)
          #f
-         (sub (move-left))
-         (sub (move-right))
-         (sub (timer-tick))))
+         (list (sub (move-left))
+               (sub (move-right))
+               (sub (timer-tick)))))
 
 ;; the vertical motion behavior tries to move the player downward by sending (move-y dy)
 ;; this happens periodically when the timer sends a (timer-tick) message
@@ -213,9 +214,9 @@
                                          clock) #f))]
        [_ #f]))
    (v-motion-state #f (motion 0 gravity) 0)
-   (sub (jump))
+   (list (sub (jump))
    (sub (timer-tick))
-   (sub (y-collision 'player ?))))
+   (sub (y-collision 'player ?)))))
 
 ;; create a clock that sends (timer-tick) every period-ms
 (define (spawn-clock period-ms)
@@ -404,11 +405,11 @@
 (define (spawn-game-logic player0 goal0 level-size)
   (spawn game-logic-behavior
          (game-state player0 '() goal0 (hash) level-size)
-         (sub (move-x ? ?))
+         (list (sub (move-x ? ?))
          (sub (move-y ? ? ?))
          (sub (static ?))
          (sub (jump-request))
-         (sub (enemy ? ?))))
+         (sub (enemy ? ?)))))
 
 (define (star-points scale)
   (map (lambda (pr) (cons (* scale (car pr)) (* scale (cdr pr))))
@@ -513,11 +514,11 @@
   (spawn
    (render-behavior dc)
    (game-state (rect (posn 0 0) 0 0) '() (rect (posn -100 -100) 0 0) (hash) (posn 100 100))
-   (sub (game-state ? ? ? ? ?))
+   (list (sub (game-state ? ? ? ? ?))
    (sub (timer-tick))
    (sub (defeat))
    (sub (victory))
-   (sub (level-complete))))
+   (sub (level-complete)))))
 
 ;; level -> (constreeof action)
 (define (level->actions l)
@@ -684,11 +685,11 @@
                         '()))]
        [_ #f]))
    0
-   (sub (timer-tick))
+   (list (sub (timer-tick))
    (sub (kill-enemy id))
    (sub (defeat))
    (sub (level-complete))
-   (assert (enemy id (rect (posn x0 y0) w h)))))
+   (assert (enemy id (rect (posn x0 y0) w h))))))
 
 ;; spawn an enemy that travels from (x0, y0) to (x0 + x-dist, y0) then back to
 ;; (x0, y0) at a rate of dx per clock tick
