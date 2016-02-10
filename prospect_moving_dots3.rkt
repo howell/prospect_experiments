@@ -112,7 +112,7 @@
 (struct shape-l (label shape) #:transparent)
 
 (define (match-shapes m)
-  (for/set [(x (matcher-project/set m shape-detector))]
+  (for/set [(x (trie-project/set m shape-detector))]
     (match-define (list lbl sh) x)
     (shape-l lbl sh)))
 

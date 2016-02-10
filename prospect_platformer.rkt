@@ -152,8 +152,8 @@
     (sub (key-press ?) #:meta-level 1)
     (sub (key-release ?) #:meta-level 1))))
 
-(define left-matcher (compile-projection (move-left)))
-(define right-matcher (compile-projection (move-right)))
+(define left-trie (compile-projection (move-left)))
+(define right-trie (compile-projection (move-right)))
 (define (not-set-empty? s) (not (set-empty? s)))
 
 ;; the horizontal motion behavior tries to move the player along the x-axis
@@ -163,10 +163,10 @@
   ;; state is (U #f 'left 'right)
   (match e
     [(patch p-added p-removed)
-     (define left-added? (not-set-empty? (matcher-project/set p-added left-matcher)))
-     (define left-removed? (not-set-empty? (matcher-project/set p-removed left-matcher)))
-     (define right-added? (not-set-empty? (matcher-project/set p-added right-matcher)))
-     (define right-removed? (not-set-empty? (matcher-project/set p-removed right-matcher)))
+     (define left-added? (not-set-empty? (trie-project/set p-added left-trie)))
+     (define left-removed? (not-set-empty? (trie-project/set p-removed left-trie)))
+     (define right-added? (not-set-empty? (trie-project/set p-added right-trie)))
+     (define right-removed? (not-set-empty? (trie-project/set p-removed right-trie)))
      (cond
        [left-added? (transition 'left '())]
        [right-added? (transition 'right '())]
@@ -223,10 +223,10 @@
   (periodically period-ms (lambda () (message (timer-tick)))))
 
 (define static-detector (compile-projection (static (?!))))
-;; matcher -> (listof rect)
-(define static-rects-matcher
+;; trie -> (listof rect)
+(define static-rects-trie
   (lambda (m)
-    (set-map (matcher-project/set m static-detector) car)))
+    (set-map (trie-project/set m static-detector) car)))
 
 (define enemy-detector (compile-projection (enemy (?!) (?!))))
 (define (patch-enemies p)
@@ -302,8 +302,8 @@
      (and (cdr (move-player-y (game-state-player s) 1 (game-state-env s)))
           (transition s (message (jump))))]
     [(patch p-added p-removed)
-     (define removed (static-rects-matcher p-removed))
-     (define added (static-rects-matcher p-added))
+     (define removed (static-rects-trie p-removed))
+     (define added (static-rects-trie p-added))
      (define new-env (append added (remove* removed (game-state-env s))))
      (define-values (enemies-added enemies-removed) (patch-enemies e))
      (define enemies-new (update-enemy-hash enemies-added enemies-removed enemies-old))
@@ -563,7 +563,7 @@
 (define (enemy-spawner-behavior e s)
   (match e
     [(? patch/added? p)
-     (define added (matcher-project/set (patch-added p) (compile-projection (spawn-enemy (?!)))))
+     (define added (trie-project/set (patch-added p) (compile-projection (spawn-enemy (?!)))))
      (define spawns (set-map added car))
      (transition s spawns)]
     [_ #f]))
@@ -626,7 +626,7 @@
 (define GOAL0 (make-goal 900 150))
 (define GOAL1 (make-goal 500 150))
 
-(define FRAMES-PER-SEC 60)
+(define FRAMES-PER-SEC 30)
 
 (define GRAVITY-PER-SEC 6)
 (define JUMP-V-PER-SEC -200)
@@ -665,7 +665,7 @@
    (listener-state 1 (current-inexact-milliseconds))
    (sub (timer-tick))))
 
-(spawn-frame-listener)
+#;(spawn-frame-listener)
 
 ;; nat nat nat nat (nat symbol -> (U #f (constreeof message))) -> spawn
 (define (make-enemy x0 y0 w h mover)
