@@ -222,17 +222,14 @@
 (define (spawn-clock period-ms)
   (periodically period-ms (lambda () (message (timer-tick)))))
 
-(define static-detector (compile-projection (static (?!))))
 ;; trie -> (listof rect)
-(define static-rects-trie
-  (lambda (m)
-    (set-map (trie-project/set m static-detector) car)))
+(define (static-rects-trie t)
+  (for-trie/list ([(static $r) t])
+    r))
 
-(define enemy-detector (compile-projection (enemy (?!) (?!))))
 (define (patch-enemies p)
-  (define-values (added removed) (patch-project/set p enemy-detector))
-  (values (set-map added (lambda (l) (enemy (first l) (second l))))
-          (set-map removed (lambda (l) (enemy (first l) (second l))))))
+  (values (for-trie/list ([(? enemy? $e) (patch-added p)]) e)
+          (for-trie/list ([(? enemy? $e) (patch-removed p)]) e)))
 
 ;; (hashof Key Any) (listof Key) -> (hashof Key Any)
 ;; remove a bunch of keys from a hash
@@ -562,9 +559,8 @@
 ;; enemy spawner
 (define (enemy-spawner-behavior e s)
   (match e
-    [(? patch/added? p)
-     (define added (trie-project/set (patch-added p) (compile-projection (spawn-enemy (?!)))))
-     (define spawns (set-map added car))
+    [(patch added _)
+     (define spawns (for-trie/list ([(spawn-enemy $s) added]) s))
      (transition s spawns)]
     [_ #f]))
 
