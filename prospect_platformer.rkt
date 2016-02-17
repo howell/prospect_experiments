@@ -228,8 +228,8 @@
     r))
 
 (define (patch-enemies p)
-  (values (for-trie/list ([(? enemy? $e) (patch-added p)]) e)
-          (for-trie/list ([(? enemy? $e) (patch-removed p)]) e)))
+  (values (for-trie/list ([(enemy $id $r) (patch-added p)]) (enemy id r))
+          (for-trie/list ([(enemy $id $r) (patch-removed p)]) (enemy id r))))
 
 ;; (hashof Key Any) (listof Key) -> (hashof Key Any)
 ;; remove a bunch of keys from a hash
