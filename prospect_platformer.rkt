@@ -56,9 +56,6 @@
 ;;   - (game-state ...) messages
 ;;   - (victory)/(defeat) assertions
 ;;   Redraws every timer tick.
-;; Enemy Spawning Process:
-;;   Spawns enemy processes on demand.
-;;   Listens for (spawn-enemy spawn) and spawns the argument
 
 (require "./geometry.rkt"
          "./periodic_timer.rkt"
@@ -94,9 +91,6 @@
 ;; any * rect
 (struct enemy (id rect) #:transparent)
 
-;; spawn
-(struct spawn-enemy (spawn) #:transparent)
-
 ;; any
 (struct kill-enemy (id) #:transparent)
 
@@ -119,8 +113,8 @@
 ;; rect * (listof rect) * rect * (hashof symbol -> enemy) * posn
 (struct game-state (player env goal enemies level-size) #:transparent)
 
-;; rect * (listof rect) * rect * (listof spawn) * posn
-(struct level (player0 env0 goal enemies size) #:transparent)
+;; rect * (listof rect) * rect * (-> (listof spawn)) * posn
+(struct level (player0 env0 goal enemies-thunk size) #:transparent)
 
 ;; translate key presses into commands
 ;; asserts (move-left)/(move-right) while the left/right arrow key is held down
@@ -519,31 +513,29 @@
 
 ;; level -> (constreeof action)
 (define (level->actions l)
-  (match-define (level player0 env0 goal0 enemies lsize) l)
+  (match-define (level player0 env0 goal0 enemies-thunk lsize) l)
   (flatten (list (assert (player player0))
                  (map (lambda (r) (assert (static r))) env0)
-                 (map (lambda (e) (assert (spawn-enemy e))) enemies))))
+                 (enemies-thunk))))
 
 ;; state is a (non-empty-listof level), the first of which is the current level
 ;; need a way to kill all enemies
 (define (level-manager-behavior e s)
   (match e
     [(message (defeat))
-     (match-define (level player0 env0 goal0 enemies size) (car s))
-     (transition s (list (spawn-game-logic player0 goal0 size)
-                         (retract (static ?))
-                         (retract (player ?))
-                         (retract (spawn-enemy ?))
-                         (apply patch-seq (flatten (level->actions (car s))))))]
+     (match-define (level player0 env0 goal0 _ size) (car s))
+     (transition s (flatten (list (spawn-game-logic player0 goal0 size)
+                                  (retract (static ?))
+                                  (retract (player ?))
+                                  (level->actions (car s)))))]
     [(message (level-complete))
      (match (cdr s)
        [(cons next-level _)
-        (transition (cdr s) (list (spawn-game-logic (level-player0 next-level)
-                                                    (level-goal next-level) (level-size next-level))
+        (transition (cdr s) (flatten (list (spawn-game-logic (level-player0 next-level)
+                                                             (level-goal next-level) (level-size next-level))
                                   (retract (static ?))
                                   (retract (player ?))
-                                  (retract (spawn-enemy ?))
-                                  (apply patch-seq (flatten (level->actions next-level)))))]
+                                  (level->actions next-level))))]
        [_ (quit (list (message (victory))))])]
     [_ #f]))
 
@@ -552,22 +544,9 @@
   (spawn
    level-manager-behavior
    levels
-   (apply patch-seq (flatten (list (sub (defeat))
-                                   (sub (level-complete))
-                                   (level->actions (first levels)))))))
-
-;; enemy spawner
-(define (enemy-spawner-behavior e s)
-  (match e
-    [(patch added _)
-     (define spawns (for-trie/list ([(spawn-enemy $s) added]) s))
-     (transition s spawns)]
-    [_ #f]))
-
-(define (spawn-enemy-spawner)
-  (spawn enemy-spawner-behavior
-         (void)
-         (sub (spawn-enemy ?))))
+   (flatten (list (sub (defeat))
+                  (sub (level-complete))
+                  (level->actions (first levels))))))
 
 ;; gui stuff
 (define game-canvas%
@@ -720,26 +699,28 @@
                (rect (posn 200 178) 50 10)
                (rect (posn 300 150) 50 10))
          GOAL0
-         (list (make-horiz-enemy 0 180 20 20 130 2)
-               (make-horiz-enemy 200 158 20 20 30 1)
-               (make-horiz-enemy 300 130 20 20 30 1)
-               (make-horiz-enemy 400 180 20 20 180 3))
+         (thunk
+          (list (make-horiz-enemy 0 180 20 20 130 2)
+                (make-horiz-enemy 200 158 20 20 30 1)
+                (make-horiz-enemy 300 130 20 20 30 1)
+                (make-horiz-enemy 400 180 20 20 180 3)))
          (posn 1000 400)))
 
 (define level1
   (level PLAYER0
          (list (rect (posn 0 200) 600 10))
          GOAL1
-         (list (make-horiz-enemy 0 180 20 20 580 4)
-               (make-horiz-enemy 0 140 20 20 580 8)
-               (make-vert-enemy 50 125 20 20 75 4)
-               (make-vert-enemy 100 125 20 20 75 4)
-               (make-vert-enemy 150 125 20 20 75 4)
-               (make-vert-enemy 200 125 20 20 75 4)
-               (make-vert-enemy 250 125 20 20 75 4)
-               (make-vert-enemy 300 125 20 20 75 4)
-               (make-vert-enemy 350 125 20 20 75 4)
-               (make-vert-enemy 400 125 20 20 75 4))
+         (thunk
+          (list (make-horiz-enemy 0 180 20 20 580 4)
+                (make-horiz-enemy 0 140 20 20 580 8)
+                (make-vert-enemy 50 125 20 20 75 4)
+                (make-vert-enemy 100 125 20 20 75 4)
+                (make-vert-enemy 150 125 20 20 75 4)
+                (make-vert-enemy 200 125 20 20 75 4)
+                (make-vert-enemy 250 125 20 20 75 4)
+                (make-vert-enemy 300 125 20 20 75 4)
+                (make-vert-enemy 350 125 20 20 75 4)
+                (make-vert-enemy 400 125 20 20 75 4)))
          (posn 600 400)))
 
 ;; int int int int int nat nat -> (list rect)
@@ -755,8 +736,9 @@
                                   100 -40
                                   50 10
                                   10)]
-        [birdies (for/list ([i (in-range 5)])
-                   (make-vert-enemy (+ 160 (* i 200)) (- 650 (* i 80)) 20 20 120 4))])
+        [birdies (thunk
+                  (for/list ([i (in-range 5)])
+                          (make-vert-enemy (+ 160 (* i 200)) (- 650 (* i 80)) 20 20 120 4)))])
     (level (make-player 0 750)
            (flatten (list stairs
                           (rect (posn 0 800) 50 200)))
@@ -766,8 +748,6 @@
 
 (define levels (list level0 level1 level2))
 
-
-(spawn-enemy-spawner)
 (spawn-game-logic (level-player0 (car levels))
                   (level-goal (car levels))
                   (level-size (car levels)))
