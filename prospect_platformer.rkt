@@ -8,8 +8,10 @@
 ;; Level Manager Process:
 ;;   Manage transitions between levels, which are one of:
 ;;     - no levels -> first-level, when the game starts
-;;     - current-level -> current-level, when the player dies (a (defeat) message)
-;;     - current-level -> next-level, when the player reaches the goal (a (level-complete) message))
+;;     - current-level -> current-level, when the player dies
+;;       (a (defeat) message)
+;;     - current-level -> next-level, when the player reaches the goal (a
+;;       (level-complete) message))
 ;;     - last-level -> end-screen, when the player beats the game
 ;;   Transitions are accompished by:
 ;;     - spawning a game logic process
@@ -19,29 +21,35 @@
 ;;   Similarly, when the player dies (a (defeat) message) retract
 ;;      the current level and then spawn it again
 ;; Game Logic Process:
-;;   Decides where the player and enemies are on the map and when the level is over.
-;;   Processes (jump-request) messages. If the player is allowed to jump sends a (jump) message.
-;;   Listens for (move-x id dx) and (move-y id dy) messages and attempts to move the player
-;;         (id = 'player) or enemy accordingly.
-;;   When a (move-y id _) command results in a collision with the environment a (y-collision id)
-;;         message is sent.
+;;   Decides where the player and enemies are on the map and when the level is
+;;     over.
+;;   Processes (jump-request) messages. If the player is allowed to jump sends a
+;;     (jump) message.
+;;   Listens for (move-x id dx) and (move-y id dy) messages and attempts to move
+;;     the player (id = 'player) or enemy accordingly.
+;;   When a (move-y id _) command results in a collision with the environment a
+;;     (y-collision id) message is sent.
 ;;   Sends the entire (game-state ...) as a message every time it updates.
 ;;   The environment is determined by assertions of the shape (static rect).
-;;   The existence of enemies and their initial location is determined by assertions of the shape
-;;         (enemy id rect).
+;;   The existence of enemies and their initial location is determined by
+;;     assertions of the shape (enemy id rect).
 ;;   If the player kills an enemy sends a (kill-enemy id) message.
-;;   When the player reaches the goal, quits and sends the message (level-complete)
-;;   When the player loses (leaves the map/killed by an enemy), quits and sends the message (defeat)
+;;   When the player reaches the goal, quits and sends the message
+;;     (level-complete)
+;;   When the player loses (leaves the map/killed by an enemy), quits and sends
+;;     the message (defeat)
 ;; Timer Process:
 ;;   Sends a (timer-tick) message at a fixed rate
 ;; Player Process:
 ;;   Translates keyboard event messages into movement commands.
-;;   asserts (move-left) or (move-right) while the left or right arrow key is held down
+;;   asserts (move-left) or (move-right) while the left or right arrow key is
+;;     held down
 ;;   sends a (jump-request) message when space is pressed
 ;; Horizontal Motion Process:
-;;   Interprets the output of the Player Process into commands for the Game Logic Process.
-;;   Sends the messsage (move-x 'player +-dx) on every (timer-tick) while (move-left) or
-;;       (move-right) is being asserted.
+;;   Interprets the output of the Player Process into commands for the Game
+;;     Logic Process.
+;;   Sends the messsage (move-x 'player +-dx) on every (timer-tick) while
+;;     (move-left) or (move-right) is being asserted.
 ;; Vertical Motion Process:
 ;;   Represents gravity and the player's attempts to fight gravity by jumping.
 ;;   Sends (move-y 'player dy) every (timer-tick).
@@ -50,7 +58,8 @@
 ;; Enemy Process(es):
 ;;   Asserts the initial position and id as (enemy id (rect posn0 w h)).
 ;;   Moves by sending (move-x id dx) and (move-y id dy) messages.
-;;   Quits when a (kill-enemy id), (defeat), or (level-complete) message is received.
+;;   Quits when a (kill-enemy id), (defeat), or (level-complete) message is
+;;     received.
 ;; Rendering Process:
 ;;   Tracks and draws the state of the game:
 ;;   - (game-state ...) messages
@@ -141,34 +150,36 @@
 ;; by sending the messsage (move-x +-dx) each timer tick while (move-left) or
 ;; (move-right) is being asserted
 (define (spawn-horizontal-motion dx)
-  (forever (on (asserted (move-left))
-               (until (retracted (move-left))
-                      (on (message (timer-tick))
-                          (send! (move-x 'player (- dx))))))
-           (on (asserted (move-right))
-               (until (retracted (move-right))
-                      (on (message (timer-tick))
-                          (send! (move-x 'player dx)))))))
+  (actor (forever
+          (on (asserted (move-left))
+              (until (retracted (move-left))
+                     (on (message (timer-tick))
+                         (send! (move-x 'player (- dx))))))
+          (on (asserted (move-right))
+              (until (retracted (move-right))
+                     (on (message (timer-tick))
+                         (send! (move-x 'player dx))))))))
 
-;; the vertical motion behavior tries to move the player downward by sending (move-y dy)
-;; this happens periodically when the timer sends a (timer-tick) message
-;; when a (jump) message is received, temporarily move the player upward
-;; when a (y-collision) is detected reset velocity to 0
+;; the vertical motion behavior tries to move the player downward by sending
+;; (move-y dy).
+;; this happens periodically when the timer sends a (timer-tick) message.
+;; when a (jump) message is received, temporarily move the player upward.
+;; when a (y-collision) is detected reset velocity to 0.
 (define (spawn-vertical-motion gravity jump-v max-v)
-  (forever #:collect ([mot (motion 0 gravity)]
-                      [clock 0])
-           (on (message (jump))
-               (values (motion jump-v (motion-a mot))
-                       (add1 clock)))
-           (on (message (timer-tick))
-               (send! (move-y 'player (motion-v mot) clock))
-               (values (motion (min max-v
-                                    (+ (motion-v mot) (motion-a mot)))
-                               (motion-a mot))
-                       clock))
-           (on (message (y-collision 'player clock))
-               (values (motion 0 (motion-a mot))
-                       clock))))
+  (actor (forever #:collect ([mot (motion 0 gravity)]
+                             [clock 0])
+                  (on (message (jump))
+                      (values (motion jump-v (motion-a mot))
+                              (add1 clock)))
+                  (on (message (timer-tick))
+                      (send! (move-y 'player (motion-v mot) clock))
+                      (values (motion (min max-v
+                                           (+ (motion-v mot) (motion-a mot)))
+                                      (motion-a mot))
+                              clock))
+                  (on (message (y-collision 'player clock))
+                      (values (motion 0 (motion-a mot))
+                              clock)))))
 
 ;; create a clock that sends (timer-tick) every period-ms
 (define (spawn-clock period-ms)
@@ -187,14 +198,16 @@
   (hash-remove* h (map (lambda (e) (enemy-id e)) enemies)))
 
 ;; rect goal -> spawn
-;; The game logic process keeps track of the location of the player and the environment.
-;; processes move-x and move-y commands from the player and enemies. When a collision
-;; along the y-axis occurs it sends a (y-collision id) message with the id of the moving
-;; object.
-;; Sends the entire state of the game as a message - (message (game-state ...)) - every
-;; time it changes.
-;; If the player is moving down/enemy is moving up and they collide, send a (kill-enemy id)
-;; message. Otherwise if the player and the enemy collide the game is over.
+;; The game logic process keeps track of the location of the player and the
+;; environment.
+;; processes move-x and move-y commands from the player and enemies. When a
+;; collision along the y-axis occurs it sends a (y-collision id) message with
+;; the id of the moving object.
+;; Sends the entire state of the game as a message - (message (game-state ...))
+;; - every time it changes.
+;; If the player is moving down/enemy is moving up and they collide, send a
+;; (kill-enemy id) message. Otherwise if the player and the enemy collide the
+;; game is over.
 ;; Quits and messages (level-complete) if the player reaches the goal
 ;; Quits and messages (defeat) if the player leaves the map
 (define (spawn-game-logic player0 goal0 level-size)
@@ -228,13 +241,15 @@
             (on (asserted (enemy $id $r))
                 (define old-enemies (game-state-enemies gs))
                 (define new-enemies (hash-set old-enemies id (enemy id r)))
-                (define next-state (struct-copy game-state gs [enemies new-enemies]))
+                (define next-state
+                  (struct-copy game-state gs [enemies new-enemies]))
                 (send! next-state)
                 next-state)
             (on (retracted (enemy $id $r))
                 (define old-enemies (game-state-enemies gs))
                 (define new-enemies (hash-remove old-enemies id))
-                (define next-state (struct-copy game-state gs [enemies new-enemies]))
+                (define next-state
+                  (struct-copy game-state gs [enemies new-enemies]))
                 (send! next-state)
                 next-state))))
 
@@ -256,7 +271,8 @@
      (send! (defeat))
      (return!)]
     [else
-     (define next-state (game-state player-n env-old cur-goal enemies-old lsize))
+     (define next-state
+       (game-state player-n env-old cur-goal enemies-old lsize))
      (send! next-state)
      next-state]))
 
@@ -423,7 +439,9 @@
   (send dc set-text-foreground color)
   (define fnt (make-object font% 100 'default))
   (send dc set-font fnt)
-  (send dc draw-text text (/ (posn-x canvas-bot-right) 6) (/ (posn-y canvas-bot-right) 4))
+  (define tl-x (/ (posn-x canvas-bot-right) 6))
+  (define tl-y (/ (posn-y canvas-bot-right) 4))
+  (send dc draw-text text tl-x tl-y)
   (send dc resume-flush))
 
 (define (draw-victory dc)
@@ -600,7 +618,8 @@
   (define THRESHOLD (/ x-dist dx))
   (make-enemy x0 y0 w h
               (lambda (n id)
-                (send! (move-x id (if (< (modulo n (floor (* 2 THRESHOLD))) THRESHOLD)
+                (define right? (< (modulo n (floor (* 2 THRESHOLD))) THRESHOLD))
+                (send! (move-x id (if right?
                                       dx
                                       (- dx)))))))
 
@@ -611,8 +630,9 @@
   (define THRESHOLD (/ y-dist dy))
   (make-enemy x0 y0 w h
               (lambda (n id)
+                (define up? (< (modulo n (floor (* 2 THRESHOLD))) THRESHOLD))
                 (send! (move-y id
-                               (if (< (modulo n (floor (* 2 THRESHOLD))) THRESHOLD)
+                               (if up?
                                    dy
                                    (- dy))
                                0)))))
@@ -663,7 +683,12 @@
                                   10)]
         [birdies (thunk
                   (for/list ([i (in-range 5)])
-                    (make-vert-enemy (+ 160 (* i 200)) (- 650 (* i 80)) 20 20 120 4)))])
+                    (make-vert-enemy (+ 160 (* i 200))
+                                     (- 650 (* i 80))
+                                     20
+                                     20
+                                     120
+                                     4)))])
     (level (make-player 0 750)
            (flatten (list stairs
                           (rect (posn 0 800) 50 200)))
