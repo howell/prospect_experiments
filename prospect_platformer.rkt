@@ -117,20 +117,22 @@
 ;; rect * (listof rect) * rect * (-> (listof spawn)) * posn
 (struct level (player0 env0 goal enemies-thunk size) #:transparent)
 
+(define (key-state key action)
+  (actor (forever #:collect ([state #f])
+                  (assert #:when state action)
+                  (on (message (at-meta (key-press key)))
+                      key)
+                  (on (message (at-meta (key-release key)))
+                      #f))))
+
 ;; Player Behavior
 ;; translate key presses into commands
 ;; asserts (move-left)/(move-right) while the left/right arrow key is held down
 ;; space becomes a (jump-request) message
 (define (spawn-player)
   (list
-   (actor
-    (forever (on (message (at-meta (key-press $key)))
-                 (match key
-                   ['left (until (message (at-meta (key-release 'left)))
-                                 (assert (move-left)))]
-                   ['right (until (message (at-meta (key-release 'right)))
-                                  (assert (move-right)))]
-                   [_ #f]))))
+   (key-state 'left (move-left))
+   (key-state 'right (move-right))
    (actor
     (forever (on (message (at-meta (key-press #\space)))
                  (send! (jump-request)))))))
