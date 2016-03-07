@@ -1,7 +1,7 @@
 #lang prospect
 
 (require racket/gui)
-(require "../prospect/prospect/drivers/timer.rkt")
+(require prospect/drivers/timer)
 
 (define my-canvas%
   (class canvas%
@@ -37,9 +37,9 @@
        [_ #f]))
    #f
    ;; listen for key event messages from this canvas
-   (sub `(key-event ,label ,?) #:meta-level 1)
-   ;; listen for display messages from universe
-   (sub `(display ,?))))
+   (list (sub `(key-event ,label ,?) #:meta-level 1)
+         ;; listen for display messages from universe
+         (sub `(display ,?)))))
 
 (define (spawn-universe)
   (define key-press-detector (compile-projection `(key-press ,? ,(?!))))
