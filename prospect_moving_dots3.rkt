@@ -1,4 +1,4 @@
-#lang prospect
+#lang syndicate
 
 (require racket/gui racket/draw racket/set)
 (require "./geometry.rkt")

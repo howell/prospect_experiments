@@ -1,4 +1,4 @@
-#lang prospect
+#lang syndicate
 
 ;; Events
 ;; keyboard events are injected into the system at the ground level as either
@@ -70,8 +70,8 @@
          "./periodic_timer.rkt"
          "./platform_lib.rkt"
          rackunit
-         prospect/drivers/timer
-         prospect/actor
+         syndicate/drivers/timer
+         syndicate/actor
          racket/set
          racket/gui
          racket/draw

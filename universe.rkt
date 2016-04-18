@@ -1,7 +1,7 @@
-#lang prospect
+#lang syndicate
 
 (require racket/gui)
-(require prospect/drivers/timer)
+(require syndicate/drivers/timer)
 
 (define my-canvas%
   (class canvas%

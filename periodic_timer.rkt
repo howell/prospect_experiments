@@ -1,7 +1,7 @@
 #lang racket
 
-(require prospect
-         prospect/drivers/timer)
+(require syndicate
+         syndicate/drivers/timer)
 
 (provide periodically)
 

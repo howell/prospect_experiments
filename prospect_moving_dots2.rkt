@@ -1,4 +1,4 @@
-#lang prospect
+#lang syndicate
 
 (require racket/set racket/gui racket/draw)
 

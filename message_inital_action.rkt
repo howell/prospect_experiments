@@ -1,4 +1,4 @@
-#lang prospect
+#lang syndicate
 
 (spawn
  (lambda (e s) #f)
