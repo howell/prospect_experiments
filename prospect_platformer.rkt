@@ -73,7 +73,7 @@
          syndicate/drivers/timer
          syndicate/actor
          racket/set
-         racket/gui
+         (except-in racket/gui field)
          racket/draw
          racket/block)
 
@@ -127,12 +127,14 @@
 (struct level (player0 env0 goal enemies-thunk size) #:transparent)
 
 (define (key-state key action)
-  (actor (forever #:collect ([state #f])
-           (assert #:when state action)
-           (on (message (at-meta (key-press key)))
-               key)
-           (on (message (at-meta (key-release key)))
-               #f))))
+  (actor #:name (format "key-state:~a" key)
+   (forever
+       (field [state #f])
+     (assert #:when (state) action)
+     (on (message (at-meta (key-press key)))
+         (state #t))
+     (on (message (at-meta (key-release key)))
+         (state #f)))))
 
 ;; Player Behavior
 ;; translate key presses into commands
@@ -142,7 +144,7 @@
   (list
    (key-state 'left (move-left))
    (key-state 'right (move-right))
-   (actor
+   (actor #:name 'player
     (forever (on (message (at-meta (key-press #\space)))
                  (send! (jump-request)))))))
 
@@ -150,7 +152,8 @@
 ;; by sending the messsage (move-x +-dx) each timer tick while (move-left) or
 ;; (move-right) is being asserted
 (define (spawn-horizontal-motion dx)
-  (actor (forever
+  (actor #:name 'horizontal-motion
+         (forever
              (on (asserted (move-left))
                  (until (retracted (move-left))
                         (on (message (timer-tick))
@@ -166,23 +169,35 @@
 ;; when a (jump) message is received, temporarily move the player upward.
 ;; when a (y-collision) is detected reset velocity to 0.
 (define (spawn-vertical-motion gravity jump-v max-v)
-  (actor (forever #:collect ([mot (motion 0 gravity)]
-                             [clock 0])
+  (actor #:name 'vertical-motion
+   (forever (field [mot (motion 0 gravity)]
+                         [clock 0])
            (on (message (jump))
-               (values (motion jump-v (motion-a mot))
-                       (add1 clock)))
+               (mot (motion jump-v (motion-a (mot))))
+               (clock (add1 (clock))))
            (on (message (timer-tick))
-               (send! (move-y 'player (motion-v mot) clock))
-               (values (motion (min max-v
-                                    (+ (motion-v mot) (motion-a mot)))
-                               (motion-a mot))
-                       clock))
-           (on (message (y-collision 'player clock))
-               (values (motion 0 (motion-a mot))
-                       clock)))))
+               (send! (move-y 'player (motion-v (mot)) (clock)))
+               (mot (motion (min max-v
+                                    (+ (motion-v (mot)) (motion-a (mot))))
+                               (motion-a (mot)))))
+           (on (message (y-collision 'player (clock)))
+               (mot (motion 0 (motion-a (mot))))))))
 
 ;; create a clock that sends (timer-tick) every period-ms
 (define (spawn-clock period-ms)
+  (define id (gensym 'after))
+  (define begin-time (current-inexact-milliseconds))
+  (define (set-timer-message! n)
+    (send! (set-timer id (+ begin-time (* n period-ms)) 'absolute)))
+  (actor #:name 'clock
+   (set-timer-message! 0) ; does this create a race?
+   (until (message (victory)) (field [n 0])
+          (on (message (timer-expired id _))
+              (send! (timer-tick))
+              (set-timer-message! (add1 (n)))
+              (n (add1 (n)))))))
+          
+#;(define (spawn-clock period-ms)
   (periodically period-ms (lambda () (message (timer-tick)))))
 
 ;; (hashof Key Any) (listof Key) -> (hashof Key Any)
@@ -212,50 +227,50 @@
 ;; Quits and messages (defeat) if the player leaves the map
 (define (spawn-game-logic player0 goal0 level-size)
   (define gs0 (game-state player0 '() goal0 (hash) level-size))
-  (actor
-   (forever #:collect ([gs gs0])
+  (actor #:name 'game-logic
+   (react/suspend (return!)
+                  (field [gs gs0])
      (on (message (move-x 'player $dx))
-         (player-motion-x gs dx))
+         (gs (player-motion-x (gs) dx return!)))
      (on (message (move-y 'player $dy $clock))
-         (player-motion-y gs dy clock))
+         (gs (player-motion-y (gs) dy clock return!)))
      (on (message (move-x $id $dx))
-         (enemy-motion-x gs id dx))
+         (gs (enemy-motion-x (gs) id dx return!)))
      (on (message (move-y $id $dy $clock))
-         (enemy-motion-y gs id dy clock))
+         (gs (enemy-motion-y (gs) id dy clock return!)))
      (on (message (jump-request))
-         (when (cdr (move-player-y (game-state-player gs)
+         (when (cdr (move-player-y (game-state-player (gs))
                                    1
-                                   (game-state-env gs)))
-           (send! (jump)))
-         gs)
+                                   (game-state-env (gs))))
+           (send! (jump))))
      (on (asserted (static $r))
-         (define new-env (cons r (game-state-env gs)))
-         (define next-state (struct-copy game-state gs [env new-env]))
+         (define new-env (cons r (game-state-env (gs))))
+         (define next-state (struct-copy game-state (gs) [env new-env]))
          (send! next-state)
-         next-state)
+         (gs next-state))
      (on (retracted (static $r))
-         (define new-env (remove r (game-state-env gs)))
-         (define next-state (struct-copy game-state gs [env new-env]))
+         (define new-env (remove r (game-state-env (gs))))
+         (define next-state (struct-copy game-state (gs) [env new-env]))
          (send! next-state)
-         next-state)
+         (gs next-state))
      (on (asserted (enemy $id $r))
-         (define old-enemies (game-state-enemies gs))
+         (define old-enemies (game-state-enemies (gs)))
          (define new-enemies (hash-set old-enemies id (enemy id r)))
          (define next-state
-           (struct-copy game-state gs [enemies new-enemies]))
+           (struct-copy game-state (gs) [enemies new-enemies]))
          (send! next-state)
-         next-state)
+         (gs next-state))
      (on (retracted (enemy $id $r))
-         (define old-enemies (game-state-enemies gs))
+         (define old-enemies (game-state-enemies (gs)))
          (define new-enemies (hash-remove old-enemies id))
          (define next-state
-           (struct-copy game-state gs [enemies new-enemies]))
+           (struct-copy game-state (gs) [enemies new-enemies]))
          (send! next-state)
-         next-state))))
+         (gs next-state)))))
 
-;; game-state num -> (U return! GameState)
+;; game-state num return! -> (U return! GameState)
 ;; move the player along the x-axis
-(define (player-motion-x gs dx)
+(define (player-motion-x gs dx return!)
   (match-define (game-state player-old env-old cur-goal enemies-old lsize) gs)
   (match-define (posn x-limit y-limit) lsize)
   (define level-rect (rect (posn 0 0) x-limit y-limit))
@@ -276,9 +291,9 @@
      (send! next-state)
      next-state]))
 
-;; game-state num -> (U return! GameState)
+;; game-state num return! -> (U return! GameState)
 ;; move the player along the y-axis
-(define (player-motion-y gs dy clock)
+(define (player-motion-y gs dy clock return!)
   (match-define (game-state player-old env-old cur-goal enemies-old lsize) gs)
   (match-define (posn x-limit y-limit) lsize)
   (define level-rect (rect (posn 0 0) x-limit y-limit))
@@ -308,9 +323,9 @@
      (send! next-state)
      next-state]))
 
-;; game-state symbol num -> (U return! GameState)
+;; game-state symbol num return! -> (U return! GameState)
 ;; move an enemy along the x-axis
-(define (enemy-motion-x gs id dx)
+(define (enemy-motion-x gs id dx return!)
   (match-define (game-state player-old env-old cur-goal enemies-old lsize) gs)
   (define maybe-enemy (hash-ref enemies-old id #f))
   ;; the enemy might not be in the hash if it was recently killed
@@ -330,7 +345,7 @@
         next-state])]
     [else gs]))
 
-(define (enemy-motion-y gs id dy clock)
+(define (enemy-motion-y gs id dy clock return!)
   (match-define (game-state player-old env-old cur-goal enemies-old lsize) gs)
   (define maybe-enemy (hash-ref enemies-old id #f))
   ;; the enemy might not be in the hash if it was recently killed
@@ -464,19 +479,25 @@
                           (rect (posn -100 -100) 0 0)
                           (hash)
                           (posn 100 100)))
-  (actor
-   (until (message (victory)) #:collect ([gs gs0])
+  (actor #:name 'renderer
+   (until (message (victory)) (field [gs gs0])
           (on (message (game-state $player $env $goal $enemies $level-size))
-              (game-state player env goal enemies level-size))
+              (gs (game-state player env goal enemies level-size)))
           (on (message (timer-tick))
-              (draw-game-state dc gs)
-              gs))
+              (draw-game-state dc (gs))))
    (draw-victory dc)))
 
 (define (boot-level! l)
   (match-define (level player0 env0 goal0 enemies-thunk lsize) l)
   (assert! (player player0))
   (for ([r (in-list env0)]) (assert! (static r)))
+  (enemies-thunk)
+  (spawn-game-logic player0 goal0 lsize))
+
+(define (run-level l)
+  (match-define (level player0 env0 goal0 enemies-thunk lsize) l)
+  (assert (player player0))
+  (for ([r (in-list env0)]) (assert (static r)))
   (enemies-thunk)
   (spawn-game-logic player0 goal0 lsize))
 
@@ -487,26 +508,16 @@
 
 ;; (non-empty-listof level) -> spawn
 (define (spawn-level-manager levels)
-  (define first-level (car levels))
-  (actor
-   (forever
-       #:init [(boot-level! first-level)]
-     #:collect ([cur-level first-level]
-                [remaining-levels (cdr levels)])
-     (on (message (defeat))
-         (quit-level! cur-level)
-         (boot-level! cur-level)
-         (values cur-level remaining-levels))
-     (on (message (level-complete))
-         (match remaining-levels
-           [(cons next-level remaining-levels)
-            (quit-level! cur-level)
-            (boot-level! next-level)
-            (values next-level remaining-levels)]
-           ['()
-            (send! (victory))
-            (return!)])))))
-
+  (actor #:name 'level-manager
+     (react
+      (run-level (first levels))
+      (stop-when (message (defeat))
+                 (spawn-level-manager levels))
+      (stop-when (message (level-complete))
+                 (match (rest levels)
+                   ['() (send! (victory))]
+                   [more-levels (spawn-level-manager more-levels)])))))
+     
 ;; gui stuff
 (define game-canvas%
   (class canvas%
@@ -580,27 +591,42 @@
 
 (define (spawn-frame-listener)
   (define begin-time (current-inexact-milliseconds))
-  (actor
-   (forever #:collect ([frame-num 1]
-                       [last-ms (current-inexact-milliseconds)])
+  (actor #:name 'frame-listener
+   (forever (field [frame-num 1]
+                   [last-ms (current-inexact-milliseconds)])
      (on (message (timer-tick))
          (define now (current-inexact-milliseconds))
          (define elapsed-ms (- now begin-time))
          (define elapsed-s (/ elapsed-ms 1000))
          (define ideal-frames-elapsed (* elapsed-s FRAMES-PER-SEC))
-         (define missed-frames (- ideal-frames-elapsed frame-num))
-         (define fps (/ frame-num elapsed-s))
+         (define missed-frames (- ideal-frames-elapsed (frame-num)))
+         (define fps (/ (frame-num) elapsed-s))
          (printf "fps: ~v\n" fps)
-         (values (add1 frame-num)
-                 now)))))
+         (frame-num (add1 frame-num))
+         (last-ms now)))))
+
+(define (spawn-sliding-frame-listener window)
+  (define begin-time (current-inexact-milliseconds))
+  (actor #:name 'sliding-frame-listener
+     (until (rising-edge (= (frames) window))
+            (field [frames 0])
+            (on (message (timer-tick))
+                (frames (add1 (frames)))))
+     (define now (current-inexact-milliseconds))
+     (define elapsed (/ (- now begin-time) 1000))
+     (define fps (/ window elapsed))
+     (printf "fps: ~v\n" fps)
+     (spawn-sliding-frame-listener window)))
 
 #;(spawn-frame-listener)
+(spawn-sliding-frame-listener 30)
 
 ;; nat nat nat nat (nat symbol -> Void) -> spawn
 (define (make-enemy x0 y0 w h mover)
   (define id (gensym 'enemy))
-  (actor
-   (forever #:collect [(n 0)]
+  (actor #:name 'enemy
+   (react/suspend (return!)
+                  (field (n 0))
      (assert (enemy id (rect (posn x0 y0) w h)))
      (on (message (kill-enemy id))
          (return!))
@@ -609,8 +635,8 @@
      (on (message (level-complete))
          (return!))
      (on (message (timer-tick))
-         (mover n id)
-         (add1 n)))))
+         (mover (n) id)
+         (n (add1 (n)))))))
 
 ;; spawn an enemy that travels from (x0, y0) to (x0 + x-dist, y0) then back to
 ;; (x0, y0) at a rate of dx per clock tick
