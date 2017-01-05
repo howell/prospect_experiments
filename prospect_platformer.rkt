@@ -128,13 +128,12 @@
 
 (define (key-state key action)
   (actor #:name (format "key-state:~a" key)
-   (forever
-       (field [state #f])
-     (assert #:when (state) action)
-     (on (message (at-meta (key-press key)))
-         (state #t))
-     (on (message (at-meta (key-release key)))
-         (state #f)))))
+         (field [state #f])
+         (assert #:when (state) action)
+         (on (message (inbound (key-press key)))
+             (state #t))
+         (on (message (inbound (key-release key)))
+             (state #f))))
 
 ;; Player Behavior
 ;; translate key presses into commands
@@ -145,23 +144,23 @@
    (key-state 'left (move-left))
    (key-state 'right (move-right))
    (actor #:name 'player
-    (forever (on (message (at-meta (key-press #\space)))
-                 (send! (jump-request)))))))
+          (on (message (inbound (key-press #\space)))
+              (send! (jump-request))))))
 
 ;; the horizontal motion behavior tries to move the player along the x-axis
 ;; by sending the messsage (move-x +-dx) each timer tick while (move-left) or
 ;; (move-right) is being asserted
 (define (spawn-horizontal-motion dx)
   (actor #:name 'horizontal-motion
-         (forever
-             (on (asserted (move-left))
-                 (until (retracted (move-left))
-                        (on (message (timer-tick))
-                            (send! (move-x 'player (- dx))))))
-           (on (asserted (move-right))
-               (until (retracted (move-right))
-                      (on (message (timer-tick))
-                          (send! (move-x 'player dx))))))))
+         ;; use during here?
+         (on (asserted (move-left))
+             (until (retracted (move-left))
+                    (on (message (timer-tick))
+                        (send! (move-x 'player (- dx))))))
+         (on (asserted (move-right))
+             (until (retracted (move-right))
+                    (on (message (timer-tick))
+                        (send! (move-x 'player dx)))))))
 
 ;; the vertical motion behavior tries to move the player downward by sending
 ;; (move-y dy).
@@ -170,18 +169,18 @@
 ;; when a (y-collision) is detected reset velocity to 0.
 (define (spawn-vertical-motion gravity jump-v max-v)
   (actor #:name 'vertical-motion
-   (forever (field [mot (motion 0 gravity)]
-                         [clock 0])
-           (on (message (jump))
-               (mot (motion jump-v (motion-a (mot))))
-               (clock (add1 (clock))))
-           (on (message (timer-tick))
-               (send! (move-y 'player (motion-v (mot)) (clock)))
-               (mot (motion (min max-v
-                                    (+ (motion-v (mot)) (motion-a (mot))))
-                               (motion-a (mot)))))
-           (on (message (y-collision 'player (clock)))
-               (mot (motion 0 (motion-a (mot))))))))
+         (field [mot (motion 0 gravity)]
+                [clock 0])
+         (on (message (jump))
+             (mot (motion jump-v (motion-a (mot))))
+             (clock (add1 (clock))))
+         (on (message (timer-tick))
+             (send! (move-y 'player (motion-v (mot)) (clock)))
+             (mot (motion (min max-v
+                               (+ (motion-v (mot)) (motion-a (mot))))
+                          (motion-a (mot)))))
+         (on (message (y-collision 'player (clock)))
+             (mot (motion 0 (motion-a (mot)))))))
 
 ;; create a clock that sends (timer-tick) every period-ms
 (define (spawn-clock period-ms)
@@ -189,7 +188,7 @@
   (define begin-time (current-inexact-milliseconds))
   (define (set-timer-message! n)
     (send! (set-timer id (+ begin-time (* n period-ms)) 'absolute)))
-  (actor #:name 'clock
+  (actor* #:name 'clock
    (set-timer-message! 0) ; does this create a race?
    (until (message (victory)) (field [n 0])
           (on (message (timer-expired id _))
@@ -227,7 +226,7 @@
 ;; Quits and messages (defeat) if the player leaves the map
 (define (spawn-game-logic player0 goal0 level-size)
   (define gs0 (game-state player0 '() goal0 (hash) level-size))
-  (actor #:name 'game-logic
+  (actor* #:name 'game-logic
    (react/suspend (return!)
                   (field [gs gs0])
      (on (message (move-x 'player $dx))
@@ -479,7 +478,7 @@
                           (rect (posn -100 -100) 0 0)
                           (hash)
                           (posn 100 100)))
-  (actor #:name 'renderer
+  (actor* #:name 'renderer
    (until (message (victory)) (field [gs gs0])
           (on (message (game-state $player $env $goal $enemies $level-size))
               (gs (game-state player env goal enemies level-size)))
@@ -509,14 +508,13 @@
 ;; (non-empty-listof level) -> spawn
 (define (spawn-level-manager levels)
   (actor #:name 'level-manager
-     (react
-      (run-level (first levels))
-      (stop-when (message (defeat))
-                 (spawn-level-manager levels))
-      (stop-when (message (level-complete))
-                 (match (rest levels)
-                   ['() (send! (victory))]
-                   [more-levels (spawn-level-manager more-levels)])))))
+         (run-level (first levels))
+         (stop-when (message (defeat))
+                    (spawn-level-manager levels))
+         (stop-when (message (level-complete))
+                    (match (rest levels)
+                      ['() (send! (victory))]
+                      [more-levels (spawn-level-manager more-levels)]))))
      
 ;; gui stuff
 (define game-canvas%
@@ -592,24 +590,24 @@
 (define (spawn-frame-listener)
   (define begin-time (current-inexact-milliseconds))
   (actor #:name 'frame-listener
-   (forever (field [frame-num 1]
-                   [last-ms (current-inexact-milliseconds)])
-     (on (message (timer-tick))
-         (define now (current-inexact-milliseconds))
-         (define elapsed-ms (- now begin-time))
-         (define elapsed-s (/ elapsed-ms 1000))
-         (define ideal-frames-elapsed (* elapsed-s FRAMES-PER-SEC))
-         (define missed-frames (- ideal-frames-elapsed (frame-num)))
-         (define fps (/ (frame-num) elapsed-s))
-         (printf "fps: ~v\n" fps)
-         (frame-num (add1 frame-num))
-         (last-ms now)))))
+         (field [frame-num 1]
+                [last-ms (current-inexact-milliseconds)])
+         (on (message (timer-tick))
+             (define now (current-inexact-milliseconds))
+             (define elapsed-ms (- now begin-time))
+             (define elapsed-s (/ elapsed-ms 1000))
+             (define ideal-frames-elapsed (* elapsed-s FRAMES-PER-SEC))
+             (define missed-frames (- ideal-frames-elapsed (frame-num)))
+             (define fps (/ (frame-num) elapsed-s))
+             (printf "fps: ~v\n" fps)
+             (frame-num (add1 frame-num))
+             (last-ms now))))
 
 (define (spawn-sliding-frame-listener window)
   (define begin-time (current-inexact-milliseconds))
-  (actor #:name 'sliding-frame-listener
-     (until (rising-edge (= (frames) window))
-            (field [frames 0])
+  (actor* #:name 'sliding-frame-listener
+     (react (field [frames 0])
+            (stop-when (rising-edge (= (frames) window)))
             (on (message (timer-tick))
                 (frames (add1 (frames)))))
      (define now (current-inexact-milliseconds))
@@ -619,12 +617,12 @@
      (spawn-sliding-frame-listener window)))
 
 #;(spawn-frame-listener)
-(spawn-sliding-frame-listener 30)
+#;(spawn-sliding-frame-listener 30)
 
 ;; nat nat nat nat (nat symbol -> Void) -> spawn
 (define (make-enemy x0 y0 w h mover)
   (define id (gensym 'enemy))
-  (actor #:name 'enemy
+  (actor* #:name 'enemy
    (react/suspend (return!)
                   (field (n 0))
      (assert (enemy id (rect (posn x0 y0) w h)))
