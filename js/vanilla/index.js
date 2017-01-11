@@ -40,25 +40,6 @@ Rect.prototype.distanceTo = function(rect) {
   return Math.sqrt(Math.pow(this.x - rect.x, 2) + Math.pow(this.y - rect.y, 2));
 };
 
-// velocity and acceleration
-function Motion(v, a) {
-  this.v = v;
-  this.a = a;
-}
-
-// int
-function MoveX(id, dx) {
-  this. id = id;
-  this.dx = dx;
-}
-
-// int
-function MoveY(id, dy, clock) {
-  this. id = id;
-  this.dy = dy;
-  this.clock = clock;
-}
-
 function drawRectangle(ctx, rect, color) {
   ctx.fillStyle = color;
   ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
