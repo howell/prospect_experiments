@@ -127,7 +127,7 @@
 (struct level (player0 env0 goal enemies-thunk size) #:transparent)
 
 (define (key-state key action)
-  (actor #:name (format "key-state:~a" key)
+  (spawn #:name (format "key-state:~a" key)
          (field [state #f])
          (assert #:when (state) action)
          (on (message (inbound (key-press key)))
@@ -143,7 +143,7 @@
   (list
    (key-state 'left (move-left))
    (key-state 'right (move-right))
-   (actor #:name 'player
+   (spawn #:name 'player
           (on (message (inbound (key-press #\space)))
               (send! (jump-request))))))
 
@@ -151,7 +151,7 @@
 ;; by sending the messsage (move-x +-dx) each timer tick while (move-left) or
 ;; (move-right) is being asserted
 (define (spawn-horizontal-motion dx)
-  (actor #:name 'horizontal-motion
+  (spawn #:name 'horizontal-motion
          ;; use during here?
          (on (asserted (move-left))
              (until (retracted (move-left))
@@ -168,7 +168,7 @@
 ;; when a (jump) message is received, temporarily move the player upward.
 ;; when a (y-collision) is detected reset velocity to 0.
 (define (spawn-vertical-motion gravity jump-v max-v)
-  (actor #:name 'vertical-motion
+  (spawn #:name 'vertical-motion
          (field [mot (motion 0 gravity)]
                 [clock 0])
          (on (message (jump))
@@ -188,7 +188,7 @@
   (define begin-time (current-inexact-milliseconds))
   (define (set-timer-message! n)
     (send! (set-timer id (+ begin-time (* n period-ms)) 'absolute)))
-  (actor* #:name 'clock
+  (spawn* #:name 'clock
    (set-timer-message! 0) ; does this create a race?
    (until (message (victory)) (field [n 0])
           (on (message (timer-expired id _))
@@ -226,7 +226,7 @@
 ;; Quits and messages (defeat) if the player leaves the map
 (define (spawn-game-logic player0 goal0 level-size)
   (define gs0 (game-state player0 '() goal0 (hash) level-size))
-  (actor* #:name 'game-logic
+  (spawn* #:name 'game-logic
    (react/suspend (return!)
                   (field [gs gs0])
      (on (message (move-x 'player $dx))
@@ -478,7 +478,7 @@
                           (rect (posn -100 -100) 0 0)
                           (hash)
                           (posn 100 100)))
-  (actor* #:name 'renderer
+  (spawn* #:name 'renderer
    (until (message (victory)) (field [gs gs0])
           (on (message (game-state $player $env $goal $enemies $level-size))
               (gs (game-state player env goal enemies level-size)))
@@ -507,7 +507,7 @@
 
 ;; (non-empty-listof level) -> spawn
 (define (spawn-level-manager levels)
-  (actor #:name 'level-manager
+  (spawn #:name 'level-manager
          (run-level (first levels))
          (stop-when (message (defeat))
                     (spawn-level-manager levels))
@@ -569,7 +569,7 @@
 (define GOAL0 (make-goal 900 150))
 (define GOAL1 (make-goal 500 150))
 
-(define FRAMES-PER-SEC 30)
+(define FRAMES-PER-SEC 45)
 
 (define GRAVITY-PER-SEC 6)
 (define JUMP-V-PER-SEC -200)
@@ -589,7 +589,7 @@
 
 (define (spawn-frame-listener)
   (define begin-time (current-inexact-milliseconds))
-  (actor #:name 'frame-listener
+  (spawn #:name 'frame-listener
          (field [frame-num 1]
                 [last-ms (current-inexact-milliseconds)])
          (on (message (timer-tick))
@@ -605,7 +605,7 @@
 
 (define (spawn-sliding-frame-listener window)
   (define begin-time (current-inexact-milliseconds))
-  (actor* #:name 'sliding-frame-listener
+  (spawn* #:name 'sliding-frame-listener
      (react (field [frames 0])
             (stop-when (rising-edge (= (frames) window)))
             (on (message (timer-tick))
@@ -622,7 +622,7 @@
 ;; nat nat nat nat (nat symbol -> Void) -> spawn
 (define (make-enemy x0 y0 w h mover)
   (define id (gensym 'enemy))
-  (actor* #:name 'enemy
+  (spawn* #:name 'enemy
    (react/suspend (return!)
                   (field (n 0))
      (assert (enemy id (rect (posn x0 y0) w h)))

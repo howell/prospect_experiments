@@ -11,7 +11,7 @@
   (define begin-time (current-inexact-milliseconds))
   (define (set-timer-message n)
     (message (set-timer id (+ begin-time (* n period-ms)) 'absolute)))
-  (spawn
+  (actor
          (lambda (e n)
            (and (message? e)
                 (let* ([msg (set-timer-message n)]
