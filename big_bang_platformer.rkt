@@ -2,13 +2,13 @@
 
 (require 2htdp/universe
          2htdp/image
-         (only-in "./geometry.rkt"
+         (only-in "../platformer-lib/platform_lib.rkt"
                   rect rect-top-left
                   posn
                   move-rect
                   overlapping-rects?
-                  point-distance)
-         "./platform_lib.rkt")
+                  point-distance
+                  move-player-x move-player-y))
 
 ;; num * num * num
 (struct motion (dx dy ddy) #:transparent)

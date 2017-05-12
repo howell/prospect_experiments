@@ -66,9 +66,8 @@
 ;;   - (victory)/(defeat) assertions
 ;;   Redraws every timer tick.
 
-(require "./geometry.rkt"
-         "./periodic_timer.rkt"
-         "./platform_lib.rkt"
+(require "./periodic_timer.rkt"
+         "../platformer-lib/platform_lib.rkt"
          rackunit
          syndicate/drivers/timer
          syndicate/actor
